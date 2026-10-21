@@ -1,8 +1,7 @@
 import path from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
 import { defineBddConfig } from 'playwright-bdd'
-
-const E2E_PORT = 3410
+import { E2E_DATABASE_URL, E2E_PORT } from './qa/lib/e2e'
 const runDir = process.env.QA_RUN_DIR ?? path.join('reports', 'runs', 'adhoc')
 
 const testDir = defineBddConfig({
@@ -17,6 +16,8 @@ export default defineConfig({
   retries: 1,
   forbidOnly: !!process.env.CI,
   fullyParallel: true,
+  // Fixed, not per CPU: the same parallelism on a 20-core laptop and on a 4-core CI runner (RT-2).
+  workers: 2,
   reporter: [
     ['list'],
     ['html', { outputFolder: path.join(runDir, 'playwright-report'), open: 'never' }],
@@ -34,5 +35,6 @@ export default defineConfig({
     url: `http://localhost:${E2E_PORT}/api/health`,
     reuseExistingServer: false,
     timeout: 120_000,
+    env: { DATABASE_URL: E2E_DATABASE_URL },
   },
 })

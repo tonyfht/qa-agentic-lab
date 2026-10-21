@@ -1,6 +1,9 @@
 import { OpenAPIRegistry, OpenApiGeneratorV31 } from '@asteasolutions/zod-to-openapi'
+import { z } from 'zod'
 import { appVersion } from '@/lib/version'
-import { HealthResponse } from './schemas'
+import { ApiError, CatalogQueryParams, Category, HealthResponse, Product, ProductList } from './schemas'
+
+const json = (schema: z.ZodType, description: string) => ({ description, content: { 'application/json': { schema } } })
 
 // The API contract is generated from the same Zod schemas the handlers use, so it cannot drift from the code.
 export function buildOpenApiDocument() {
@@ -12,12 +15,42 @@ export function buildOpenApiDocument() {
     operationId: 'getHealth',
     summary: 'Estado de salud de la tienda',
     tags: ['Sistema'],
+    responses: { 200: json(HealthResponse, 'La tienda está operativa') },
+  })
+
+  registry.registerPath({
+    method: 'get',
+    path: '/api/products',
+    operationId: 'listProducts',
+    summary: 'Buscar, filtrar, ordenar y paginar el catálogo',
+    tags: ['Catálogo'],
+    request: { query: CatalogQueryParams },
     responses: {
-      200: {
-        description: 'La tienda está operativa',
-        content: { 'application/json': { schema: HealthResponse } },
-      },
+      200: json(ProductList, 'Una página del catálogo'),
+      400: json(ApiError, 'Parámetros no válidos, con el motivo de cada uno'),
     },
+  })
+
+  registry.registerPath({
+    method: 'get',
+    path: '/api/products/{slug}',
+    operationId: 'getProduct',
+    summary: 'Ficha de un artículo',
+    tags: ['Catálogo'],
+    request: { params: z.object({ slug: z.string().openapi({ example: 'manta-punto-gruesa' }) }) },
+    responses: {
+      200: json(Product, 'El artículo'),
+      404: json(ApiError, 'El artículo no existe'),
+    },
+  })
+
+  registry.registerPath({
+    method: 'get',
+    path: '/api/categories',
+    operationId: 'listCategories',
+    summary: 'Categorías con su número de artículos',
+    tags: ['Catálogo'],
+    responses: { 200: json(z.array(Category), 'Las categorías en el orden de la tienda') },
   })
 
   return new OpenApiGeneratorV31(registry.definitions).generateDocument({

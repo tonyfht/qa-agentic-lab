@@ -94,14 +94,15 @@ técnico. Palabras clave estructurales de OpenSpec (`Requirement`, `Scenario`, `
 
 ## Stack
 
-Next.js 16 (App Router) + TypeScript estricto + Tailwind 4 · Zod (y OpenAPI generado desde Zod) · Playwright +
+Next.js 16 (App Router) + TypeScript estricto + Tailwind 4 · libSQL (SQLite local, se crea y rellena sola en `.data/`) ·
+Zod (y OpenAPI generado desde Zod) · Playwright +
 playwright-bdd · Vitest · ECharts · Node 24 (estricto, `engine-strict`) · npm.
 
 ## Estructura del repositorio
 
 ```
 app/                  → La Tienda en Casa: rutas de Next.js (portada, /api/health, /api/openapi.json)
-lib/                  → lógica de la tienda y esquemas Zod de la API
+lib/                  → lógica de la tienda: catalog/ (consulta pura), db/ (libSQL y datos de ejemplo), api/ (Zod + OpenAPI)
 tests/
   features/<dominio>/ → Gherkin (.feature), etiquetado con el ID de requisito (@QA-001)
   steps/              → steps de playwright-bdd
@@ -172,3 +173,13 @@ Herramientas por fase (Playwright MCP, Playwright Test Agents, GitHub MCP, GitHu
 [`openspec/PROJECT.md`](openspec/PROJECT.md).
 
 Las *quality gates* son deterministas; un agente solo puede explicar por qué una gate bloquea, no levantarla.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -1,15 +1,19 @@
 import type { Metadata } from 'next'
+import { SiteHeader } from './_components/SiteHeader'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'La Tienda en Casa',
+  title: { default: 'La Tienda en Casa', template: '%s · La Tienda en Casa' },
   description: 'Artículos para el hogar. Tienda de demostración de QA Agentic Lab.',
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
-      <body className="min-h-screen antialiased">{children}</body>
+      <body className="min-h-screen antialiased">
+        <SiteHeader />
+        {children}
+      </body>
     </html>
   )
 }
