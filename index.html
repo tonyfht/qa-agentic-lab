@@ -16,6 +16,7 @@
     <div class="meta" id="run-meta"></div>
   </header>
 
+  <div class="banner demo" id="demo-banner" role="alert" data-testid="demo-banner" hidden></div>
   <div class="banner" id="banner" role="status"></div>
   <div class="tiles" id="kpis"></div>
 
@@ -107,12 +108,37 @@
     </div>
   </section>
 
+  <section aria-labelledby="h-stab" data-testid="stability">
+    <h2 id="h-stab">Estabilidad</h2>
+    <p class="q"><b>¿Es estable la suite?</b> Porcentaje de tests que solo pasaron al reintentar en cada una de las últimas ejecuciones.</p>
+    <div class="grid2">
+      <div class="card">
+        <div id="stab-chart" class="chart short" role="img" aria-label="Porcentaje de tests inestables por ejecución"></div>
+        <details><summary>Ver como tabla</summary><div id="stab-table"></div></details>
+      </div>
+      <div class="card">
+        <b>Tests más inestables</b>
+        <div id="stab-unstable"></div>
+        <b style="display:block;margin-top:12px">En cuarentena</b>
+        <div id="stab-quarantine"></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-ops" data-testid="operations">
+    <h2 id="h-ops">Agentes de operación</h2>
+    <p class="q"><b>¿Qué han reparado los agentes?</b> De quién es cada fallo de esta ejecución según el triaje, y lo que han hecho el Sanador, el Detector de inestables y el Triaje.</p>
+    <div class="tiles" id="ops-kpis"></div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="card"><b>Fallos de esta ejecución</b><div id="ops-failures"></div></div>
+      <div class="card"><b>Actuaciones</b><ol class="actions" id="ops-actions"></ol></div>
+    </div>
+  </section>
+
   <section aria-labelledby="h-soon">
     <h2 id="h-soon">Lo que irá apareciendo</h2>
     <p class="q">El formato de resultados ya reserva su sitio; cada gráfico aparece cuando su cambio aporta los datos.</p>
     <div class="soon">
-      <div><b>¿Qué han reparado los agentes?</b>Tests reparados y defectos abiertos por el Sanador y el Triaje (QAL-008)</div>
-      <div><b>¿Es estable la suite?</b>Tasa de tests inestables por ejecución (QAL-008)</div>
       <div><b>¿Podemos salir?</b>Resumen ejecutivo y recomendación del Reportero (QAL-009)</div>
     </div>
   </section>

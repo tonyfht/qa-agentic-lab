@@ -34,6 +34,8 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .meta { color: var(--ink-2); font-size: 13px; text-align: right; }
 .banner { margin: 20px 0; padding: 16px 20px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border);
   display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.banner.demo { border-color: var(--warning); background: color-mix(in srgb, var(--warning) 14%, var(--surface)); color: var(--ink); }
+.banner[hidden] { display: none; }
 .badge { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; padding: 3px 10px; border-radius: 999px; font-size: 13px; }
 .badge.passed { color: var(--good-ink); background: color-mix(in srgb, var(--good) 14%, transparent); }
 .badge.failed { color: var(--critical-ink); background: color-mix(in srgb, var(--critical) 14%, transparent); }
