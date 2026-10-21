@@ -61,14 +61,20 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
    [primera auditoría de seguridad](qa/agents/reviews/seguridad-2026-10-21.md): un agente ordena los hallazgos por
    riesgo real, y el más grave (contraseñas que podían acabar en la URL) lo había marcado la herramienta como
    simplemente informativo.
-12. **El pipeline en GitHub.** Abre la
+12. **Rompe la tienda a propósito.** Ejecuta `npm run qa -- --stage e2e --inject cupon` (o `selector`, o `caida`) y
+   después `npm run qa -- --stage report` y `npm run report`. Verás el pipeline en rojo y, en el informe, un aviso de
+   demostración y la sección *¿Qué han reparado los agentes?*: el triaje dice de quién es cada fallo antes de que
+   nadie abra un log (`cupon` es del producto, `selector` del test y `caida` del entorno). Luego lee lo que hizo el
+   [Sanador](qa/agents/reviews/sanador-2026-10-21.md) con el fallo de `selector`: reparó el localizador, y la
+   guardia le impidió "curarlo" relajando la aserción.
+13. **El pipeline en GitHub.** Abre la
    [pestaña Actions](https://github.com/tonyfht/qa-agentic-lab/actions/workflows/pipeline.yml) y entra en la última
    ejecución. Verás las etapas por separado y, al final, un resumen con una fila por etapa.
-13. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás
+14. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás
    preguntas respondidas con gráficos (¿estamos mejor que antes?, ¿qué ha hecho la IA?...) y, en la
    trazabilidad, cada requisito con sus pruebas por tipo: por ejemplo, `CAT-004` cubierto a la vez por pruebas de
    interfaz, de API y unitarias.
-14. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
+15. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
    qué especificación implementa; si no lo dice, el pipeline lo para.
 
 ## Cómo funciona
@@ -114,13 +120,19 @@ flowchart LR
   M -.-> U
   U --> PR["🔀 Pull Request"]
   PR --> H{"👤 Revisión humana<br/>+ pipeline"}
+  H -->|"🔴 falla"| T["🩺 Triaje<br/>¿de quién es el fallo?"]
+  T -->|producto| B["🐞 Issue de defecto"]
+  T -->|test| SA["🩹 Sanador<br/>localizadores, nunca aserciones"]
+  T -->|inestable| FD["📉 Detector de inestables<br/>corrección o cuarentena"]
+  SA --> PR
   H --> L[("📒 Registro de actuaciones")]
+  T --> L
   L --> I["📊 Informe: ¿qué ha hecho la IA?"]
 ```
 
 Se ejecutan desde una sesión de [Claude Code](https://claude.com/claude-code) en el repositorio (por ejemplo, *"usa el
 subagente qa-disenador sobre el catálogo"*) o desde GitHub con el workflow
-[Agentes de diseño](.github/workflows/agents.yml). En GitHub necesitan la clave `ANTHROPIC_API_KEY` en los
+[Agentes de QA](.github/workflows/agents.yml). En GitHub necesitan la clave `ANTHROPIC_API_KEY` en los
 *secrets*; sin ella, el workflow se omite avisando. Se apoyan en los
 [Playwright Test Agents](https://playwright.dev/docs/test-agents) y en su servidor MCP ([`.mcp.json`](.mcp.json)).
 
@@ -142,13 +154,15 @@ npx playwright install chromium
 | Ver el contrato de la API | `npm run dev` | <http://localhost:3400/api/openapi.json> |
 | Probar el carrito y los cupones | `npm run dev` | <http://localhost:3400/carrito> (cupones: `BIENVENIDA10`, `CASA5`, `TEXTIL15`, `ENVIOGRATIS`, `VERANO2026`) |
 | Ejecutar todo el pipeline | `npm run qa` | Resumen en la consola |
-| Ejecutar una sola etapa | `npm run qa -- --stage e2e` | Etapas: `static`, `build`, `e2e`, `performance`, `report` |
+| Ejecutar una sola etapa | `npm run qa -- --stage e2e` | Etapas: `static`, `build`, `e2e`, `performance`, `security`, `report` |
+| Romper la tienda a propósito | `npm run qa -- --stage e2e --inject cupon` | Defectos: `cupon` (producto), `selector` (test), `caida` (entorno). Triaje en `reports/runs/<id>/triaje.md` tras `--stage report` |
 | Medir rendimiento y carga | `npm run qa -- --stage performance` | Lighthouse en 3 páginas y k6 con 20 usuarios (si está instalado) |
 | Ver el informe con mi histórico | `npm run report` | <http://localhost:3420> |
 
 **En GitHub, sin instalar nada:** entra en la
 [pestaña Actions](https://github.com/tonyfht/qa-agentic-lab/actions/workflows/pipeline.yml), pulsa **Run workflow** y
-elige la rama. El pipeline no necesita ningún secreto.
+elige la rama. El pipeline no necesita ningún secreto. En el mismo formulario puedes elegir un **defecto** para la
+demostración: la ejecución se pondrá en rojo, el resumen mostrará el triaje y no se publicará en el histórico.
 
 ### Tarjetas de prueba
 

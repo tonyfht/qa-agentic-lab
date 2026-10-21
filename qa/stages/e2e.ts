@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { resetE2eDatabase } from '../lib/e2e'
 import { runCommand, tail } from '../lib/exec'
+import { applyQuarantine, readQuarantine } from '../quarantine'
 import type { TestResult } from '../results/schema'
 import type { StageDefinition } from './types'
 
@@ -21,12 +22,17 @@ export const e2eStage: StageDefinition = {
 
     const { code, output } = await runCommand('npx playwright test', { cwd: ctx.root, env })
     const resultsFile = path.join(ctx.runDir, E2E_RESULTS_FILE)
-    const tests: TestResult[] = existsSync(resultsFile) ? JSON.parse(readFileSync(resultsFile, 'utf8')) : []
-    if (code === 0) return { status: 'passed', tests }
-    const failed = tests.filter((t) => t.status === 'failed').map((t) => t.title)
+    const raw: TestResult[] = existsSync(resultsFile) ? JSON.parse(readFileSync(resultsFile, 'utf8')) : []
+    if (code === 0) return { status: 'passed', tests: raw }
+    // Failures of quarantined tests are reported but do not block (QA-028).
+    const { tests, blocking } = applyQuarantine(raw, readQuarantine(ctx.root))
+    const quarantined = tests.filter((t) => t.status === 'failed').length - blocking.length
+    if (blocking.length === 0 && quarantined > 0) {
+      return { status: 'passed', reason: `${quarantined} test(s) en cuarentena fallaron (no bloquean)`, tests }
+    }
     return {
       status: 'failed',
-      reason: failed.length ? `Fallan: ${failed.join(', ')}` : `Playwright terminó con error:\n${tail(output)}`,
+      reason: blocking.length ? `Fallan: ${blocking.map((t) => t.title).join(', ')}` : `Playwright terminó con error:\n${tail(output)}`,
       tests,
     }
   },

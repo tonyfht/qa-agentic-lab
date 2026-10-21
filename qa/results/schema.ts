@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { DEFECT_IDS } from '../../lib/qa/defects'
 import { AgentAction } from '../agents/registry'
 
 // Contract of a single pipeline run (local or CI). Every later change extends it without breaking history:
@@ -37,6 +38,10 @@ export const TestResult = z.object({
   // Failure message or skip reason, shown in the report.
   message: z.string().optional(),
   detail: TestDetail.optional(),
+  // Triage of a failed or flaky test (QAL-008, QA-052): category and the rule that decided it.
+  triage: z
+    .object({ category: z.enum(['producto', 'test', 'entorno', 'inestable', 'desconocido']), reason: z.string().min(1) })
+    .optional(),
 })
 
 export const Requirement = z.object({
@@ -75,6 +80,8 @@ export const RunResult = z.object({
   metrics: z.record(z.string(), z.unknown()),
   findings: z.array(Finding),
   agentActions: z.array(AgentAction),
+  // Demo run with a defect switched on (QAL-008, QA-029): never published to the history.
+  injectedDefect: z.enum(DEFECT_IDS as [string, ...string[]]).optional(),
 })
 
 export type StageStatus = z.infer<typeof StageStatus>

@@ -17,6 +17,11 @@ if (!pagesDir || !runDir) {
 
 const historyFile = path.join(pagesDir, 'history', 'runs.ndjson')
 const run = JSON.parse(readFileSync(path.join(runDir, 'run.json'), 'utf8'))
+// Second line of defence after the workflow condition: a demo run with an injected defect is never public history.
+if (run.injectedDefect) {
+  console.log(`La ejecución ${run.runId} tiene el defecto «${run.injectedDefect}» inyectado; no se publica.`)
+  process.exit(0)
+}
 if (readHistory(historyFile).some((r) => r.runId === run.runId)) {
   console.log(`La ejecución ${run.runId} ya estaba publicada; no se duplica.`)
 } else {

@@ -1,0 +1,4 @@
+{
+  "$comment": "Tests en cuarentena (QA-028): siguen ejecutándose, pero su fallo no bloquea. Cada entrada lleva motivo, issue y caducidad de 14 días como máximo; una entrada caducada bloquea el análisis estático.",
+  "tests": []
+}

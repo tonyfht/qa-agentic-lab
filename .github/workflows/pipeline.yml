@@ -9,6 +9,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      defecto:
+        description: Defecto que se inyecta en la tienda para la demostración (QA-029). Una ejecución con defecto no se publica.
+        type: choice
+        default: ninguno
+        options: [ninguno, cupon, selector, caida]
   schedule:
     - cron: '30 5 * * *' # cada día a las 05:30 UTC
 
@@ -20,6 +26,8 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
+  # Vacío salvo en una ejecución manual con defecto: la tienda solo lo activa con esta variable (QA-029).
+  QA_INJECT_DEFECT: ${{ github.event_name == 'workflow_dispatch' && inputs.defecto != 'ninguno' && inputs.defecto || '' }}
   QA_RUN_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}
   QA_REPORT_URL: ${{ github.ref == 'refs/heads/main' && format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) || format('{0}/{1}/actions/runs/{2}#artifacts', github.server_url, github.repository, github.run_id) }}
 
@@ -215,7 +223,7 @@ jobs:
   publish:
     name: 7 · Publicar en GitHub Pages
     needs: report
-    if: always() && needs.report.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: always() && needs.report.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || inputs.defecto == 'ninguno')
     runs-on: ubuntu-latest
     permissions:
       contents: write

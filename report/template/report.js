@@ -190,6 +190,60 @@
         .join('')
     : '<li data-testid="agents-empty">Todavía no hay actuaciones de agentes registradas.</li>'
 
+  // Stability (QA-053)
+  const stab = data.stability
+  const pctText = (n) => `${n.toLocaleString('es-ES', { maximumFractionDigits: 1 })} %`
+  $('stab-table').innerHTML = table(
+    ['Ejecución', 'Inestables', 'Ejecutados', '% inestables'],
+    stab.runs.map((r) => [esc(r.label), r.flaky, r.executed, pctText(r.ratePct)]),
+  )
+  $('stab-unstable').innerHTML = stab.unstable.length
+    ? table(
+        ['Test', 'Inestable', 'Última vez'],
+        stab.unstable.map((t) => [
+          `${esc(t.title)} <span class="nodetail">${esc(t.file)}</span>`,
+          `${t.flaky} de ${t.runs} (${pctText(t.ratePct)})`,
+          esc(new Date(t.lastFlakyAt).toLocaleDateString('es-ES')),
+        ]),
+      )
+    : `<p class="nodetail" data-testid="stability-none">Ningún test ha sido inestable en las últimas ${stab.window} ejecuciones.</p>`
+  $('stab-quarantine').innerHTML = stab.quarantine.length
+    ? table(
+        ['Test', 'Motivo', 'Caduca'],
+        stab.quarantine.map((q) => [`${esc(q.titulo)} <a href="${esc(q.issue)}">issue</a>`, esc(q.motivo), esc(q.hasta)]),
+      )
+    : '<p class="nodetail">Ningún test en cuarentena.</p>'
+
+  // Operations: triage of this run and what the operation agents did (QA-054)
+  const ops = data.operations
+  if (ops.injectedDefect) {
+    const demo = $('demo-banner')
+    demo.hidden = false
+    demo.innerHTML = `<span><b>⚠ Ejecución de demostración</b> con el defecto <code>${esc(ops.injectedDefect)}</code> inyectado a propósito. No entra en el histórico publicado.</span>`
+  }
+  const TRIAGE_ICON = { producto: '✖', test: '⚙', entorno: '☁', inestable: '⚠', desconocido: '?' }
+  const triagedTotal = ops.byCategory.reduce((n, c) => n + c.count, 0)
+  $('ops-kpis').innerHTML = ops.byCategory
+    .map((c) => kpi(`${TRIAGE_ICON[c.category]} ${c.label}`, String(c.count), null, triagedTotal ? `${Math.round((c.count / triagedTotal) * 100)} % de los fallos` : 'sin fallos'))
+    .join('')
+  $('ops-failures').innerHTML = ops.failures.length
+    ? table(
+        ['Test', 'Requisitos', 'Categoría', 'Motivo'],
+        ops.failures.map((x) => [esc(x.title), esc(x.requirements.join(', ') || '—'), `${TRIAGE_ICON[x.category]} ${esc(x.label)}`, esc(x.reason)]),
+      )
+    : '<p class="nodetail" data-testid="operations-none">Ningún test ha fallado ni ha sido inestable en esta ejecución.</p>'
+  $('ops-actions').innerHTML = ops.actions.length
+    ? ops.actions
+        .map(
+          (x) =>
+            `<li><div class="who">${esc(x.agent)} · ${esc(x.action)}</div>` +
+            `<div class="when">${esc(new Date(x.date).toLocaleDateString('es-ES'))} · ${esc(x.change)}</div>` +
+            `<div>${esc(x.summary)}</div>` +
+            `<div class="when">${x.artifacts.map((p) => `<a href="${repo}${esc(p)}">${esc(p)}</a>`).join(' · ')}</div></li>`,
+        )
+        .join('')
+    : '<li>El Sanador, el Detector de inestables y el Triaje todavía no han registrado actuaciones.</li>'
+
   $('footer').textContent = `Informe generado el ${new Date(data.generatedAt).toLocaleString('es-ES')} · QA Agentic Lab`
 
   // Charts
@@ -360,6 +414,29 @@
         })),
       })
       charts.push(sc)
+    }
+
+    const stEl = $('stab-chart')
+    if (stab.runs.every((r) => r.flaky === 0)) {
+      stEl.className = 'chart short empty'
+      stEl.setAttribute('data-testid', 'stability-empty')
+      stEl.textContent = `Ningún test ha sido inestable en las últimas ${stab.window} ejecuciones.`
+    } else {
+      const sb = echarts.init(stEl)
+      sb.setOption({
+        textStyle,
+        tooltip: { ...tooltip, trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: (p) => `${p[0].name}: ${pctText(p[0].value)} (${stab.runs[p[0].dataIndex].flaky} de ${stab.runs[p[0].dataIndex].executed})` },
+        grid: { left: 44, right: 16, top: 16, bottom: 28 },
+        xAxis: { type: 'category', data: stab.runs.map((r) => r.label), ...axis, splitLine: { show: false } },
+        yAxis: { type: 'value', name: '% inestables', min: 0, nameTextStyle: { color: css('--muted') }, ...axis, axisLabel: { color: css('--muted'), formatter: (v) => `${v} %` } },
+        series: [{
+          type: 'bar',
+          barMaxWidth: 28,
+          data: stab.runs.map((r) => r.ratePct),
+          itemStyle: { color: css('--warning'), borderRadius: [4, 4, 0, 0] },
+        }],
+      })
+      charts.push(sb)
     }
 
     const agEl = $('agents-chart')

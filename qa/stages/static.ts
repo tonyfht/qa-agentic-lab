@@ -4,6 +4,7 @@ import { checkAgentDefinitions, readAgentActions } from '../agents/registry'
 import { lintFeatures } from '../checks/gherkin'
 import { findBrokenLinks, markdownFiles, mermaidBlocks } from '../checks/markdown'
 import { lintAllSpecs, openspecValidate } from '../checks/specs'
+import { checkQuarantine, QUARANTINE_FILE } from '../quarantine'
 import { loadRequirementCatalog } from '../results/requirements'
 import { validateMermaid } from '../checks/mermaid'
 import { scanSecrets } from '../checks/secrets'
@@ -96,6 +97,17 @@ export const staticChecks: StaticCheck[] = [
     requirements: ['QA-040', 'QA-045'],
     async run(ctx) {
       const errors = [...checkAgentDefinitions(ctx.root), ...readAgentActions(ctx.root).errors]
+      return errors.length === 0 ? { status: 'passed' } : { status: 'failed', message: errors.join('\n') }
+    },
+  },
+  {
+    id: 'quarantine',
+    title: 'Cuarentena vigente y con motivo',
+    requirements: ['QA-028'],
+    async run(ctx) {
+      const file = path.join(ctx.root, QUARANTINE_FILE)
+      if (!existsSync(file)) return { status: 'passed' }
+      const errors = checkQuarantine(JSON.parse(readFileSync(file, 'utf8')), new Date().toISOString().slice(0, 10))
       return errors.length === 0 ? { status: 'passed' } : { status: 'failed', message: errors.join('\n') }
     },
   },

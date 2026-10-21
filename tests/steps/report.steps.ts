@@ -5,6 +5,7 @@ import { pathToFileURL } from 'node:url'
 import { expect } from '@playwright/test'
 import { buildSite } from '../../report/build'
 import type { RunResult, TestResult } from '../../qa/results/schema'
+import { withTriage } from '../../qa/triage/classify'
 import { sampleRun } from '../support/sample-runs'
 import { Given, Then, When } from './fixtures'
 
@@ -162,6 +163,73 @@ Given('un histórico cuya última ejecución tiene hallazgos de seguridad', asyn
 Then('veo la excepción aceptada {string} con su motivo', async ({ page }, title: string) => {
   const row = page.getByTestId('security').getByRole('row').filter({ hasText: title })
   await expect(row).toContainText('Next.js emite scripts en línea')
+})
+
+// QA-053: one test needs a retry in two of three runs.
+Given('un histórico en el que un test fue inestable en 2 de 3 ejecuciones', async ({ world }) => {
+  const outDir = mkdtempSync(path.join(os.tmpdir(), 'qal-report-'))
+  const cart = (status: TestResult['status']): TestResult => ({
+    id: 'cart-1',
+    title: 'Carrito › Se conserva al recargar',
+    file: 'tests/features/cart/carrito.feature',
+    stage: 'e2e',
+    status,
+    durationMs: 900,
+    retries: status === 'flaky' ? 1 : 0,
+    requirements: ['QA-001'],
+    tags: ['@QA-001', '@e2e'],
+  })
+  const history = (['flaky', 'passed', 'flaky'] as const).map((status, i) =>
+    sampleRun({ runId: `run-${i + 1}`, origin: { kind: 'ci', runNumber: i + 1 }, tests: [cart(status)] }),
+  )
+  world.reportIndex = buildSite({ root, history, outDir })
+})
+
+Then('el test {string} aparece como inestable {string}', async ({ page }, title: string, times: string) => {
+  const row = page.getByTestId('stability').getByRole('row').filter({ hasText: title })
+  await expect(row).toContainText(times)
+})
+
+Then('la sección de estabilidad dice que ningún test ha sido inestable', async ({ page }) => {
+  await expect(page.getByTestId('stability-empty')).toContainText('Ningún test ha sido inestable en las últimas 2 ejecuciones')
+})
+
+// QA-054: a demo run with the `cupon` defect, triaged by the real rules.
+Given('una ejecución con el defecto {string} inyectado, un fallo de producto y uno de test', async ({ world }, defect: string) => {
+  const outDir = mkdtempSync(path.join(os.tmpdir(), 'qal-report-'))
+  const failed = (id: string, title: string, message: string): TestResult => ({
+    id,
+    title,
+    file: 'tests/features/x.feature',
+    stage: 'e2e',
+    status: 'failed',
+    durationMs: 500,
+    retries: 1,
+    requirements: ['QA-001'],
+    tags: ['@QA-001'],
+    message,
+  })
+  const last = sampleRun({
+    runId: 'run-2',
+    status: 'failed',
+    origin: { kind: 'ci', runNumber: 2 },
+    injectedDefect: defect,
+    tests: withTriage([
+      failed('p', 'Cupones › Un cupón válido descuenta', 'expect(received).toBe(expected)\n\nExpected: 200\nReceived: 400'),
+      failed('t', 'Filtros › Filtrar por categoría', "Locator: getByTestId('results-total')\nError: element(s) not found"),
+    ]),
+  })
+  world.reportIndex = buildSite({ root, history: [...runs(1), last], outDir })
+})
+
+Then('el aviso de demostración nombra el defecto {string}', async ({ page }, defect: string) => {
+  await expect(page.getByTestId('demo-banner')).toBeVisible()
+  await expect(page.getByTestId('demo-banner')).toContainText(`con el defecto ${defect} inyectado`)
+})
+
+Then('el fallo {string} aparece como {string}', async ({ page }, title: string, category: string) => {
+  const row = page.getByTestId('operations').getByRole('row').filter({ hasText: title })
+  await expect(row).toContainText(category)
 })
 
 Then('la sección de seguridad explica que no hay resultados', async ({ page }) => {

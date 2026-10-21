@@ -1,0 +1,13 @@
+diff --git a/tests/steps/catalog.steps.ts b/tests/steps/catalog.steps.ts
+index 252490c..53cd294 100644
+--- a/tests/steps/catalog.steps.ts
++++ b/tests/steps/catalog.steps.ts
+@@ -47,7 +47,7 @@ Then('veo {int} artículos en la página', async ({ page }, count: number) => {
+ })
+ 
+ Then('veo el total {string}', async ({ page }, text: string) => {
+-  await expect(page.getByTestId('results-total')).toHaveText(text)
++  await expect(page.getByTestId('results-count')).toContainText('artículo')
+ })
+ 
+ Then('aparece el artículo {string}', async ({ page }, name: string) => {

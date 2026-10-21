@@ -128,6 +128,7 @@ openspec/             → specs, cambios y archivo (fuente de verdad)
 | `npm run dev` | Tienda en desarrollo en el 3400 |
 | `npm run qa` | Pipeline completo: static → build → e2e → report |
 | `npm run qa -- --stage <id>` | Una etapa (y sus previas). `governance` necesita `--pr-body <fichero>` |
+| `npm run qa -- --inject <defecto>` | Demostración con un defecto inyectado (`cupon`, `selector`, `caida`); nunca se publica |
 | `npm run report` | Informe con el histórico local en el 3420 |
 | `npm run test:unit` | Solo las pruebas unitarias |
 | `node scripts/setup-branch-protection.mjs` | Reglas de protección de `main` (tras cambiar nombres de jobs) |
@@ -162,9 +163,9 @@ No usar puertos de otros proyectos de la máquina: 3000 (Aigovia), 3100/3110/312
 | Diseñador de casos | Aplica técnicas (equivalencia, valores límite, tablas de decisión, *pairwise*) a los escenarios | Diseño | [`qa-disenador`](.claude/agents/qa-disenador.md) |
 | Automatizador | Implementa los *steps* y tests, y solo entrega lo que pasa | Automatización | [`qa-automatizador`](.claude/agents/qa-automatizador.md) |
 | Agente de API | Diseña pruebas de contrato y negocio desde la especificación OpenAPI y mantiene el barrido de contrato | Automatización | [`qa-api`](.claude/agents/qa-api.md) |
-| Sanador | Repara tests rotos por cambios no funcionales; abre PR con evidencia | Tras un fallo en CI | QAL-008 |
-| Detector de *flaky* | Detecta tests inestables con el histórico y propone su corrección o cuarentena | Tras cada ejecución | QAL-008 |
-| Triaje | Clasifica fallos y abre *issues* de defecto con evidencia | Tras un fallo en CI | QAL-008 |
+| Sanador | Repara tests rotos por cambios no funcionales, solo localizadores y esperas; su PR pasa la guardia de aserciones | Tras un fallo de categoría `test` | [`qa-sanador`](.claude/agents/qa-sanador.md) |
+| Detector de inestables | Mide la inestabilidad con el histórico, distingue test de entorno y propone corrección o cuarentena con caducidad | Tras cada ejecución | [`qa-detector-flaky`](.claude/agents/qa-detector-flaky.md) |
+| Triaje | Revisa la categoría de cada fallo (producto, test, entorno, inestable) y abre *issues* de defecto con evidencia | Tras un fallo en CI | [`qa-triaje`](.claude/agents/qa-triaje.md) |
 | Auditor de experiencia | Interpreta accesibilidad, rendimiento, regresión visual y carga en lenguaje de negocio | Tras cada ejecución | [`qa-auditor-experiencia`](.claude/agents/qa-auditor-experiencia.md) |
 | Auditor de seguridad y cumplimiento | Prioriza hallazgos de SAST, dependencias, licencias, secretos y DAST y revisa las excepciones | Tras cada ejecución | [`qa-auditor-seguridad`](.claude/agents/qa-auditor-seguridad.md) |
 | Reportero | Compara con el histórico, redacta el resumen ejecutivo y recomienda si se puede salir | Tras cada ejecución | QAL-009 |
