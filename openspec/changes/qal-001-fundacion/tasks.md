@@ -4,7 +4,7 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
 
 ## 0. Antes de empezar
 
-- [ ] 0.1 Elegir el logo (A, B o C) y validar la dirección visual del informe a partir de `bocetos/`. Se verifica
+- [x] 0.1 Elegir el logo (A, B o C) y validar la dirección visual del informe a partir de `bocetos/`. Se verifica
   cuando la elección queda anotada en `design.md`, sección *Dirección visual*.
 
 ## 1. Base del repositorio

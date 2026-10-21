@@ -143,4 +143,5 @@ se puede enseñar entero.
 | 2026-10-21 | Producto y sistema de calidad en un único repositorio, ambos gobernados por OpenSpec. |
 | 2026-10-21 | Uso formativo y sin ánimo de lucro: la demo pública puede ir en el plan gratuito de Vercel. Se difundirá también desde antonioherrera.tech. |
 | 2026-10-21 | La demo completa se levanta también en local (puertos 3400, 3410 y 3420). |
+| 2026-10-21 | Identidad visual: logo **escudo** (el check del escudo está hecho de agentes conectados), índigo `#4f46e5` + verde azulado `#0d9488`, y la dirección del informe de `qal-001-fundacion/bocetos/informe.html`. |
 | 2026-10-21 | Requisitos transversales RT-1 a RT-5: volumen para todas las tipologías, paridad local/CI, informe propio con histórico, README guiado e IA en todo el ciclo. |

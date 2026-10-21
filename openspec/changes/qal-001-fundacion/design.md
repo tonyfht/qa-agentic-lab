@@ -237,7 +237,11 @@ con una prueba unitaria del orquestador, con `describe('QA-001 ...')`.
 | QA-023, QA-031, QA-032 | Unitaria de los comprobadores con casos que pasan y que fallan | `tests/unit/qa/checks/` |
 | QA-025 | Unitaria: `git ls-files --eol` sin CRLF en el índice | `tests/unit/repo/` |
 
-## Dirección visual (pendiente de tu elección)
+## Dirección visual
+
+> **Decisión (2026-10-21):** logo **B · Escudo** y dirección visual del informe validada tal como está en el boceto.
+> El logo definitivo parte de `bocetos/logo-b-escudo.svg` (tarea 10.1) y el informe sigue `bocetos/informe.html`
+> (grupo 7).
 
 Los bocetos están en [`bocetos/`](bocetos/). Se sirven con `npx http-server openspec/changes/qal-001-fundacion/bocetos -p 3420`.
 
