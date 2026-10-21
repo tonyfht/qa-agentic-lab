@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 128" role="img" aria-labelledby="t">
+  <title id="t">QA Agentic Lab</title>
+  <style>
+    .ink { fill: #0b0b0b; } .sub { fill: #52514e; }
+    .lens { fill: none; stroke: #4f46e5; stroke-width: 8; }
+    .handle { stroke: #4f46e5; stroke-width: 13; stroke-linecap: round; }
+    .edge { stroke: #0d9488; stroke-width: 3; opacity: .85; }
+    .node { fill: #0d9488; }
+    .core { fill: #4f46e5; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #f0efec; } .sub { fill: #c3c2b7; }
+      .lens { stroke: #8b85f0; } .handle { stroke: #8b85f0; } .core { fill: #8b85f0; }
+      .edge { stroke: #2dd4bf; } .node { fill: #2dd4bf; }
+    }
+  </style>
+  <g transform="translate(12 8)">
+    <circle class="lens" cx="50" cy="50" r="40"/>
+    <line class="handle" x1="80" y1="80" x2="104" y2="104"/>
+    <!-- hexagon of agents around a core -->
+    <g class="edge">
+      <line x1="50" y1="50" x2="50" y2="26"/><line x1="50" y1="50" x2="71" y2="38"/>
+      <line x1="50" y1="50" x2="71" y2="62"/><line x1="50" y1="50" x2="50" y2="74"/>
+      <line x1="50" y1="50" x2="29" y2="62"/><line x1="50" y1="50" x2="29" y2="38"/>
+      <polyline fill="none" points="50,26 71,38 71,62 50,74 29,62 29,38 50,26"/>
+    </g>
+    <g class="node">
+      <circle cx="50" cy="26" r="5"/><circle cx="71" cy="38" r="5"/><circle cx="71" cy="62" r="5"/>
+      <circle cx="50" cy="74" r="5"/><circle cx="29" cy="62" r="5"/><circle cx="29" cy="38" r="5"/>
+    </g>
+    <circle class="core" cx="50" cy="50" r="8"/>
+  </g>
+  <text x="138" y="66" class="ink" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="44" font-weight="700" letter-spacing="-0.5">QA Agentic Lab</text>
+  <text x="140" y="98" class="sub" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="18">Calidad con IA, gobernada por especificación</text>
+</svg>

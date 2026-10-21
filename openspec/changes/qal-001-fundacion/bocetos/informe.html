@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Informe de calidad — QA Agentic Lab (boceto)</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,.10);
+    --brand: #4f46e5; --accent: #0d9488; --brand-soft: #eef0ff;
+    --good: #0ca30c; --warning: #fab219; --critical: #d03b3b; --skipped: #a8a7a0;
+    --good-ink: #006300; --critical-ink: #b42323; --warning-ink: #8a5a00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10);
+      --brand: #8b85f0; --accent: #2dd4bf; --brand-soft: #23214a; --skipped: #6b6a64;
+      --good-ink: #0ca30c; --critical-ink: #ff7b7b; --warning-ink: #fab219;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10);
+    --brand: #8b85f0; --accent: #2dd4bf; --brand-soft: #23214a; --skipped: #6b6a64;
+    --good-ink: #0ca30c; --critical-ink: #ff7b7b; --warning-ink: #fab219;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 24px 16px 64px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  header img { height: 56px; }
+  .meta { color: var(--ink-2); font-size: 13px; text-align: right; }
+  .banner { margin: 20px 0; padding: 16px 20px; border-radius: 12px; background: var(--surface);
+            border: 1px solid var(--border); display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .badge { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; padding: 4px 10px;
+           border-radius: 999px; font-size: 13px; }
+  .badge.ok { color: var(--good-ink); background: color-mix(in srgb, var(--good) 14%, transparent); }
+  .badge.ko { color: var(--critical-ink); background: color-mix(in srgb, var(--critical) 14%, transparent); }
+  .badge.flaky { color: var(--warning-ink); background: color-mix(in srgb, var(--warning) 18%, transparent); }
+  .badge.skip { color: var(--ink-2); background: color-mix(in srgb, var(--skipped) 22%, transparent); }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .tile .label { color: var(--ink-2); font-size: 13px; }
+  .tile .value { font-size: 32px; font-weight: 700; line-height: 1.2; }
+  .tile .delta { font-size: 13px; color: var(--good-ink); }
+  h2 { font-size: 18px; margin: 36px 0 4px; }
+  .q { color: var(--ink-2); margin: 0 0 12px; font-size: 14px; }
+  .q b { color: var(--brand); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .chart { width: 100%; height: 300px; }
+  .pipeline { display: flex; gap: 8px; flex-wrap: wrap; align-items: stretch; }
+  .stage { flex: 1 1 150px; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
+           background: var(--surface); position: relative; }
+  .stage .name { font-weight: 600; }
+  .stage .dur { color: var(--muted); font-size: 12px; }
+  .stage.ok { border-left: 4px solid var(--good); }
+  .stage.flaky { border-left: 4px solid var(--warning); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } .meta { text-align: left; } }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { color: var(--ink-2); font-weight: 600; font-size: 13px; }
+  td.id { font-family: ui-monospace, "Cascadia Mono", monospace; font-weight: 600; color: var(--brand); white-space: nowrap; }
+  .soon { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+  .soon div { border: 1px dashed var(--axis); border-radius: 10px; padding: 12px; color: var(--ink-2); font-size: 13px; }
+  .soon b { color: var(--ink); display: block; }
+  .note { margin-top: 40px; font-size: 12px; color: var(--muted); }
+  .toggle { border: 1px solid var(--border); background: var(--surface); color: var(--ink); border-radius: 8px;
+            padding: 4px 10px; cursor: pointer; font: inherit; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="logo-b-escudo.svg" alt="QA Agentic Lab">
+    <div class="meta">
+      Ejecución <b>#8</b> · rama <code>main</code> · commit <code>3f2c9a1</code><br>
+      GitHub Actions · 21 oct 2026, 09:14 · <button class="toggle" id="theme">Cambiar tema</button>
+    </div>
+  </header>
+
+  <div class="banner">
+    <span class="badge ok">✔ Superada</span>
+    <span>Todas las etapas bloqueantes en verde. <b>1 test inestable</b> que conviene revisar.</span>
+  </div>
+
+  <div class="tiles">
+    <div class="tile"><div class="label">Tests superados</div><div class="value">41 / 42</div><div class="delta">▲ 6 más que la ejecución anterior</div></div>
+    <div class="tile"><div class="label">Requisitos cubiertos</div><div class="value">27 / 30</div><div class="delta">▲ 4 nuevos</div></div>
+    <div class="tile"><div class="label">Tests sin trazar</div><div class="value">0</div><div class="delta">Todos ligados a un requisito</div></div>
+    <div class="tile"><div class="label">Duración total</div><div class="value">4 min 12 s</div><div class="delta">▼ 18 s más rápida</div></div>
+  </div>
+
+  <h2>Pipeline de esta ejecución</h2>
+  <p class="q">¿Por qué etapas ha pasado el código y cómo ha ido cada una?</p>
+  <div class="pipeline">
+    <div class="stage ok"><div class="name">1 · Análisis estático</div><div class="dur">✔ 38 s · lint, tipos, secretos, enlaces</div></div>
+    <div class="stage ok"><div class="name">2 · Tienda en el runner</div><div class="dur">✔ 52 s · build y arranque</div></div>
+    <div class="stage flaky"><div class="name">3 · Smoke y E2E</div><div class="dur">⚠ 1 min 47 s · 1 inestable</div></div>
+    <div class="stage ok"><div class="name">4 · Informe</div><div class="dur">✔ 15 s · histórico + publicación</div></div>
+  </div>
+
+  <h2>Tendencia</h2>
+  <p class="q"><b>¿Estamos mejor o peor que antes?</b> Resultado de los tests en cada ejecución de <code>main</code>.</p>
+  <div class="card"><div id="trend" class="chart" role="img" aria-label="Tests por estado en las últimas ocho ejecuciones"></div></div>
+
+  <div class="grid2">
+    <div>
+      <h2>Tiempo</h2>
+      <p class="q"><b>¿Dónde se va el tiempo del pipeline?</b> Duración por etapa en esta ejecución.</p>
+      <div class="card"><div id="stages" class="chart" style="height:240px" role="img" aria-label="Duración por etapa"></div></div>
+    </div>
+    <div>
+      <h2>Cobertura</h2>
+      <p class="q"><b>¿Cuánto de lo especificado está probado?</b> Requisitos por estado.</p>
+      <div class="card"><div id="coverage" class="chart" style="height:240px" role="img" aria-label="Requisitos por estado"></div></div>
+    </div>
+  </div>
+
+  <h2>Trazabilidad</h2>
+  <p class="q"><b>¿Qué requisitos están cubiertos y cuáles fallan?</b> Cada requisito con su escenario y su último resultado.</p>
+  <div class="card">
+    <table>
+      <thead><tr><th>Requisito</th><th>Qué pide</th><th>Escenarios</th><th>Último resultado</th></tr></thead>
+      <tbody>
+        <tr><td class="id">QA-001</td><td>La tienda arranca y responde</td><td>Tienda sana · La tienda no arranca</td><td><span class="badge ok">✔ Superado</span></td></tr>
+        <tr><td class="id">CAT-001</td><td>Búsqueda por texto</td><td>Búsqueda con resultados · Sin resultados · Texto vacío</td><td><span class="badge ok">✔ Superado</span></td></tr>
+        <tr><td class="id">CAT-002</td><td>Filtro por categoría y precio</td><td>6 combinaciones (pairwise)</td><td><span class="badge flaky">⚠ Inestable</span> <a href="#">ver traza</a></td></tr>
+        <tr><td class="id">CAT-003</td><td>Ordenación del catálogo</td><td>Precio ascendente · Precio descendente</td><td><span class="badge ok">✔ Superado</span></td></tr>
+        <tr><td class="id">CAT-004</td><td>Ficha de producto</td><td>—</td><td><span class="badge skip">○ Sin pruebas</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Lo que irá apareciendo</h2>
+  <p class="q">El formato de resultados ya reserva su sitio; cada gráfico aparece cuando su cambio aporta los datos.</p>
+  <div class="soon">
+    <div><b>¿Qué ha hecho la IA?</b>Tests diseñados, reparados y defectos abiertos por los agentes (QAL-003, QAL-008)</div>
+    <div><b>¿Es estable la suite?</b>Tasa de tests inestables por ejecución (QAL-008)</div>
+    <div><b>¿Es usable y rápida?</b>Accesibilidad, rendimiento y regresión visual (QAL-006)</div>
+    <div><b>¿Es segura y cumple?</b>Hallazgos de seguridad, dependencias y licencias (QAL-007)</div>
+    <div><b>¿Podemos salir?</b>Resumen ejecutivo y recomendación del Reportero (QAL-009)</div>
+  </div>
+
+  <p class="note">Boceto con datos de ejemplo para validar la dirección visual (QAL-001). Los colores de estado van siempre con icono y texto.</p>
+</div>
+
+<script>
+const runs = ['#1','#2','#3','#4','#5','#6','#7','#8'];
+const data = {
+  passed:  [4, 4, 12, 18, 18, 30, 35, 41],
+  flaky:   [0, 0, 1, 0, 1, 0, 0, 1],
+  failed:  [0, 1, 0, 2, 0, 1, 0, 0],
+  skipped: [1, 0, 2, 1, 1, 1, 1, 0],
+};
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const charts = [];
+
+function axisStyle() {
+  return {
+    axisLine: { lineStyle: { color: css('--axis') } },
+    axisTick: { show: false },
+    axisLabel: { color: css('--muted') },
+    splitLine: { lineStyle: { color: css('--grid') } },
+  };
+}
+
+function render() {
+  charts.forEach((c) => c.dispose());
+  charts.length = 0;
+  const textStyle = { color: css('--ink-2'), fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif' };
+  const tooltip = { backgroundColor: css('--surface'), borderColor: css('--border'), textStyle: { color: css('--ink') } };
+  const bar = (name, key, color) => ({
+    name, type: 'bar', stack: 'r', data: data[key], barMaxWidth: 36,
+    itemStyle: { color, borderColor: css('--surface'), borderWidth: 1 },
+    emphasis: { focus: 'series' },
+  });
+
+  const trend = echarts.init(document.getElementById('trend'));
+  trend.setOption({
+    textStyle, tooltip: { ...tooltip, trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { top: 0, textStyle, icon: 'roundRect', itemWidth: 12, itemHeight: 12 },
+    grid: { left: 44, right: 16, top: 64, bottom: 44 },
+    xAxis: { type: 'category', data: runs, name: 'Ejecución', nameLocation: 'middle', nameGap: 30, nameTextStyle: { color: css('--muted') }, ...axisStyle(), splitLine: { show: false } },
+    yAxis: { type: 'value', name: 'Tests', nameTextStyle: { color: css('--muted') }, ...axisStyle() },
+    series: [
+      bar('✔ Superados', 'passed', css('--good')),
+      bar('⚠ Inestables', 'flaky', css('--warning')),
+      bar('✖ Fallidos', 'failed', css('--critical')),
+      { ...bar('○ Omitidos', 'skipped', css('--skipped')), itemStyle: { color: css('--skipped'), borderRadius: [4, 4, 0, 0], borderColor: css('--surface'), borderWidth: 1 } },
+    ],
+  });
+  charts.push(trend);
+
+  const stages = echarts.init(document.getElementById('stages'));
+  stages.setOption({
+    textStyle, tooltip: { ...tooltip, trigger: 'item', formatter: (p) => `${p.name}: ${p.value} s` },
+    grid: { left: 150, right: 48, top: 8, bottom: 24 },
+    xAxis: { type: 'value', name: 's', ...axisStyle() },
+    yAxis: { type: 'category', inverse: true, data: ['Análisis estático', 'Tienda en el runner', 'Smoke y E2E', 'Informe'], ...axisStyle(), axisLabel: { color: css('--ink-2') } },
+    series: [{ type: 'bar', data: [38, 52, 107, 15], barMaxWidth: 22,
+      itemStyle: { color: css('--brand'), borderRadius: [0, 4, 4, 0] },
+      label: { show: true, position: 'right', color: css('--ink-2'), formatter: '{c} s' } }],
+  });
+  charts.push(stages);
+
+  const cov = echarts.init(document.getElementById('coverage'));
+  cov.setOption({
+    textStyle, tooltip: { ...tooltip, trigger: 'item', formatter: '{b}: {c} requisitos ({d} %)' },
+    legend: { right: 0, top: 'middle', orient: 'vertical', textStyle },
+    series: [{ type: 'pie', radius: ['55%', '80%'], center: ['35%', '50%'], padAngle: 1,
+      itemStyle: { borderColor: css('--surface'), borderWidth: 2, borderRadius: 4 },
+      label: { show: true, position: 'center', formatter: () => '27 / 30', fontSize: 22, fontWeight: 700, color: css('--ink') },
+      labelLine: { show: false },
+      data: [
+        { name: '✔ Superados', value: 26, itemStyle: { color: css('--good') } },
+        { name: '⚠ Inestables', value: 1, itemStyle: { color: css('--warning') } },
+        { name: '✖ Fallidos', value: 0, itemStyle: { color: css('--critical') } },
+        { name: '○ Sin pruebas', value: 3, itemStyle: { color: css('--skipped') } },
+      ] }],
+  });
+  charts.push(cov);
+}
+
+render();
+window.addEventListener('resize', () => charts.forEach((c) => c.resize()));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+document.getElementById('theme').addEventListener('click', () => {
+  const root = document.documentElement;
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark';
+  render();
+});
+</script>
+</body>
+</html>

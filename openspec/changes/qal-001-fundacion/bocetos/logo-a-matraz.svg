@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 128" role="img" aria-labelledby="t">
+  <title id="t">QA Agentic Lab</title>
+  <style>
+    .ink { fill: #0b0b0b; } .sub { fill: #52514e; }
+    .glass { fill: none; stroke: #4f46e5; stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; }
+    .liquid { fill: #4f46e5; opacity: .14; }
+    .edge { stroke: #0d9488; stroke-width: 3.5; }
+    .node { fill: #0d9488; }
+    .check { fill: none; stroke: #4f46e5; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #f0efec; } .sub { fill: #c3c2b7; }
+      .glass, .check { stroke: #8b85f0; } .liquid { fill: #8b85f0; opacity: .2; }
+      .edge { stroke: #2dd4bf; } .node { fill: #2dd4bf; }
+    }
+  </style>
+  <g transform="translate(14 8)">
+    <!-- Erlenmeyer flask -->
+    <path class="liquid" d="M24 74 L80 74 L96 106 Q98 112 92 112 L12 112 Q6 112 8 106 Z"/>
+    <path class="glass" d="M40 6 H64 M44 6 V40 L8 106 Q5 112 12 112 H92 Q99 112 96 106 L60 40 V6"/>
+    <!-- agent network inside -->
+    <line class="edge" x1="30" y1="96" x2="52" y2="82"/>
+    <line class="edge" x1="52" y1="82" x2="74" y2="98"/>
+    <line class="edge" x1="30" y1="96" x2="74" y2="98"/>
+    <circle class="node" cx="30" cy="96" r="6"/>
+    <circle class="node" cx="52" cy="82" r="6"/>
+    <circle class="node" cx="74" cy="98" r="6"/>
+    <!-- bubble-check rising -->
+    <path class="check" d="M36 54 L48 64 L70 38"/>
+  </g>
+  <text x="138" y="66" class="ink" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="44" font-weight="700" letter-spacing="-0.5">QA Agentic Lab</text>
+  <text x="140" y="98" class="sub" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="18">Calidad con IA, gobernada por especificación</text>
+</svg>

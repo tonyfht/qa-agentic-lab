@@ -1,7 +1,6 @@
 # QAL-001 — Fundación del laboratorio
 
-**Estado:** borrador (revisión 2: informe propio, paridad local/CI y README guiado) · **Fecha:** 2026-10-21 ·
-**Tipo:** fundacional
+**Estado:** aprobado (revisión 2, 2026-10-21) · **Fecha:** 2026-10-21 · **Tipo:** fundacional
 
 Este cambio concreta la base de [`openspec/PROJECT.md`](../../PROJECT.md): visión, requisitos transversales RT-1 a RT-5
 y hoja de ruta.
