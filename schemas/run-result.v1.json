@@ -344,7 +344,8 @@
               "auditor-seguridad",
               "sanador",
               "detector-flaky",
-              "triaje"
+              "triaje",
+              "reportero"
             ]
           },
           "change": {

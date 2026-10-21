@@ -98,3 +98,25 @@ Feature: Informe de calidad
     And el aviso de demostración nombra el defecto "cupon"
     And el fallo "Un cupón válido descuenta" aparece como "Defecto del producto"
     And el fallo "Filtrar por categoría" aparece como "Test roto"
+
+  @QA-036 @QA-037
+  Scenario: El informe abre con la recomendación de salida y sus motivos
+    Given un histórico cuya última ejecución tiene un test fallido sin detalle técnico
+    When abro el informe
+    Then lo primero es la pregunta "¿Podemos salir?" con la recomendación "No salir"
+    And un motivo dice "Falla el requisito QA-001"
+    And la comparación con la ejecución anterior muestra "Tests superados"
+
+  @QA-037
+  Scenario: Sin lectura del Reportero la sección lo dice
+    Given un histórico con 2 ejecuciones
+    When abro el informe
+    Then la recomendación es "Sí, se puede salir"
+    And la sección dice que el Reportero todavía no ha escrito ninguna lectura
+
+  @QA-038
+  Scenario: El informe muestra los huecos por capacidad
+    Given un histórico con 1 ejecución
+    When abro el informe
+    Then veo la pregunta "¿Dónde están los huecos?"
+    And la tabla de huecos muestra "quality-pipeline" con 0 sin pruebas

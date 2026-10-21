@@ -6,6 +6,7 @@ import { gitInfo, historyFile, origin, reportLink, siteDir } from '../lib/contex
 import { assembleRun, readRunMeta } from '../results/assemble'
 import { appendRun, readHistory } from '../results/history'
 import { triageMarkdown } from '../triage/report'
+import { releaseVerdict, verdictMarkdown } from '../../report/verdict'
 import type { StageDefinition } from './types'
 
 /** Assembles the run, validates it, appends it to the history and regenerates the report (QA-010, QA-012, QA-015). */
@@ -36,12 +37,16 @@ export function createReportStage(registry: () => StageDefinition[]): StageDefin
       // A run with an injected defect is shown but never enters the history (QA-029).
       if (!run.injectedDefect) appendRun(history, run)
 
-      const triage = triageMarkdown(run, reportLink(ctx.root))
-      writeFileSync(path.join(ctx.runDir, 'triaje.md'), triage)
-      if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, '\n' + triage)
-
       const site = siteDir(ctx.root)
       const shown = run.injectedDefect ? [...readHistory(history), run] : readHistory(history)
+
+      // The recommendation (QA-037) and the triage (QA-052) go to the job summary in CI.
+      const verdict = releaseVerdict(shown)
+      const triage = triageMarkdown(run, reportLink(ctx.root))
+      writeFileSync(path.join(ctx.runDir, 'triaje.md'), triage)
+      ctx.log(`  · ¿Podemos salir? ${verdict.title}`)
+      if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n${verdictMarkdown(verdict)}\n${triage}`)
+
       buildSite({ root: ctx.root, history: shown, outDir: site, runDir: ctx.runDir })
       ctx.log(`  · Informe generado en ${site}`)
       return { status: 'passed' }

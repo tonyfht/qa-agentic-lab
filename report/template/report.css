@@ -36,6 +36,15 @@ header { display: flex; align-items: center; justify-content: space-between; gap
   display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
 .banner.demo { border-color: var(--warning); background: color-mix(in srgb, var(--warning) 14%, var(--surface)); color: var(--ink); }
 .banner[hidden] { display: none; }
+#kpis { margin-top: 16px; }
+.verdict { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.verdict .badge { font-size: 20px; padding: 6px 14px; }
+.reasons { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.reasons li { display: flex; gap: 8px; align-items: baseline; }
+.reasons .k { font-weight: 700; min-width: 1.2em; }
+.reasons .blocker .k { color: var(--critical-ink); }
+.reasons .reservation .k { color: var(--warning-ink); }
+.reasons .ok .k { color: var(--good-ink); }
 .badge { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; padding: 3px 10px; border-radius: 999px; font-size: 13px; }
 .badge.passed { color: var(--good-ink); background: color-mix(in srgb, var(--good) 14%, transparent); }
 .badge.failed { color: var(--critical-ink); background: color-mix(in srgb, var(--critical) 14%, transparent); }
@@ -55,6 +64,7 @@ h2 { font-size: 18px; margin: 36px 0 4px; }
 .card.scroll { overflow-x: auto; }
 .chart { width: 100%; height: 300px; }
 .chart.short { height: 240px; }
+.chart.tall { height: 420px; }
 .empty { display: flex; align-items: center; justify-content: center; text-align: center; color: var(--ink-2);
   border: 1px dashed var(--axis); border-radius: 10px; padding: 24px; }
 details { margin-top: 8px; font-size: 14px; }

@@ -5,6 +5,7 @@ import type { QuarantineEntry } from '../qa/quarantine'
 import { blockingFindings } from '../qa/security/findings'
 import { STABILITY_WINDOW, stability } from '../qa/stability/stability'
 import { TRIAGE_LABELS, type TriageCategory } from '../qa/triage/classify'
+import { releaseVerdict, type ReleaseVerdict } from './verdict'
 
 export type RequirementStatus = 'passed' | 'flaky' | 'failed' | 'untested'
 
@@ -82,6 +83,15 @@ export interface ReportModel {
   }
   stability: StabilityModel
   operations: OperationsModel
+  executive: ExecutiveModel
+  coverageByCapability: ({ capability: string } & Record<RequirementStatus, number>)[]
+}
+
+export interface ExecutiveModel {
+  verdict: ReleaseVerdict
+  /** Against the previous run; `previous` is null on the first run. */
+  compare: { label: string; current: string; previous: string | null; better: boolean | null }[]
+  reporter: AgentActionView | null
 }
 
 export interface AgentActionView {
@@ -220,6 +230,43 @@ export function operationsSummary(run: RunResult): OperationsModel {
       .sort((a, b) => b.date.localeCompare(a.date))
       .map((x) => ({ date: x.date, agent: name(x.agent), change: x.change, action: x.action, summary: x.summary, artifacts: x.artifacts })),
   }
+}
+
+/** QA-037: the recommendation, the comparison with the previous run and the Reportero's latest reading. */
+export function executiveSummary(history: RunResult[]): ExecutiveModel {
+  const run = history[history.length - 1]
+  const prev = history.length > 1 ? history[history.length - 2] : undefined
+  const row = (label: string, current: number, previous: number | undefined, higherIsBetter: boolean, format: (n: number) => string = String) => ({
+    label,
+    current: format(current),
+    previous: previous === undefined ? null : format(previous),
+    better: previous === undefined || previous === current ? null : current > previous === higherIsBetter,
+  })
+  const blocking = (r: RunResult) => blockingFindings(r.findings).length
+  const latest = [...run.agentActions].filter((a) => a.agent === 'reportero').sort((a, b) => b.date.localeCompare(a.date))[0]
+  return {
+    verdict: releaseVerdict(history),
+    compare: [
+      row('Tests superados', countByStatus(run.tests).passed, prev && countByStatus(prev.tests).passed, true),
+      row('Requisitos cubiertos', coveredCount(run), prev && coveredCount(prev), true),
+      row('Hallazgos que bloquean', blocking(run), prev && blocking(prev), false),
+      row('Duración', runDurationMs(run), prev && runDurationMs(prev), false, formatDuration),
+    ],
+    reporter: latest
+      ? { date: latest.date, agent: 'Reportero', change: latest.change, action: latest.action, summary: latest.summary, artifacts: latest.artifacts }
+      : null,
+  }
+}
+
+/** QA-038: requirements of each capability by status, to see where the gaps are. */
+export function coverageByCapability(traceability: TraceRow[]): ReportModel['coverageByCapability'] {
+  const byCap = new Map<string, Record<RequirementStatus, number>>()
+  for (const row of traceability) {
+    const counts = byCap.get(row.capability) ?? { passed: 0, flaky: 0, failed: 0, untested: 0 }
+    counts[row.status] += 1
+    byCap.set(row.capability, counts)
+  }
+  return [...byCap.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([capability, counts]) => ({ capability, ...counts }))
 }
 
 /** QA-017: actions per agent (every known agent, even with zero) and the latest ones, newest first. */
@@ -378,5 +425,7 @@ export function buildModel(
     agents: agentsSummary(run),
     stability: stabilitySummary(history, quarantine),
     operations: operationsSummary(run),
+    executive: executiveSummary(history),
+    coverageByCapability: coverageByCapability(traceability),
   }
 }

@@ -69,7 +69,7 @@ describe('QA-043 Diseñador de casos con técnica declarada', () => {
 describe('QA-040 Agentes versionados con función y límites', () => {
   it('los agentes del laboratorio tienen definición completa', () => {
     expect(checkAgentDefinitions(root)).toEqual([])
-    expect(AGENTS.map((a) => a.id)).toEqual(['revisor-specs', 'analista', 'disenador', 'automatizador', 'api', 'auditor-experiencia', 'auditor-seguridad', 'sanador', 'detector-flaky', 'triaje'])
+    expect(AGENTS.map((a) => a.id)).toEqual(['revisor-specs', 'analista', 'disenador', 'automatizador', 'api', 'auditor-experiencia', 'auditor-seguridad', 'sanador', 'detector-flaky', 'triaje', 'reportero'])
   })
 
   it('una definición sin prohibiciones se señala con el agente y la sección', () => {
@@ -139,6 +139,26 @@ describe('QA-049 Auditor de seguridad y cumplimiento', () => {
     const forbidden = def.slice(def.indexOf('## Prohibido'), def.indexOf('## Registro'))
     expect(forbidden).toMatch(/Añadir o ampliar excepciones/)
     expect(forbidden).toMatch(/Rebajar la gravedad/)
+  })
+})
+
+describe('QA-055 Reportero', () => {
+  const def = readFileSync(path.join(root, '.claude/agents/qa-reportero.md'), 'utf8')
+
+  it('tiene prohibido cambiar la recomendación o suavizar un bloqueo', () => {
+    const forbidden = def.slice(def.indexOf('## Prohibido'), def.indexOf('## Registro'))
+    expect(forbidden).toMatch(/Cambiar la recomendación, sus reglas o sus umbrales/)
+    expect(forbidden).toMatch(/Omitir o suavizar un motivo de bloqueo/)
+  })
+
+  it('su resumen dice la recomendación, qué ha cambiado y qué falta para salir sin reservas', () => {
+    const dir = path.join(root, 'qa/agents/reviews')
+    const summaries = readdirSync(dir).filter((f) => f.startsWith('reportero-'))
+    expect(summaries.length).toBeGreaterThan(0)
+    const text = readFileSync(path.join(dir, summaries[0]), 'utf8')
+    expect(text).toMatch(/^## Recomendación: /m)
+    expect(text).toMatch(/^## Qué ha cambiado$/m)
+    expect(text).toMatch(/^## Para seguir saliendo sin reservas$/m)
   })
 })
 

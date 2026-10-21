@@ -235,3 +235,32 @@ Then('el fallo {string} aparece como {string}', async ({ page }, title: string, 
 Then('la sección de seguridad explica que no hay resultados', async ({ page }) => {
   await expect(page.getByTestId('security-empty')).toContainText('No hay resultados de seguridad')
 })
+
+// QA-036, QA-037, QA-038: the executive summary at the top and the gaps by capability.
+Then('lo primero es la pregunta {string} con la recomendación {string}', async ({ page }, question: string, verdict: string) => {
+  const first = page.locator('section').first()
+  await expect(first.getByRole('heading', { level: 2 })).toHaveText(question)
+  await expect(page.locator('#verdict')).toContainText(verdict)
+})
+
+Then('la recomendación es {string}', async ({ page }, verdict: string) => {
+  await expect(page.locator('#verdict')).toContainText(verdict)
+})
+
+Then('un motivo dice {string}', async ({ page }, text: string) => {
+  await expect(page.locator('#verdict-reasons').getByText(text, { exact: true })).toBeVisible()
+})
+
+Then('la comparación con la ejecución anterior muestra {string}', async ({ page }, label: string) => {
+  await expect(page.locator('#exec-compare').getByRole('row').filter({ hasText: label })).toBeVisible()
+})
+
+Then('la sección dice que el Reportero todavía no ha escrito ninguna lectura', async ({ page }) => {
+  await expect(page.getByTestId('reporter-none')).toHaveText('El Reportero todavía no ha escrito ninguna lectura.')
+})
+
+Then('la tabla de huecos muestra {string} con {int} sin pruebas', async ({ page }, capability: string, untested: number) => {
+  await page.getByTestId('gaps').getByText('Ver como tabla').click()
+  const row = page.getByTestId('capability-table').getByRole('row').filter({ hasText: capability })
+  await expect(row.getByRole('cell').last()).toHaveText(String(untested))
+})

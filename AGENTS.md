@@ -21,8 +21,8 @@ Público objetivo: proyecto **formativo y sin ánimo de lucro**, para personas q
 que se presenta el laboratorio. Todo lo visible (README, informe, specs) debe poder explicarse **desde cero** a
 alguien que no sabe de QA ni conoce el proyecto.
 
-> Estado: fundación terminada (`QAL-001`, archivado). Stack, estructura, pipeline e informe están fijados; los agentes de QA llegan con
-> sus propios cambios (ver la hoja de ruta en [`openspec/PROJECT.md`](openspec/PROJECT.md#hoja-de-ruta)).
+> Estado: laboratorio completo (`QAL-001` a `QAL-009`, archivados). Un cambio nuevo empieza con una propuesta en
+> `openspec/changes/` y el siguiente ID libre de [`openspec/README.md`](openspec/README.md).
 
 ---
 
@@ -111,10 +111,16 @@ tests/
 qa/
   run.ts              → orquestador: npm run qa [-- --stage <id>]
   stages/             → una etapa por fichero; registry.ts fija el orden
-  checks/             → enlaces, Mermaid y secretos (etapa static)
+  checks/             → enlaces, Mermaid, secretos, Gherkin y specs (etapa static)
+  security/           → normalización de hallazgos de Semgrep, npm audit, licencias y ZAP
+  triage/             → triaje de fallos (producto, test, entorno, inestable) y triaje.md
+  stability/          → estabilidad de la suite sobre el histórico
+  healer/             → guardia de aserciones de los PR del Sanador
+  quarantine.ts       → cuarentena con caducidad (qa/cuarentena.json)
+  agents/             → registro de agentes, actuaciones (actions.ndjson) y revisiones
   results/            → contrato run-result v1, histórico y catálogo de requisitos
   publish.ts          → publicación en gh-pages (solo CI, solo main)
-report/               → generador del informe (template/ + build.ts + serve.ts)
+report/               → generador del informe (template/ + build.ts + serve.ts); verdict.ts: recomendación de salida
 schemas/              → JSON Schema publicado del resultado de una ejecución
 .github/              → workflows, plantillas de PR e issues, CODEOWNERS, Dependabot
 docs/assets/          → logo y recursos del README
@@ -126,7 +132,7 @@ openspec/             → specs, cambios y archivo (fuente de verdad)
 | Comando | Qué hace |
 |---|---|
 | `npm run dev` | Tienda en desarrollo en el 3400 |
-| `npm run qa` | Pipeline completo: static → build → e2e → report |
+| `npm run qa` | Pipeline completo: static → build → e2e → performance → security → report |
 | `npm run qa -- --stage <id>` | Una etapa (y sus previas). `governance` necesita `--pr-body <fichero>` |
 | `npm run qa -- --inject <defecto>` | Demostración con un defecto inyectado (`cupon`, `selector`, `caida`); nunca se publica |
 | `npm run report` | Informe con el histórico local en el 3420 |
@@ -168,7 +174,7 @@ No usar puertos de otros proyectos de la máquina: 3000 (Aigovia), 3100/3110/312
 | Triaje | Revisa la categoría de cada fallo (producto, test, entorno, inestable) y abre *issues* de defecto con evidencia | Tras un fallo en CI | [`qa-triaje`](.claude/agents/qa-triaje.md) |
 | Auditor de experiencia | Interpreta accesibilidad, rendimiento, regresión visual y carga en lenguaje de negocio | Tras cada ejecución | [`qa-auditor-experiencia`](.claude/agents/qa-auditor-experiencia.md) |
 | Auditor de seguridad y cumplimiento | Prioriza hallazgos de SAST, dependencias, licencias, secretos y DAST y revisa las excepciones | Tras cada ejecución | [`qa-auditor-seguridad`](.claude/agents/qa-auditor-seguridad.md) |
-| Reportero | Compara con el histórico, redacta el resumen ejecutivo y recomienda si se puede salir | Tras cada ejecución | QAL-009 |
+| Reportero | Explica la recomendación de salida en lenguaje de negocio y la compara con el histórico; puede discrepar, no cambiarla | Tras cada ejecución | [`qa-reportero`](.claude/agents/qa-reportero.md) |
 
 **Reglas para todo agente:** su definición tiene las secciones Función, Entradas, Salidas, Herramientas, Prohibido y
 Registro (lo comprueba la etapa `static`). Cada actuación se registra en `qa/agents/actions.ndjson`, y su trabajo entra

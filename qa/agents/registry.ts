@@ -14,6 +14,7 @@ export const AGENTS = [
   { id: 'sanador', file: 'qa-sanador.md', name: 'Sanador', phase: 'Operación' },
   { id: 'detector-flaky', file: 'qa-detector-flaky.md', name: 'Detector de inestables', phase: 'Operación' },
   { id: 'triaje', file: 'qa-triaje.md', name: 'Triaje', phase: 'Operación' },
+  { id: 'reportero', file: 'qa-reportero.md', name: 'Reportero', phase: 'Informe y salida' },
 ] as const
 
 export type AgentId = (typeof AGENTS)[number]['id']

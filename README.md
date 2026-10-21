@@ -16,8 +16,9 @@ Para enseñarlo hay una tienda online pequeña, **La Tienda en Casa**, construid
 cambio pasa por el mismo camino: especificación → código → escenarios en lenguaje natural (Gherkin) → pruebas →
 informe. Puedes recorrerlo con la guía de abajo o ejecutarlo tú mismo.
 
-> **Estado:** la tienda ya permite comprar de principio a fin: catálogo, carrito con cupones, cuenta, pago simulado y pedidos (`QAL-002`, `QAL-004`, `QAL-005`). Los agentes de diseño y de API trabajan sobre cada cambio (`QAL-003`). La hoja de ruta
-> completa está en [`openspec/PROJECT.md`](openspec/PROJECT.md#hoja-de-ruta).
+> **Estado:** laboratorio completo. Los nueve cambios de la [hoja de ruta](openspec/PROJECT.md#hoja-de-ruta) están
+> hechos: una tienda con compra de principio a fin, seis etapas de calidad, once agentes de IA con sus límites y un
+> informe que termina en una recomendación de salida.
 
 ## Ruta de la visita
 
@@ -74,7 +75,12 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
    preguntas respondidas con gráficos (¿estamos mejor que antes?, ¿qué ha hecho la IA?...) y, en la
    trazabilidad, cada requisito con sus pruebas por tipo: por ejemplo, `CAT-004` cubierto a la vez por pruebas de
    interfaz, de API y unitarias.
-15. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
+15. **¿Podemos salir?** Vuelve al principio del [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás
+   la recomendación de salida (*sí*, *con reservas* o *no*) con sus motivos y la comparación con la ejecución
+   anterior. La calcula una [regla que se puede leer](report/verdict.ts), no la IA. El
+   [Reportero](qa/agents/reviews/reportero-2026-10-21.md) la cuenta en lenguaje de negocio y puede discrepar, pero
+   no cambiarla. Y la decisión de salir sigue siendo de una persona.
+16. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
    qué especificación implementa; si no lo dice, el pipeline lo para.
 
 ## Cómo funciona
@@ -127,7 +133,8 @@ flowchart LR
   SA --> PR
   H --> L[("📒 Registro de actuaciones")]
   T --> L
-  L --> I["📊 Informe: ¿qué ha hecho la IA?"]
+  L --> I["📊 Informe<br/>¿qué ha hecho la IA?"]
+  I --> RP["📣 Reportero<br/>¿podemos salir?"]
 ```
 
 Se ejecutan desde una sesión de [Claude Code](https://claude.com/claude-code) en el repositorio (por ejemplo, *"usa el
