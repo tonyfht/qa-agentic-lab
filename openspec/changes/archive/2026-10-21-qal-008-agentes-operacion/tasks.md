@@ -43,7 +43,7 @@ Rama: `change/qal-008-agentes-operacion`.
 
 ## 6. Verificación
 
-- [ ] 6.1 Pipeline en verde en el PR, y una ejecución en GitHub con defecto inyectado y su triaje. Se verifica con las
+- [x] 6.1 Pipeline en verde en el PR, y una ejecución en GitHub con defecto inyectado y su triaje. Se verifica con las
   ejecuciones de Actions.
 
 ## Testing
