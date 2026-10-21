@@ -27,7 +27,7 @@ Rama: `change/qal-003-agentes-diseno`.
 
 ## 4. Ejecución en GitHub
 
-- [ ] 4.1 `agents.yml` con omisión explícita sin clave. Se verifica con una prueba de configuración y una ejecución
+- [x] 4.1 `agents.yml` con omisión explícita sin clave. Se verifica con una prueba de configuración y una ejecución
   manual en GitHub tras fusionar (QA-046).
 
 ## 5. Primera actuación real
@@ -44,7 +44,7 @@ Rama: `change/qal-003-agentes-diseno`.
 
 ## 7. Verificación
 
-- [ ] 7.1 Pipeline en verde en local y en el PR. Se verifica con la ejecución del PR.
+- [x] 7.1 Pipeline en verde en local y en el PR. Se verifica con la ejecución del PR.
 
 ## Workflow follow-up
 
