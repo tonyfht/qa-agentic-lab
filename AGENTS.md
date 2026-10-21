@@ -21,7 +21,7 @@ Público objetivo: proyecto **formativo y sin ánimo de lucro**, para personas q
 que se presenta el laboratorio. Todo lo visible (README, informe, specs) debe poder explicarse **desde cero** a
 alguien que no sabe de QA ni conoce el proyecto.
 
-> Estado: fundación (`QAL-001`). Stack, estructura, pipeline e informe están fijados; los agentes de QA llegan con
+> Estado: fundación terminada (`QAL-001`, archivado). Stack, estructura, pipeline e informe están fijados; los agentes de QA llegan con
 > sus propios cambios (ver la hoja de ruta en [`openspec/PROJECT.md`](openspec/PROJECT.md#hoja-de-ruta)).
 
 ---
