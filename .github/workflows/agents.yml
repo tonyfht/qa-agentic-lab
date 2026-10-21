@@ -1,0 +1,60 @@
+# Agentes de diseño bajo demanda (QA-046). Se lanza a mano desde la pestaña Actions.
+# El agente trabaja sobre un cambio de OpenSpec y entrega su trabajo como Pull Request, que una persona revisa (QA-020).
+# Sin la clave de la IA configurada, se omite indicando el motivo: nunca falla ni se salta en silencio (QA-007).
+name: Agentes de diseño
+
+on:
+  workflow_dispatch:
+    inputs:
+      agente:
+        description: Agente a ejecutar
+        type: choice
+        options: [qa-revisor-specs, qa-analista, qa-disenador, qa-automatizador]
+      cambio:
+        description: Cambio de OpenSpec o capacidad (por ejemplo qal-004-carrito o catalog)
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  agent:
+    name: Agente ${{ inputs.agente }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comprobar la clave de la IA
+        id: key
+        env:
+          HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+        run: |
+          echo "has_key=$HAS_KEY" >> "$GITHUB_OUTPUT"
+          if [ "$HAS_KEY" != "true" ]; then
+            echo "::notice::Agente omitido: falta ANTHROPIC_API_KEY en los secrets del repositorio"
+            {
+              echo "## ⏭️ Agente omitido"
+              echo ""
+              echo "omitido: falta ANTHROPIC_API_KEY. Configúrala en *Settings → Secrets and variables → Actions* para ejecutar los agentes en GitHub."
+              echo "Mientras tanto, los agentes se pueden ejecutar en local desde Claude Code (ver README)."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/checkout@v7
+        if: steps.key.outputs.has_key == 'true'
+      - uses: ./.github/actions/setup
+        if: steps.key.outputs.has_key == 'true'
+      - name: Navegador para el MCP de Playwright
+        if: steps.key.outputs.has_key == 'true'
+        run: npx playwright install --with-deps chromium
+      - uses: anthropics/claude-code-action@v1
+        if: steps.key.outputs.has_key == 'true'
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            Usa el subagente ${{ inputs.agente }} (definido en .claude/agents/) sobre "${{ inputs.cambio }}".
+            Sigue sus reglas al pie de la letra, incluida la sección "Prohibido", y registra tu actuación en
+            qa/agents/actions.ndjson con executedBy "GitHub Actions (ejecución #${{ github.run_number }})".
+            Antes de terminar ejecuta `npm run qa -- --stage static` y, si añadiste escenarios, `npm run qa -- --stage e2e`.
+            Entrega el resultado en una rama nueva y abre un Pull Request contra main cuya descripción incluya
+            "Implementa: ${{ inputs.cambio }}" o la casilla de mantenimiento marcada, según corresponda.
+          claude_args: --max-turns 60

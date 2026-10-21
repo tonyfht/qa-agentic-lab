@@ -1,6 +1,10 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { checkAgentDefinitions, readAgentActions } from '../agents/registry'
+import { lintFeatures } from '../checks/gherkin'
 import { findBrokenLinks, markdownFiles, mermaidBlocks } from '../checks/markdown'
+import { lintAllSpecs, openspecValidate } from '../checks/specs'
+import { loadRequirementCatalog } from '../results/requirements'
 import { validateMermaid } from '../checks/mermaid'
 import { scanSecrets } from '../checks/secrets'
 import type { TestResult } from '../results/schema'
@@ -65,6 +69,34 @@ export const staticChecks: StaticCheck[] = [
             status: 'failed',
             message: errors.map((e) => `${e.block.file}, diagrama ${e.block.index}: ${e.message.split('\n')[0]}`).join('\n'),
           }
+    },
+  },
+  {
+    id: 'specs',
+    title: 'Calidad de las especificaciones',
+    requirements: ['QA-009'],
+    async run(ctx) {
+      const errors = [...lintAllSpecs(ctx.root), ...(await openspecValidate(ctx.root))]
+      return errors.length === 0 ? { status: 'passed' } : { status: 'failed', message: errors.join('\n') }
+    },
+  },
+  {
+    id: 'gherkin',
+    title: 'Etiquetado de los escenarios Gherkin',
+    requirements: ['QA-009', 'QA-043'],
+    async run(ctx) {
+      const known = new Set(loadRequirementCatalog(ctx.root).map((r) => r.id))
+      const errors = lintFeatures(ctx.root, known)
+      return errors.length === 0 ? { status: 'passed' } : { status: 'failed', message: errors.join('\n') }
+    },
+  },
+  {
+    id: 'agents',
+    title: 'Definición y registro de los agentes de QA',
+    requirements: ['QA-040', 'QA-045'],
+    async run(ctx) {
+      const errors = [...checkAgentDefinitions(ctx.root), ...readAgentActions(ctx.root).errors]
+      return errors.length === 0 ? { status: 'passed' } : { status: 'failed', message: errors.join('\n') }
     },
   },
   {

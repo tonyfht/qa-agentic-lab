@@ -33,18 +33,23 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
 4. **De la especificación al escenario.** Abre [`filtros.feature`](tests/features/catalog/filtros.feature). Verás
    `CAT-004` convertido en escenarios Gherkin legibles por cualquiera, con una tabla de **valores límite**
    (19,90 € exactos, un céntimo por encima y por debajo) y la etiqueta `@CAT-004` que los une a su requisito.
-5. **La tienda.** Ejecuta `npm run dev` (ver [Ejecútalo tú](#ejecútalo-tú)) y abre <http://localhost:3400/catalogo>.
+5. **Los agentes de IA.** Abre [`qa-disenador.md`](.claude/agents/qa-disenador.md) y después
+   [`combinaciones.feature`](tests/features/catalog/combinaciones.feature). Verás qué puede y qué **no puede** hacer
+   un agente, y su trabajo real: 9 combinaciones *pairwise* de filtros en lugar de 54. La
+   [revisión de la spec del catálogo](qa/agents/reviews/catalog.md) es obra del Revisor de specs.
+6. **La tienda.** Ejecuta `npm run dev` (ver [Ejecútalo tú](#ejecútalo-tú)) y abre <http://localhost:3400/catalogo>.
    Verás el catálogo: busca "algodón" (encuentra artículos escritos sin tilde), filtra por precio u ordena.
-6. **La API y su contrato.** Con la tienda abierta, mira <http://localhost:3400/api/openapi.json> y
+7. **La API y su contrato.** Con la tienda abierta, mira <http://localhost:3400/api/openapi.json> y
    <http://localhost:3400/api/products?minPrice=19,90&maxPrice=19,90>. Verás el contrato publicado y la misma
    búsqueda que en la web; cada escenario de API comprueba que la respuesta cumple ese contrato.
-7. **El pipeline en GitHub.** Abre la
+8. **El pipeline en GitHub.** Abre la
    [pestaña Actions](https://github.com/tonyfht/qa-agentic-lab/actions/workflows/pipeline.yml) y entra en la última
    ejecución. Verás las etapas por separado y, al final, un resumen con una fila por etapa.
-8. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás cuatro
-   preguntas respondidas con gráficos y, en la trazabilidad, cada requisito con sus pruebas por tipo: por ejemplo,
-   `CAT-004` cubierto a la vez por pruebas de interfaz, de API y unitarias.
-9. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
+9. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás
+   preguntas respondidas con gráficos (¿estamos mejor que antes?, ¿qué ha hecho la IA?...) y, en la
+   trazabilidad, cada requisito con sus pruebas por tipo: por ejemplo, `CAT-004` cubierto a la vez por pruebas de
+   interfaz, de API y unitarias.
+10. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
    qué especificación implementa; si no lo dice, el pipeline lo para.
 
 ## Cómo funciona
@@ -71,6 +76,30 @@ flowchart LR
   E --> D["4 · Informe<br/>histórico y gráficos"]
   D --> F["5 · Publicar<br/>GitHub Pages, solo main"]
 ```
+
+**Los agentes de QA.** Cada agente es un fichero versionado en [`.claude/agents/`](.claude/agents/) con su función,
+sus herramientas y lo que tiene prohibido. Los agentes proponen; las comprobaciones deterministas y una persona
+deciden.
+
+```mermaid
+flowchart LR
+  S[("📐 Especificaciones")] --> R["🔎 Revisor de specs<br/>ambigüedad y huecos"]
+  R --> A["🧭 Analista<br/>requisitos → Gherkin"]
+  A --> D["🧮 Diseñador de casos<br/>límites · pairwise · tablas"]
+  D --> U["🤖 Automatizador<br/>steps en verde"]
+  M[["🎭 Playwright MCP"]] -.-> A
+  M -.-> U
+  U --> PR["🔀 Pull Request"]
+  PR --> H{"👤 Revisión humana<br/>+ pipeline"}
+  H --> L[("📒 Registro de actuaciones")]
+  L --> I["📊 Informe: ¿qué ha hecho la IA?"]
+```
+
+Se ejecutan desde una sesión de [Claude Code](https://claude.com/claude-code) en el repositorio (por ejemplo, *"usa el
+subagente qa-disenador sobre el catálogo"*) o desde GitHub con el workflow
+[Agentes de diseño](.github/workflows/agents.yml). En GitHub necesitan la clave `ANTHROPIC_API_KEY` en los
+*secrets*; sin ella, el workflow se omite avisando. Se apoyan en los
+[Playwright Test Agents](https://playwright.dev/docs/test-agents) y en su servidor MCP ([`.mcp.json`](.mcp.json)).
 
 ## Ejecútalo tú
 

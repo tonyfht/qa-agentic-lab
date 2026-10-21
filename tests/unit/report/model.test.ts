@@ -111,3 +111,25 @@ describe('QA-011 Tipo de prueba en la trazabilidad', () => {
     expect(kind([])).toBe('otra')
   })
 })
+
+describe('QA-017 Qué ha hecho la IA', () => {
+  it('cuenta las actuaciones por agente (también los que no tienen) y ordena las últimas', () => {
+    const base = { change: 'QAL-003', artifacts: [], executedBy: 'x', action: 'a', summary: 's' }
+    const run = sampleRun({
+      agentActions: [
+        { ...base, date: '2026-10-20T10:00:00.000Z', agent: 'analista' },
+        { ...base, date: '2026-10-21T10:00:00.000Z', agent: 'analista' },
+        { ...base, date: '2026-10-19T10:00:00.000Z', agent: 'disenador' },
+      ],
+    })
+    const { agents } = buildModel([run], () => false)
+    expect(agents.byAgent.map((a) => [a.id, a.count])).toEqual([
+      ['revisor-specs', 0],
+      ['analista', 2],
+      ['disenador', 1],
+      ['automatizador', 0],
+    ])
+    expect(agents.latest.map((a) => a.date.slice(0, 10))).toEqual(['2026-10-21', '2026-10-20', '2026-10-19'])
+    expect(agents.latest[0].agent).toBe('Analista')
+  })
+})

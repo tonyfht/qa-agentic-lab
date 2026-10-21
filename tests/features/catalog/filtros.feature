@@ -19,7 +19,7 @@ Feature: Filtros del catálogo
     And el error explica "La categoría «jardineria-espacial» no existe"
     And la respuesta cumple el contrato publicado
 
-  @CAT-004 @api
+  @CAT-004 @api @valores-limite
   Scenario Outline: Los límites del rango de precio están incluidos
     When pido por la API los artículos entre <min> y <max> euros
     Then la API responde 200

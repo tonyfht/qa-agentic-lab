@@ -37,3 +37,16 @@ Feature: Informe de calidad
     Given un histórico cuya última ejecución tiene un test fallido sin detalle técnico
     When abro el informe
     Then el test fallido indica que no hay detalle técnico
+
+  @QA-017
+  Scenario: El informe muestra lo que han hecho los agentes
+    Given un histórico cuya última ejecución tiene actuaciones de agentes
+    When abro el informe
+    Then veo la pregunta "¿Qué ha hecho la IA?"
+    And veo la actuación "Revisor de specs · revisión de especificación"
+
+  @QA-017
+  Scenario: Sin actuaciones la sección lo explica
+    Given un histórico con 1 ejecución
+    When abro el informe
+    Then la sección de agentes explica que todavía no hay actuaciones

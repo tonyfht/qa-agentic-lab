@@ -4,7 +4,7 @@ Feature: Búsqueda por texto
   quiero buscar sin preocuparme de tildes ni mayúsculas
   para encontrar lo que tengo en la cabeza
 
-  @e2e
+  @e2e @clases-equivalencia
   Scenario Outline: La búsqueda no distingue mayúsculas ni tildes
     When abro el catálogo
     And busco "<texto>"

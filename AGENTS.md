@@ -153,21 +153,26 @@ No usar puertos de otros proyectos de la máquina: 3000 (Aigovia), 3100/3110/312
 
 ---
 
-## Agentes de QA *(pendiente de su cambio propio)*
+## Agentes de QA
 
-| Agente | Función | Cuándo actúa |
-|---|---|---|
-| Revisor de specs | Detecta ambigüedad, requisitos no comprobables y huecos antes de diseñar pruebas | Requisitos |
-| Analista | Explora la tienda y convierte las specs en `.feature` con riesgos y prioridades | Diseño |
-| Diseñador de casos | Aplica técnicas (equivalencia, valores límite, tablas de decisión, *pairwise*) a los escenarios | Diseño |
-| Automatizador | Implementa los *steps* y tests, y solo entrega lo que pasa | Automatización |
-| Agente de API | Diseña pruebas de contrato y negocio desde la especificación OpenAPI | Automatización |
-| Sanador | Repara tests rotos por cambios no funcionales; abre PR con evidencia | Tras un fallo en CI |
-| Detector de *flaky* | Detecta tests inestables con el histórico y propone su corrección o cuarentena | Tras cada ejecución |
-| Triaje | Clasifica fallos y abre *issues* de defecto con evidencia | Tras un fallo en CI |
-| Auditor de experiencia | Interpreta accesibilidad, rendimiento y regresión visual en lenguaje de negocio | Tras cada ejecución |
-| Auditor de seguridad y cumplimiento | Prioriza hallazgos de SAST, dependencias, licencias, secretos y DAST | Tras cada ejecución |
-| Reportero | Compara con el histórico, redacta el resumen ejecutivo y recomienda si se puede salir | Tras cada ejecución |
+| Agente | Función | Cuándo actúa | Definición |
+|---|---|---|---|
+| Revisor de specs | Detecta ambigüedad, requisitos no comprobables y huecos antes de diseñar pruebas | Requisitos | [`qa-revisor-specs`](.claude/agents/qa-revisor-specs.md) |
+| Analista | Explora la tienda y convierte las specs en `.feature` con riesgos y prioridades | Diseño | [`qa-analista`](.claude/agents/qa-analista.md) |
+| Diseñador de casos | Aplica técnicas (equivalencia, valores límite, tablas de decisión, *pairwise*) a los escenarios | Diseño | [`qa-disenador`](.claude/agents/qa-disenador.md) |
+| Automatizador | Implementa los *steps* y tests, y solo entrega lo que pasa | Automatización | [`qa-automatizador`](.claude/agents/qa-automatizador.md) |
+| Agente de API | Diseña pruebas de contrato y negocio desde la especificación OpenAPI | Automatización | QAL-005 |
+| Sanador | Repara tests rotos por cambios no funcionales; abre PR con evidencia | Tras un fallo en CI | QAL-008 |
+| Detector de *flaky* | Detecta tests inestables con el histórico y propone su corrección o cuarentena | Tras cada ejecución | QAL-008 |
+| Triaje | Clasifica fallos y abre *issues* de defecto con evidencia | Tras un fallo en CI | QAL-008 |
+| Auditor de experiencia | Interpreta accesibilidad, rendimiento y regresión visual en lenguaje de negocio | Tras cada ejecución | QAL-006 |
+| Auditor de seguridad y cumplimiento | Prioriza hallazgos de SAST, dependencias, licencias, secretos y DAST | Tras cada ejecución | QAL-007 |
+| Reportero | Compara con el histórico, redacta el resumen ejecutivo y recomienda si se puede salir | Tras cada ejecución | QAL-009 |
+
+**Reglas para todo agente:** su definición tiene las secciones Función, Entradas, Salidas, Herramientas, Prohibido y
+Registro (lo comprueba la etapa `static`). Cada actuación se registra en `qa/agents/actions.ndjson`, y su trabajo entra
+por PR con el mismo pipeline y la misma revisión que el de una persona. Los Playwright Test Agents
+(`playwright-test-*`) son herramientas de base y se regeneran con `npx playwright init-agents --loop=claude`.
 
 Herramientas por fase (Playwright MCP, Playwright Test Agents, GitHub MCP, GitHub Action de Claude Code...): mapa en
 [`openspec/PROJECT.md`](openspec/PROJECT.md).

@@ -60,11 +60,23 @@
     <div id="untraced"></div>
   </section>
 
+  <section aria-labelledby="h-agents" data-testid="agents">
+    <h2 id="h-agents">Agentes de IA</h2>
+    <p class="q"><b>¿Qué ha hecho la IA?</b> Actuaciones registradas por cada agente y las últimas que han hecho.</p>
+    <div class="grid2">
+      <div class="card">
+        <div id="agents-chart" class="chart short" role="img" aria-label="Actuaciones por agente"></div>
+        <details><summary>Ver como tabla</summary><div id="agents-table"></div></details>
+      </div>
+      <div class="card"><ol class="actions" id="agents-latest"></ol></div>
+    </div>
+  </section>
+
   <section aria-labelledby="h-soon">
     <h2 id="h-soon">Lo que irá apareciendo</h2>
     <p class="q">El formato de resultados ya reserva su sitio; cada gráfico aparece cuando su cambio aporta los datos.</p>
     <div class="soon">
-      <div><b>¿Qué ha hecho la IA?</b>Tests diseñados, reparados y defectos abiertos por los agentes (QAL-003, QAL-008)</div>
+      <div><b>¿Qué han reparado los agentes?</b>Tests reparados y defectos abiertos por el Sanador y el Triaje (QAL-008)</div>
       <div><b>¿Es estable la suite?</b>Tasa de tests inestables por ejecución (QAL-008)</div>
       <div><b>¿Es usable y rápida?</b>Accesibilidad, rendimiento y regresión visual (QAL-006)</div>
       <div><b>¿Es segura y cumple?</b>Hallazgos de seguridad, dependencias y licencias (QAL-007)</div>

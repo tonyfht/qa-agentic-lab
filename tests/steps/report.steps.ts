@@ -90,3 +90,31 @@ Then('el test fallido indica que no hay detalle técnico', async ({ page }) => {
   await expect(page.getByTestId('no-detail')).toHaveText('sin detalle técnico disponible')
   await expect(page.getByTestId('detail-link')).toHaveCount(0)
 })
+
+Given('un histórico cuya última ejecución tiene actuaciones de agentes', async ({ world }) => {
+  const outDir = mkdtempSync(path.join(os.tmpdir(), 'qal-report-'))
+  const action = {
+    date: '2026-10-21T10:00:00.000Z',
+    change: 'catalog',
+    artifacts: ['qa/agents/reviews/catalog.md'],
+    executedBy: 'prueba',
+  }
+  const last = sampleRun({
+    runId: 'run-2',
+    origin: { kind: 'ci', runNumber: 2 },
+    agentActions: [
+      { ...action, agent: 'revisor-specs', action: 'revisión de especificación', summary: '6 hallazgos' },
+      { ...action, agent: 'disenador', action: 'diseño de casos (pairwise)', summary: '9 filas' },
+    ],
+  })
+  world.reportIndex = buildSite({ root, history: [...runs(1), last], outDir })
+})
+
+Then('veo la actuación {string}', async ({ page }, text: string) => {
+  await expect(page.getByTestId('agents').getByText(text)).toBeVisible()
+})
+
+Then('la sección de agentes explica que todavía no hay actuaciones', async ({ page }) => {
+  await expect(page.getByTestId('agents-empty')).toHaveText('Todavía no hay actuaciones de agentes registradas.')
+  await expect(page.getByTestId('agents-chart-empty')).toBeVisible()
+})

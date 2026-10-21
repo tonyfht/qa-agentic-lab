@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { AgentAction } from '../agents/registry'
 
 // Contract of a single pipeline run (local or CI). Every later change extends it without breaking history:
 // new fields are optional, and an incompatible change bumps SCHEMA_VERSION and adds an upgrader in history.ts.
@@ -60,10 +61,10 @@ export const RunResult = z.object({
   stages: z.array(StageResult),
   tests: z.array(TestResult),
   requirements: z.array(Requirement),
-  // Reserved for later changes: non-functional metrics (QAL-006), findings (QAL-007), agent actions (QAL-003/008).
+  // Reserved for later changes: non-functional metrics (QAL-006) and findings (QAL-007). Agent actions since QAL-003.
   metrics: z.record(z.string(), z.unknown()),
   findings: z.array(z.unknown()),
-  agentActions: z.array(z.unknown()),
+  agentActions: z.array(AgentAction),
 })
 
 export type StageStatus = z.infer<typeof StageStatus>
