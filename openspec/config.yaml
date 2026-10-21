@@ -13,7 +13,8 @@ context: |
   - Producto: "La Tienda en Casa", e-commerce pequeño de artículos para el hogar (app/).
   - Sistema de calidad: pruebas de todas las tipologías, pipeline por etapas, agentes de QA,
     trazabilidad y portal de calidad en GitHub Pages.
-  Se presenta a clientes: todo lo visible debe poder explicarse desde cero.
+  Proyecto formativo y sin ánimo de lucro, para personas que se inician en QA y para clientes:
+  todo lo visible debe poder explicarse desde cero a quien no sabe de QA.
 
   ## Principios
   - La spec es la fuente de verdad; los escenarios GIVEN/WHEN/THEN originan los .feature Gherkin.

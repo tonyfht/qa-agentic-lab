@@ -17,8 +17,9 @@ por especificación (SDD)**. Tiene dos mitades en un mismo repositorio:
 La tienda existe **para ser probada**: es deliberadamente pequeña. Si una funcionalidad no sirve para enseñar una
 técnica o tipología de prueba, no se construye.
 
-Público objetivo: clientes a los que se presenta el laboratorio. Todo lo visible (README, portal, informes, specs) debe
-poder explicarse **desde cero** a alguien que no conoce el proyecto.
+Público objetivo: proyecto **formativo y sin ánimo de lucro**, para personas que se inician en QA y para clientes a los
+que se presenta el laboratorio. Todo lo visible (README, portal, informes, specs) debe poder explicarse **desde cero** a
+alguien que no sabe de QA ni conoce el proyecto.
 
 > Estado: fundación. El stack, la estructura y el pipeline los fija el cambio `QAL-001` (ver `openspec/changes/`).
 > Hasta que se apruebe y archive, las secciones marcadas *(pendiente QAL-001)* son propuesta, no norma.

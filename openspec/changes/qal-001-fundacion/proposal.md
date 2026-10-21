@@ -4,7 +4,7 @@
 
 ## Why
 
-QA Agentic Lab tiene que enseñar a un cliente, desde cero, cómo se gobierna con especificación un producto y todo su
+QA Agentic Lab tiene que enseñar, desde cero, a personas que se forman en QA y a clientes cómo se gobierna con especificación un producto y todo su
 sistema de calidad, y cómo encaja un equipo de agentes de IA en ese ciclo. Antes de construir la tienda o los agentes
 hace falta fijar el suelo común: stack, estructura, pipeline mínimo, reglas de gobierno del repositorio y un portal
 donde publicar resultados. Sin esto, cada cambio posterior reinventaría su propio arnés.
@@ -58,7 +58,7 @@ Ninguna (proyecto nuevo).
 | D3 | Datos | **SQLite (libSQL)** con datos de ejemplo deterministas y una entrada de *reset*: fichero local en desarrollo y CI | PostgreSQL en Docker | Sin servicios externos: cualquiera clona y ejecuta. Las pruebas parten siempre del mismo estado |
 | D4 | Pago | **Simulado**, con tarjetas ficticias que aprueban o rechazan según el número | Stripe en modo test | Sin cuentas externas, y se pueden diseñar casos de pago a voluntad |
 | D5 | Dónde corren las pruebas | **Contra la tienda levantada en el propio runner**, y un smoke posterior contra la demo pública | Solo contra la demo pública | Resultados deterministas. Carga y DAST sin salir de casa |
-| D6 | Demo pública | **Vercel + Turso** (libSQL gestionado) | Render o Fly.io con SQLite en disco | Despliegue y vista previa por PR sin configurar nada. **Ojo:** el plan gratuito de Vercel es para uso no comercial; si se enseña a clientes como actividad comercial, hace falta el plan Pro o la alternativa |
+| D6 | Demo pública | **Vercel (plan Hobby) + Turso** (libSQL gestionado) | Render o Fly.io con SQLite en disco | Despliegue y vista previa por PR sin configurar nada. El uso es formativo y sin ánimo de lucro, compatible con el plan gratuito. Si algún día pasa a uso comercial, se revisa |
 | D7 | Gestor de paquetes y Node | **npm** y **Node 24 LTS** | pnpm | Lo mismo que el resto de proyectos |
 | D8 | Informes | **Allure** como informe detallado, enlazado desde el portal propio | Solo el informe HTML de Playwright | Ya probado en `poc_QA_E-commerce`. El portal añade la capa ejecutiva y la trazabilidad |
 
@@ -103,7 +103,8 @@ Tipologías que aparecen: análisis estático y smoke E2E.
 
 - **Coste de los agentes en CI** (a partir de QAL-003): necesitan `ANTHROPIC_API_KEY` en *GitHub Secrets*. Los PR desde
   forks no reciben secretos, así que nadie externo puede gastarlo, pero hay que acotar cuándo corren.
-- **Plan de Vercel:** ver D6.
+- **Uso comercial futuro:** el plan Hobby de Vercel no lo cubre. Si el laboratorio pasa a usarse en servicios de pago,
+  hay que cambiar de plan o de proveedor (ver D6).
 - **Imágenes del catálogo:** deben ser libres de derechos o generadas. Se resuelve en QAL-002.
 
 ## Criterios de éxito
