@@ -33,9 +33,10 @@ QAL-XXX-nombre/
 
 | ID | Nombre | Estado |
 |----|--------|--------|
-| [QAL-001](changes/qal-001-fundacion/) | Fundación del laboratorio | implementado, pendiente de archivar |
+| — | Ninguno | — |
 
 ## Cambios archivados
 
 | ID | Nombre | Fecha | Tipo |
 |----|--------|-------|------|
+| [QAL-001](changes/archive/2026-10-21-qal-001-fundacion/) | Fundación del laboratorio: arnés, pipeline con paridad local/CI, resultados e histórico, informe propio, README guiado y gobierno | 2026-10-21 | Fundacional |

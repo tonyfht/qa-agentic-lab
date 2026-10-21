@@ -16,7 +16,7 @@ Para enseñarlo hay una tienda online pequeña, **La Tienda en Casa**, construid
 cambio pasa por el mismo camino: especificación → código → escenarios en lenguaje natural (Gherkin) → pruebas →
 informe. Puedes recorrerlo con la guía de abajo o ejecutarlo tú mismo.
 
-> **Estado:** fundación (`QAL-001`). La tienda solo tiene su portada; el catálogo llega en `QAL-002`. La hoja de ruta
+> **Estado:** fundación terminada (`QAL-001`, archivado). La tienda solo tiene su portada; el catálogo llega en `QAL-002`. La hoja de ruta
 > completa está en [`openspec/PROJECT.md`](openspec/PROJECT.md#hoja-de-ruta).
 
 ## Ruta de la visita
@@ -27,7 +27,7 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
    que cumple todo el laboratorio y qué agente de IA actúa en cada fase del ciclo.
 2. **Las reglas del juego.** Abre [`AGENTS.md`](AGENTS.md). Verás los principios que siguen personas y agentes, por
    ejemplo que *la IA propone, pero las pruebas y las personas deciden*.
-3. **Una especificación.** Abre la [spec del pipeline](openspec/changes/qal-001-fundacion/specs/quality-pipeline/spec.md).
+3. **Una especificación.** Abre la [spec del pipeline](openspec/specs/quality-pipeline/spec.md).
    Verás requisitos con un identificador (`QA-001`, `QA-002`...) y escenarios *dado / cuando / entonces*, incluido
    qué pasa cuando algo falla.
 4. **De la especificación al escenario.** Abre [`smoke.feature`](tests/features/quality/smoke.feature). Verás el
