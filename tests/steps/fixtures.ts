@@ -1,3 +1,4 @@
+import type { APIRequestContext } from '@playwright/test'
 import { test as base, createBdd } from 'playwright-bdd'
 import { ContractChecker } from '../support/contract'
 
@@ -5,6 +6,7 @@ export interface ApiCall {
   operationId: string
   status: number
   body: unknown
+  setCookies?: string[]
 }
 
 // State shared by the steps of one scenario.
@@ -14,10 +16,14 @@ type World = {
   requests: string[]
   api?: ApiCall
   otherPageText?: string
+  stock: Record<string, number>
+  orders: string[]
+  other?: { request: APIRequestContext; orderNumber?: string }
+  sweep?: { operationId: string; status: number; errors: string[] }[]
 }
 
 export const test = base.extend<{ world: World; contract: ContractChecker }>({
-  world: async ({}, provide) => provide({ requests: [] }),
+  world: async ({}, provide) => provide({ requests: [], stock: {}, orders: [] }),
   // The published contract, fetched once per scenario from the running store.
   contract: async ({ request }, provide) => {
     const doc = await (await request.get('/api/openapi.json')).json()

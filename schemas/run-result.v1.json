@@ -268,7 +268,8 @@
               "revisor-specs",
               "analista",
               "disenador",
-              "automatizador"
+              "automatizador",
+              "api"
             ]
           },
           "change": {

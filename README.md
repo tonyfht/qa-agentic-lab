@@ -16,7 +16,7 @@ Para enseñarlo hay una tienda online pequeña, **La Tienda en Casa**, construid
 cambio pasa por el mismo camino: especificación → código → escenarios en lenguaje natural (Gherkin) → pruebas →
 informe. Puedes recorrerlo con la guía de abajo o ejecutarlo tú mismo.
 
-> **Estado:** la tienda tiene catálogo y carrito con cupones (`QAL-002`, `QAL-004`), y los agentes de diseño ya trabajan sobre cada cambio (`QAL-003`). La hoja de ruta
+> **Estado:** la tienda ya permite comprar de principio a fin: catálogo, carrito con cupones, cuenta, pago simulado y pedidos (`QAL-002`, `QAL-004`, `QAL-005`). Los agentes de diseño y de API trabajan sobre cada cambio (`QAL-003`). La hoja de ruta
 > completa está en [`openspec/PROJECT.md`](openspec/PROJECT.md#hoja-de-ruta).
 
 ## Ruta de la visita
@@ -46,14 +46,18 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
    [`cupones-y-totales.feature`](tests/features/cart/cupones-y-totales.feature). Verás una **tabla de decisión**:
    cada fila es una regla de cupón (no existe, caducado, no aplicable, sin mínimo) con el mensaje exacto que ve el
    cliente. Después añade algo al carrito en <http://localhost:3400> y prueba el cupón `VERANO2026` o `BIENVENIDA10`.
-9. **El pipeline en GitHub.** Abre la
+9. **La compra completa y la seguridad.** Entra con `cliente@ejemplo.test` / `Casa2026`, tramita el pedido y paga
+   con las [tarjetas de prueba](#tarjetas-de-prueba). Luego abre [`pedidos.feature`](tests/features/orders/pedidos.feature).
+   Verás un escenario en el que un cliente intenta abrir el pedido de otro: la tienda responde exactamente igual que
+   si no existiera, para no revelar nada.
+10. **El pipeline en GitHub.** Abre la
    [pestaña Actions](https://github.com/tonyfht/qa-agentic-lab/actions/workflows/pipeline.yml) y entra en la última
    ejecución. Verás las etapas por separado y, al final, un resumen con una fila por etapa.
-10. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás
+11. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás
    preguntas respondidas con gráficos (¿estamos mejor que antes?, ¿qué ha hecho la IA?...) y, en la
    trazabilidad, cada requisito con sus pruebas por tipo: por ejemplo, `CAT-004` cubierto a la vez por pruebas de
    interfaz, de API y unitarias.
-11. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
+12. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
    qué especificación implementa; si no lo dice, el pipeline lo para.
 
 ## Cómo funciona
@@ -129,6 +133,22 @@ npx playwright install chromium
 **En GitHub, sin instalar nada:** entra en la
 [pestaña Actions](https://github.com/tonyfht/qa-agentic-lab/actions/workflows/pipeline.yml), pulsa **Run workflow** y
 elige la rama. El pipeline no necesita ningún secreto.
+
+### Tarjetas de prueba
+
+El pago es **simulado**: no se cobra nada ni se guarda el número de tarjeta (solo los 4 últimos dígitos). Usa
+cualquier caducidad futura (por ejemplo `12/30`) y un CVC de 3 dígitos.
+
+| Tarjeta | Resultado |
+|---|---|
+| `4242 4242 4242 4242` | Aprobada |
+| `4000 0000 0000 0002` | Rechazada por el banco |
+| `4000 0000 0000 9995` | Fondos insuficientes |
+| `4242 4242 4242 4241` | Número no válido (no pasa el algoritmo de Luhn) |
+| Cualquiera con caducidad pasada | Tarjeta caducada |
+
+Cuenta de demostración: `cliente@ejemplo.test` / `Casa2026` (ficticia; también puedes registrarte con datos
+inventados).
 
 ## Qué hay en el repositorio
 

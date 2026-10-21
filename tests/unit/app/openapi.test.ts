@@ -41,3 +41,14 @@ describe('CART-001 API del carrito documentada', () => {
     for (const s of ['Cart', 'CartItem', 'CartTotals', 'CouponStatus']) expect(doc.components?.schemas).toHaveProperty(s)
   })
 })
+
+describe('ACC-004 API de cuenta, checkout y pedidos documentada', () => {
+  const doc = buildOpenApiDocument()
+
+  it('documenta los errores de autorización y de pago', () => {
+    expect(Object.keys(doc.paths?.['/api/checkout']?.post?.responses ?? {})).toEqual(['201', '400', '401', '402', '409'])
+    expect(Object.keys(doc.paths?.['/api/orders/{number}']?.get?.responses ?? {})).toEqual(['200', '401', '404'])
+    expect(Object.keys(doc.paths?.['/api/account/login']?.post?.responses ?? {})).toEqual(['200', '400', '401'])
+    for (const s of ['Account', 'Order', 'OrderSummary', 'ShippingData']) expect(doc.components?.schemas).toHaveProperty(s)
+  })
+})

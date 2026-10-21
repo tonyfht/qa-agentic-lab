@@ -76,3 +76,6 @@ export const coupons: CouponSeed[] = [
   { code: 'ENVIOGRATIS', kind: 'shipping', value: 0, minSubtotalCents: 0, category: null, validUntil: '2099-12-31' },
   { code: 'VERANO2026', kind: 'percent', value: 20, minSubtotalCents: 0, category: null, validUntil: '2026-09-30' },
 ]
+
+// Fictitious demo customer (".test" is a reserved domain). Its password is public on purpose.
+export const demoCustomer = { name: 'Cliente de Prueba', email: 'cliente@ejemplo.test', password: 'Casa2026' }
