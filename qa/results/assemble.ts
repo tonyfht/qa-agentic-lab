@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { partialFile } from '../orchestrator'
 import type { StageDefinition, StagePartial } from '../stages/types'
+import { readAgentActions } from '../agents/registry'
 import { loadRequirementCatalog } from './requirements'
 import { SCHEMA_VERSION, validateRunResult, type RunResult, type StageResult } from './schema'
 
@@ -55,7 +56,7 @@ export function assembleRun(input: AssembleInput): RunResult {
     requirements: loadRequirementCatalog(input.root),
     metrics: {},
     findings: [],
-    agentActions: [],
+    agentActions: readAgentActions(input.root).actions,
   })
 }
 

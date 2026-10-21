@@ -1,7 +1,10 @@
 import { expect } from '@playwright/test'
 import { Then, When, type ApiCall } from './fixtures'
 
-type ProductList = { items: { slug: string; priceCents: number }[]; total: number }
+type ProductList = {
+  items: { slug: string; name: string; category: string; priceCents: number; stock: number; rating: number }[]
+  total: number
+}
 
 const euros = (n: number) => String(n).replace('.', ',')
 
@@ -59,6 +62,29 @@ Then('todos cuestan entre {float} y {float} euros', async ({ world }, min: numbe
     expect(p.priceCents).toBeGreaterThanOrEqual(Math.round(min * 100))
     expect(p.priceCents).toBeLessThanOrEqual(Math.round(max * 100))
   }
+})
+
+// Generic oracle for any combination of catalogue parameters (written by the Automatizador agent, QAL-003).
+Then('todos los artículos cumplen los filtros {string}', async ({ world }, query: string) => {
+  const p = new URLSearchParams(query)
+  const items = (world.api!.body as ProductList).items
+  const cents = (v: string | null) => (v === null ? null : Math.round(Number(v.replace(',', '.')) * 100))
+  const min = cents(p.get('minPrice'))
+  const max = cents(p.get('maxPrice'))
+  for (const item of items) {
+    if (p.get('category')) expect(item.category, item.slug).toBe(p.get('category'))
+    if (min !== null) expect(item.priceCents, item.slug).toBeGreaterThanOrEqual(min)
+    if (max !== null) expect(item.priceCents, item.slug).toBeLessThanOrEqual(max)
+    if (p.get('inStock')) expect(item.stock, item.slug).toBeGreaterThan(0)
+  }
+  const sorted = (key: (a: (typeof items)[0], b: (typeof items)[0]) => number) => [...items].sort(key).map((i) => i.slug)
+  const order: Record<string, string[]> = {
+    'price-asc': sorted((a, b) => a.priceCents - b.priceCents || a.name.localeCompare(b.name, 'es')),
+    name: sorted((a, b) => a.name.localeCompare(b.name, 'es')),
+    rating: sorted((a, b) => b.rating - a.rating || a.name.localeCompare(b.name, 'es')),
+  }
+  const sort = p.get('sort')
+  if (sort && order[sort]) expect(items.map((i) => i.slug)).toEqual(order[sort])
 })
 
 Then('cada artículo cuesta lo mismo o más que el anterior', async ({ world }) => {

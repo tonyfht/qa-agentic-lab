@@ -1,3 +1,4 @@
+import { AGENTS } from '../qa/agents/registry'
 import type { RunResult, StageResult, TestResult } from '../qa/results/schema'
 
 export type RequirementStatus = 'passed' | 'flaky' | 'failed' | 'untested'
@@ -62,6 +63,27 @@ export interface ReportModel {
   coverage: Record<RequirementStatus, number>
   traceability: TraceRow[]
   untraced: { title: string; file: string }[]
+  agents: {
+    byAgent: { id: string; name: string; phase: string; count: number }[]
+    latest: { date: string; agent: string; change: string; action: string; summary: string; artifacts: string[] }[]
+  }
+}
+
+/** QA-017: actions per agent (every known agent, even with zero) and the latest ones, newest first. */
+export function agentsSummary(run: RunResult): ReportModel['agents'] {
+  const name = (id: string) => AGENTS.find((a) => a.id === id)?.name ?? id
+  return {
+    byAgent: AGENTS.map((a) => ({
+      id: a.id,
+      name: a.name,
+      phase: a.phase,
+      count: run.agentActions.filter((x) => x.agent === a.id).length,
+    })),
+    latest: [...run.agentActions]
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, 8)
+      .map((x) => ({ date: x.date, agent: name(x.agent), change: x.change, action: x.action, summary: x.summary, artifacts: x.artifacts })),
+  }
 }
 
 /** "#12" for CI runs; day/month and UTC time for local runs. */
@@ -194,5 +216,6 @@ export function buildModel(history: RunResult[], hasDetail: (runId: string) => b
     coverage,
     traceability,
     untraced: untraced.map((t) => ({ title: t.title, file: t.file })),
+    agents: agentsSummary(run),
   }
 }

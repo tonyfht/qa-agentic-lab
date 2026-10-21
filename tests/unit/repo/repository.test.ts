@@ -127,3 +127,23 @@ describe('QA-033 Ejecútalo tú', () => {
     expect(read('.npmrc')).toContain('engine-strict=true')
   })
 })
+
+describe('QA-046 Ejecución de agentes en GitHub bajo demanda', () => {
+  const wf = read('.github/workflows/agents.yml')
+
+  it('se lanza a mano eligiendo uno de los agentes del laboratorio y un cambio', () => {
+    expect(wf).toContain('workflow_dispatch:')
+    for (const a of ['qa-revisor-specs', 'qa-analista', 'qa-disenador', 'qa-automatizador']) expect(wf).toContain(a)
+    expect(wf).toMatch(/cambio:[\s\S]*required: true/)
+  })
+
+  it('sin clave se omite con el motivo explícito y no ejecuta la IA', () => {
+    expect(wf).toContain("HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}")
+    expect(wf).toContain('omitido: falta ANTHROPIC_API_KEY')
+    const actionStep = wf.slice(wf.indexOf('anthropics/claude-code-action'))
+    expect(wf.slice(wf.lastIndexOf('- uses', wf.indexOf('anthropics/claude-code-action')), wf.indexOf('anthropics/claude-code-action') + 200)).toContain(
+      "if: steps.key.outputs.has_key == 'true'",
+    )
+    expect(actionStep).toContain('abre un Pull Request')
+  })
+})
