@@ -1,4 +1,5 @@
 import { AGENTS } from '../qa/agents/registry'
+import { LIGHTHOUSE_BUDGET, LOAD_THRESHOLDS, type LighthousePage, type LoadResult } from '../qa/lib/budgets'
 import type { RunResult, StageResult, TestResult } from '../qa/results/schema'
 
 export type RequirementStatus = 'passed' | 'flaky' | 'failed' | 'untested'
@@ -63,9 +64,50 @@ export interface ReportModel {
   coverage: Record<RequirementStatus, number>
   traceability: TraceRow[]
   untraced: { title: string; file: string }[]
+  experience: ExperienceModel
   agents: {
     byAgent: { id: string; name: string; phase: string; count: number }[]
     latest: { date: string; agent: string; change: string; action: string; summary: string; artifacts: string[] }[]
+  }
+}
+
+export interface ExperienceModel {
+  lighthouse: LighthousePage[]
+  load: LoadResult | null
+  /** Per run: average Lighthouse performance and load p95 (null when that run had none). */
+  trend: { label: string; performance: number | null; p95Ms: number | null }[]
+  a11y: { title: string; status: TestResult['status'] }[]
+  budget: typeof LIGHTHOUSE_BUDGET
+  thresholds: typeof LOAD_THRESHOLDS
+}
+
+function lighthouseOf(run: RunResult): LighthousePage[] {
+  const v = (run.metrics as { lighthouse?: LighthousePage[] }).lighthouse
+  return Array.isArray(v) ? v : []
+}
+
+function loadOf(run: RunResult): LoadResult | null {
+  const v = (run.metrics as { load?: LoadResult }).load
+  return v && typeof v.p95Ms === 'number' ? v : null
+}
+
+/** QA-018: is it usable and fast? Lighthouse per page, load, their trend and the accessibility checks. */
+export function experienceSummary(history: RunResult[]): ExperienceModel {
+  const run = history[history.length - 1]
+  return {
+    lighthouse: lighthouseOf(run),
+    load: loadOf(run),
+    trend: history.slice(-30).map((r) => {
+      const lh = lighthouseOf(r)
+      return {
+        label: runLabel(r),
+        performance: lh.length ? Math.round(lh.reduce((s, p) => s + p.performance, 0) / lh.length) : null,
+        p95Ms: loadOf(r)?.p95Ms ?? null,
+      }
+    }),
+    a11y: run.tests.filter((t) => t.tags.includes('@a11y')).map((t) => ({ title: displayTitle(t.title), status: t.status })),
+    budget: LIGHTHOUSE_BUDGET,
+    thresholds: LOAD_THRESHOLDS,
   }
 }
 
@@ -216,6 +258,7 @@ export function buildModel(history: RunResult[], hasDetail: (runId: string) => b
     coverage,
     traceability,
     untraced: untraced.map((t) => ({ title: t.title, file: t.file })),
+    experience: experienceSummary(history),
     agents: agentsSummary(run),
   }
 }

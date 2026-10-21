@@ -9,7 +9,13 @@ import { execFileSync } from 'node:child_process'
 const repo = execFileSync('gh', ['repo', 'view', '--json', 'nameWithOwner', '--jq', '.nameWithOwner']).toString().trim()
 
 // Must match the `name` of the jobs in .github/workflows/pipeline.yml and governance.yml.
-const REQUIRED_CHECKS = ['1 · Análisis estático', '2 · Tienda en el runner', '3 · Smoke y E2E', 'Gobierno del PR']
+const REQUIRED_CHECKS = [
+  '1 · Análisis estático',
+  '2 · Tienda en el runner',
+  '3 · Smoke y E2E',
+  '4 · Rendimiento y carga',
+  'Gobierno del PR',
+]
 
 const target = { ref_name: { include: ['~DEFAULT_BRANCH'], exclude: [] } }
 

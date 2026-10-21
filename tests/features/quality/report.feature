@@ -50,3 +50,16 @@ Feature: Informe de calidad
     Given un histórico con 1 ejecución
     When abro el informe
     Then la sección de agentes explica que todavía no hay actuaciones
+
+  @QA-018
+  Scenario: El informe dice si la tienda es usable y rápida
+    Given un histórico cuya última ejecución tiene métricas de rendimiento y carga
+    When abro el informe
+    Then veo la pregunta "¿Es usable y rápida?"
+    And la experiencia muestra un p95 de "120 ms"
+
+  @QA-018
+  Scenario: Sin métricas de rendimiento la sección lo explica
+    Given un histórico con 1 ejecución
+    When abro el informe
+    Then la sección de experiencia explica que no hay métricas de rendimiento

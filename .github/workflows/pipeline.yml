@@ -108,9 +108,44 @@ jobs:
             reports/runs/${{ env.QA_RUN_ID }}/playwright-report/
           if-no-files-found: ignore
 
+  performance:
+    name: 4 · Rendimiento y carga
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Navegador para Lighthouse
+        run: npx playwright install --with-deps chromium
+      - name: Instalar k6
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          curl -sSL https://github.com/grafana/k6/releases/download/v2.3.0/k6-v2.3.0-linux-amd64.tar.gz \
+            | tar -xz --strip-components=1 -C "$HOME/.local/bin" k6-v2.3.0-linux-amd64/k6
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - uses: actions/download-artifact@v8
+        with:
+          name: store-build
+          path: .next
+      - run: npm run qa -- --stage performance
+        env:
+          QA_REUSE_BUILD: '1'
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: partial-performance
+          path: |
+            reports/runs/${{ env.QA_RUN_ID }}/meta.json
+            reports/runs/${{ env.QA_RUN_ID }}/stages/performance.json
+          if-no-files-found: ignore
+
   report:
-    name: 4 · Informe
-    needs: [static, build, e2e]
+    name: 5 · Informe
+    needs: [static, build, e2e, performance]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -142,7 +177,7 @@ jobs:
 
   # Solo main publica el informe y alimenta el histórico público (QA-013). Un PR nunca lo modifica.
   publish:
-    name: 5 · Publicar en GitHub Pages
+    name: 6 · Publicar en GitHub Pages
     needs: report
     if: always() && needs.report.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest

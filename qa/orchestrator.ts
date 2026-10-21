@@ -82,6 +82,7 @@ export async function executePlan(
           partial = {
             stage: { ...base, status: outcome.status, durationMs: Date.now() - started, reason: outcome.reason },
             tests: outcome.tests ?? [],
+            ...(outcome.metrics ? { metrics: outcome.metrics } : {}),
           }
         } catch (error) {
           partial = {

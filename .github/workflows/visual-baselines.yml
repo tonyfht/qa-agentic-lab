@@ -1,0 +1,37 @@
+# Referencias visuales (EXP-003). Se lanza a mano: genera en Linux las capturas de referencia de la regresión visual
+# y las sube como artefacto. Se incorporan con un Pull Request normal, que pasa el pipeline y la revisión humana:
+# nadie acepta un cambio visual en silencio.
+name: Referencias visuales
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baselines:
+    name: Generar referencias (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - run: npx playwright install --with-deps chromium
+      - run: npx next build
+      - name: Capturar las referencias
+        run: npx bddgen && npx playwright test --grep @visual --update-snapshots
+        env:
+          QA_UPDATE_SNAPSHOTS: '1'
+      - uses: actions/upload-artifact@v7
+        with:
+          name: referencias-visuales-linux
+          path: tests/visual/*-linux.png
+          if-no-files-found: error
+      - name: Siguiente paso
+        run: |
+          {
+            echo "## 📸 Referencias visuales generadas"
+            echo ""
+            echo "Descarga el artefacto **referencias-visuales-linux**, copia los PNG en \`tests/visual/\` y ábrelos en un"
+            echo "Pull Request: el pipeline y la revisión humana deciden si el aspecto actual es el aprobado."
+          } >> "$GITHUB_STEP_SUMMARY"

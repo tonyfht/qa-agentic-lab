@@ -12,6 +12,8 @@ const testDir = defineBddConfig({
 
 export default defineConfig({
   testDir,
+  // Visual baselines per OS, outside the regenerated .features-gen folder (EXP-003).
+  snapshotPathTemplate: 'tests/visual/{arg}-{platform}{ext}',
   // Same settings locally and in CI so both produce the same result (RT-2). One retry exposes flaky tests.
   retries: 1,
   forbidOnly: !!process.env.CI,

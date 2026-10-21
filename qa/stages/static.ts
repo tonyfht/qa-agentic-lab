@@ -83,7 +83,7 @@ export const staticChecks: StaticCheck[] = [
   {
     id: 'gherkin',
     title: 'Etiquetado de los escenarios Gherkin',
-    requirements: ['QA-009', 'QA-043'],
+    requirements: ['QA-009', 'QA-042', 'QA-043'],
     async run(ctx) {
       const known = new Set(loadRequirementCatalog(ctx.root).map((r) => r.id))
       const errors = lintFeatures(ctx.root, known)

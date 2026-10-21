@@ -129,8 +129,35 @@ describe('QA-017 Qué ha hecho la IA', () => {
       ['disenador', 1],
       ['automatizador', 0],
       ['api', 0],
+      ['auditor-experiencia', 0],
     ])
     expect(agents.latest.map((a) => a.date.slice(0, 10))).toEqual(['2026-10-21', '2026-10-20', '2026-10-19'])
     expect(agents.latest[0].agent).toBe('Analista')
+  })
+})
+
+describe('QA-018 Es usable y rápida', () => {
+  it('resume Lighthouse, carga, su evolución y la accesibilidad de la última ejecución', () => {
+    const lh = { page: '/', performance: 90, accessibility: 100, bestPractices: 96, seo: 100, lcpMs: 400, cls: 0, tbtMs: 0 }
+    const prev = sampleRun({ runId: 'a', origin: { kind: 'ci', runNumber: 1 }, metrics: {} })
+    const curr = sampleRun({
+      runId: 'b',
+      origin: { kind: 'ci', runNumber: 2 },
+      metrics: { lighthouse: [lh, { ...lh, page: '/catalogo', performance: 100 }], load: { p95Ms: 120, errorRate: 0, requests: 10, vus: 20, durationS: 30 } },
+      tests: [{ ...sampleRun().tests[0], title: 'Accesibilidad › portada', tags: ['@a11y'], status: 'passed' }],
+    })
+    const { experience } = buildModel([prev, curr], () => false)
+    expect(experience.lighthouse).toHaveLength(2)
+    expect(experience.load?.p95Ms).toBe(120)
+    expect(experience.trend).toEqual([
+      { label: '#1', performance: null, p95Ms: null },
+      { label: '#2', performance: 95, p95Ms: 120 },
+    ])
+    expect(experience.a11y).toEqual([{ title: 'Accesibilidad › portada', status: 'passed' }])
+  })
+
+  it('sin métricas no inventa datos', () => {
+    const { experience } = buildModel([sampleRun()], () => false)
+    expect(experience).toMatchObject({ lighthouse: [], load: null, a11y: [] })
   })
 })

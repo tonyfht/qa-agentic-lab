@@ -56,7 +56,7 @@ describe('QA-020 Main protegida', () => {
 describe('QA-003 CI ejecuta las mismas etapas que local', () => {
   it('cada job de etapa solo llama a npm run qa -- --stage <id>', () => {
     const wf = read('.github/workflows/pipeline.yml')
-    for (const stage of ['static', 'build', 'e2e', 'report']) expect(wf).toContain(`run: npm run qa -- --stage ${stage}`)
+    for (const stage of ['static', 'build', 'e2e', 'performance', 'report']) expect(wf).toContain(`run: npm run qa -- --stage ${stage}`)
   })
 })
 
@@ -145,5 +145,20 @@ describe('QA-046 Ejecución de agentes en GitHub bajo demanda', () => {
       "if: steps.key.outputs.has_key == 'true'",
     )
     expect(actionStep).toContain('abre un Pull Request')
+  })
+})
+
+describe('EXP-003 Regresión visual con referencias aprobadas', () => {
+  it('las referencias se generan en Linux a mano y salen como artefacto, no como commit directo', () => {
+    const wf = read('.github/workflows/visual-baselines.yml')
+    expect(wf).toContain('workflow_dispatch:')
+    expect(wf).toContain('runs-on: ubuntu-latest')
+    expect(wf).toContain('--update-snapshots')
+    expect(wf).toContain('tests/visual/*-linux.png')
+    expect(wf).toContain('contents: read')
+  })
+
+  it('Playwright guarda las referencias por sistema fuera de la carpeta generada', () => {
+    expect(read('playwright.config.ts')).toContain("snapshotPathTemplate: 'tests/visual/{arg}-{platform}{ext}'")
   })
 })

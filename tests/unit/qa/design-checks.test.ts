@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -69,7 +69,7 @@ describe('QA-043 Diseñador de casos con técnica declarada', () => {
 describe('QA-040 Agentes versionados con función y límites', () => {
   it('los agentes del laboratorio tienen definición completa', () => {
     expect(checkAgentDefinitions(root)).toEqual([])
-    expect(AGENTS.map((a) => a.id)).toEqual(['revisor-specs', 'analista', 'disenador', 'automatizador', 'api'])
+    expect(AGENTS.map((a) => a.id)).toEqual(['revisor-specs', 'analista', 'disenador', 'automatizador', 'api', 'auditor-experiencia'])
   })
 
   it('una definición sin prohibiciones se señala con el agente y la sección', () => {
@@ -104,5 +104,54 @@ describe('QA-045 Registro de actuaciones de los agentes', () => {
     expect(actions).toHaveLength(1)
     expect(errors[0]).toMatch(/actions\.ndjson:2: agent/)
     expect(errors[1]).toMatch(/actions\.ndjson:3: no es JSON válido/)
+  })
+})
+
+describe('QA-048 Auditor de experiencia', () => {
+  const def = readFileSync(path.join(root, '.claude/agents/qa-auditor-experiencia.md'), 'utf8')
+
+  it('tiene prohibido relajar presupuestos, umbrales o referencias', () => {
+    const forbidden = def.slice(def.indexOf('## Prohibido'), def.indexOf('## Registro'))
+    expect(forbidden).toMatch(/Cambiar presupuestos, umbrales o referencias visuales/)
+  })
+
+  it('su auditoría tiene un hallazgo por fila con impacto, prioridad y propuesta', () => {
+    const dir = path.join(root, 'qa/agents/reviews')
+    const audits = readdirSync(dir).filter((f) => f.startsWith('experiencia-'))
+    expect(audits.length).toBeGreaterThan(0)
+    const audit = readFileSync(path.join(dir, audits[0]), 'utf8')
+    expect(audit).toMatch(/\| # \| Hallazgo \| Métrica y valor \| Impacto para el cliente \| Prioridad \| Propuesta \|/)
+  })
+})
+
+describe('QA-041 Revisor de especificaciones', () => {
+  it('cada revisión es una tabla de hallazgos con requisito, tipo, gravedad y propuesta', () => {
+    const dir = path.join(root, 'qa/agents/reviews')
+    const reviews = readdirSync(dir).filter((f) => !f.startsWith('experiencia-') && f.endsWith('.md'))
+    expect(reviews.length).toBeGreaterThanOrEqual(3)
+    for (const f of reviews) {
+      expect(readFileSync(path.join(dir, f), 'utf8'), f).toMatch(/\| # \| Requisito \| Tipo \| Gravedad \| Qué dice \| Propuesta \|/)
+    }
+  })
+
+  it('tiene prohibido modificar las specs', () => {
+    const def = readFileSync(path.join(root, '.claude/agents/qa-revisor-specs.md'), 'utf8')
+    expect(def.slice(def.indexOf('## Prohibido'))).toMatch(/Modificar ficheros de `openspec\/`/)
+  })
+})
+
+describe('QA-044 Automatizador que solo entrega lo que pasa', () => {
+  it('ningún step usa esperas fijas para tapar inestabilidad', () => {
+    const dir = path.join(root, 'tests/steps')
+    for (const f of readdirSync(dir)) {
+      expect(readFileSync(path.join(dir, f), 'utf8'), f).not.toMatch(/waitForTimeout\(/)
+    }
+  })
+
+  it('tiene prohibido cambiar aserciones existentes y entregar escenarios en rojo', () => {
+    const def = readFileSync(path.join(root, '.claude/agents/qa-automatizador.md'), 'utf8')
+    const forbidden = def.slice(def.indexOf('## Prohibido'))
+    expect(forbidden).toMatch(/Modificar aserciones/)
+    expect(forbidden).toMatch(/Entregar un escenario en rojo/)
   })
 })
