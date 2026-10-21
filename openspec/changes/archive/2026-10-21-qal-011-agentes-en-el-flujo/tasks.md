@@ -19,7 +19,7 @@ Rama: `change/qal-011-agentes-en-el-flujo`.
 
 ## 4. Verificación
 
-- [ ] 4.1 `npm run qa` en verde y pipeline del PR en verde. Se verifica con la ejecución.
+- [x] 4.1 `npm run qa` en verde y pipeline del PR en verde. Se verifica con la ejecución.
 
 ## Testing
 

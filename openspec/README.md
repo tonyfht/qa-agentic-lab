@@ -16,7 +16,7 @@ Este directorio gobierna el desarrollo de la tienda y del sistema de calidad con
 `QAL-XXX-nombre-descriptivo` (**Q**A **A**gentic **L**ab, 3 dígitos, kebab-case). En el archivo, OpenSpec antepone la
 fecha: `AAAA-MM-DD-qal-XXX-nombre/`.
 
-**Siguiente ID libre: `QAL-011`.**
+**Siguiente ID libre: `QAL-012`.**
 
 ## Estructura de un cambio
 
@@ -49,3 +49,4 @@ QAL-XXX-nombre/
 | [QAL-008](changes/archive/2026-10-21-qal-008-agentes-operacion/) | Agentes de operación: triaje, Detector de inestables, cuarentena con caducidad, Sanador con guardia de aserciones e inyección de defectos | 2026-10-21 | Operación de la suite + IA |
 | [QAL-009](changes/archive/2026-10-21-qal-009-informe-completo/) | Informe completo: ¿Podemos salir? con recomendación determinista, huecos por capacidad, Reportero y guía final | 2026-10-21 | Informe + IA + guía |
 | [QAL-010](changes/archive/2026-10-21-qal-010-tienda-retail/) | La Tienda en Casa, de maqueta a tienda: identidad, fotos con crédito, escaparate, filtros con chips y cajón, añadir desde la tarjeta y pasos de la compra | 2026-10-21 | UX/UI + producto |
+| [QAL-011](changes/archive/2026-10-21-qal-011-agentes-en-el-flujo/) | Los agentes de QA, en el flujo: página interactiva en el informe, presentaciones en el README y registro como única fuente | 2026-10-21 | Guía + informe + IA |
