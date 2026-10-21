@@ -9,7 +9,7 @@ on:
       agente:
         description: Agente a ejecutar
         type: choice
-        options: [qa-revisor-specs, qa-analista, qa-disenador, qa-automatizador, qa-api, qa-auditor-experiencia, qa-auditor-seguridad, qa-sanador, qa-detector-flaky, qa-triaje]
+        options: [qa-revisor-specs, qa-analista, qa-disenador, qa-automatizador, qa-api, qa-auditor-experiencia, qa-auditor-seguridad, qa-sanador, qa-detector-flaky, qa-triaje, qa-reportero]
       cambio:
         description: Cambio de OpenSpec, capacidad o ejecución (por ejemplo qal-004-carrito, catalog o la URL de una ejecución en rojo)
         required: true

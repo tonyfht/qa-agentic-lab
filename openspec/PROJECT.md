@@ -120,17 +120,17 @@ documentación como comparación, no como dependencia.
 Cada cambio es una **rebanada vertical**: spec → código → Gherkin → pruebas → pipeline → informe → README. Así cada uno
 se puede enseñar entero.
 
-| ID | Cambio | Qué se enseña |
-|---|---|---|
-| QAL-001 | Fundación: arnés, pipeline con paridad local/CI, formato de resultados e histórico, informe mínimo, README guiado con logo, gobierno del repositorio | El método antes que el producto |
-| QAL-002 | Catálogo: listado, búsqueda, filtros, orden y detalle | Primer ciclo SDD completo; E2E y API sobre el mismo requisito |
-| QAL-003 | Agentes de diseño: Revisor de specs, Analista, Diseñador y Automatizador | La IA revisa requisitos y genera Gherkin y tests, por PR |
-| QAL-004 | Carrito, stock y cupones | Valores límite y tablas de decisión diseñados por agentes |
-| QAL-005 | Cuenta, checkout con pago simulado y pedidos; Agente de API | Flujo crítico E2E; contrato de la API |
-| QAL-006 | Experiencia: accesibilidad, regresión visual, rendimiento y carga; Auditor de experiencia | Calidad no funcional con *quality gates* |
-| QAL-007 | Seguridad y cumplimiento: SAST, dependencias, SBOM, licencias, secretos, DAST; Auditor de seguridad y cumplimiento | *Shift-left* de seguridad y evidencias de cumplimiento |
-| QAL-008 | Agentes de operación: Sanador, Detector de *flaky* y Triaje, con modo de inyección de defectos | Auto-reparación y triaje en directo, con límites |
-| QAL-009 | Informe completo: Reportero, resumen ejecutivo, recomendación de salida y todos los gráficos | El "wow" final |
+| ID | Cambio | Qué se enseña | Estado |
+|---|---|---|---|
+| QAL-001 | Fundación: arnés, pipeline con paridad local/CI, formato de resultados e histórico, informe mínimo, README guiado con logo, gobierno del repositorio | El método antes que el producto | ✔ Hecho |
+| QAL-002 | Catálogo: listado, búsqueda, filtros, orden y detalle | Primer ciclo SDD completo; E2E y API sobre el mismo requisito | ✔ Hecho |
+| QAL-003 | Agentes de diseño: Revisor de specs, Analista, Diseñador y Automatizador | La IA revisa requisitos y genera Gherkin y tests, por PR | ✔ Hecho |
+| QAL-004 | Carrito, stock y cupones | Valores límite y tablas de decisión diseñados por agentes | ✔ Hecho |
+| QAL-005 | Cuenta, checkout con pago simulado y pedidos; Agente de API | Flujo crítico E2E; contrato de la API | ✔ Hecho |
+| QAL-006 | Experiencia: accesibilidad, regresión visual, rendimiento y carga; Auditor de experiencia | Calidad no funcional con *quality gates* | ✔ Hecho |
+| QAL-007 | Seguridad y cumplimiento: SAST, dependencias, SBOM, licencias, secretos, DAST; Auditor de seguridad y cumplimiento | *Shift-left* de seguridad y evidencias de cumplimiento | ✔ Hecho |
+| QAL-008 | Agentes de operación: Sanador, Detector de *flaky* y Triaje, con modo de inyección de defectos | Auto-reparación y triaje en directo, con límites | ✔ Hecho |
+| QAL-009 | Informe completo: Reportero, resumen ejecutivo, recomendación de salida y todos los gráficos | El "wow" final | ✔ Hecho |
 
 ## Decisiones cerradas
 

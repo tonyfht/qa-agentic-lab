@@ -134,6 +134,7 @@ describe('QA-017 Qué ha hecho la IA', () => {
       ['sanador', 0],
       ['detector-flaky', 0],
       ['triaje', 0],
+      ['reportero', 0],
     ])
     expect(agents.latest.map((a) => a.date.slice(0, 10))).toEqual(['2026-10-21', '2026-10-20', '2026-10-19'])
     expect(agents.latest[0].agent).toBe('Analista')
@@ -186,5 +187,51 @@ describe('QA-026 Es segura y cumple', () => {
 
   it('sin la etapa no se da por ejecutada', () => {
     expect(buildModel([sampleRun()], () => false).security.ran).toBe(false)
+  })
+})
+
+describe('QA-038 Donde estan los huecos', () => {
+  it('cuenta los requisitos de cada capacidad por estado, ordenadas por nombre', () => {
+    const run = sampleRun({
+      requirements: [
+        { id: 'CART-001', title: 'a', capability: 'cart', source: 's' },
+        { id: 'CART-002', title: 'b', capability: 'cart', source: 's' },
+        { id: 'CAT-001', title: 'c', capability: 'catalog', source: 's' },
+      ],
+      tests: [test('passed', ['CART-001']), test('flaky', ['CAT-001'])],
+    })
+    expect(buildModel([run], () => false).coverageByCapability).toEqual([
+      { capability: 'cart', passed: 1, flaky: 0, failed: 0, untested: 1 },
+      { capability: 'catalog', passed: 0, flaky: 1, failed: 0, untested: 0 },
+    ])
+  })
+})
+
+describe('QA-037 Resumen ejecutivo', () => {
+  it('compara con la ejecución anterior y dice si cada dato mejora', () => {
+    const prev = sampleRun({ requirements, tests: [test('passed', ['QA-001'])] })
+    const curr = sampleRun({ requirements, tests: [test('passed', ['QA-001']), test('passed', ['QA-002'])] })
+    const { compare } = buildModel([prev, curr], () => false).executive
+    expect(compare.slice(0, 2)).toEqual([
+      { label: 'Tests superados', current: '2', previous: '1', better: true },
+      { label: 'Requisitos cubiertos', current: '2', previous: '1', better: true },
+    ])
+  })
+
+  it('en la primera ejecución no hay comparación, y sin Reportero no hay lectura', () => {
+    const { compare, reporter } = buildModel([sampleRun()], () => false).executive
+    expect(compare.every((c) => c.previous === null && c.better === null)).toBe(true)
+    expect(reporter).toBeNull()
+  })
+
+  it('la lectura del Reportero es su última actuación', () => {
+    const action = { agent: 'reportero' as const, change: 'QAL-009', action: 'resumen ejecutivo', artifacts: [], executedBy: 'x' }
+    const run = sampleRun({
+      agentActions: [
+        { ...action, date: '2026-10-20T10:00:00.000Z', summary: 'antigua' },
+        { ...action, date: '2026-10-21T10:00:00.000Z', summary: 'nueva' },
+      ],
+    })
+    expect(buildModel([run], () => false).executive.reporter?.summary).toBe('nueva')
   })
 })
