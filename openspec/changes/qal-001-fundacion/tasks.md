@@ -30,11 +30,11 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
 
 ## 3. Contrato de resultados e histórico
 
-- [ ] 3.1 Esquema v1 en Zod (`qa/results/schema.ts`) y generación de `schemas/run-result.v1.json`. Se verifica con
+- [x] 3.1 Esquema v1 en Zod (`qa/results/schema.ts`) y generación de `schemas/run-result.v1.json`. Se verifica con
   pruebas de que un resultado válido pasa y uno inválido falla, indicando el campo (QA-010).
-- [ ] 3.2 Extractor del catálogo de requisitos desde `openspec/specs/` y los *deltas* en curso. Se verifica con una
+- [x] 3.2 Extractor del catálogo de requisitos desde `openspec/specs/` y los *deltas* en curso. Se verifica con una
   prueba de que encuentra QA-001…QA-034 de este cambio y no duplica IDs.
-- [ ] 3.3 Escritura y lectura de `runs.ndjson`: añadir sin tocar registros anteriores y leer versiones anteriores. Se
+- [x] 3.3 Escritura y lectura de `runs.ndjson`: añadir sin tocar registros anteriores y leer versiones anteriores. Se
   verifica con pruebas de N→N+1, de registros intactos, de rechazo de un resultado inválido sin modificar el histórico
   y de lectura de un registro `schemaVersion: 0` simulado (QA-012).
 
