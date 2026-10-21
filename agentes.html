@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentes de QA en el flujo — QA Agentic Lab</title>
+<link rel="icon" href="assets/logo.svg">
+<link rel="stylesheet" href="assets/report.css">
+<script src="data.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="index.html" aria-label="Volver al informe de calidad"><img src="assets/logo.svg" alt="QA Agentic Lab" class="logo"></a>
+    <div class="meta" id="run-meta"></div>
+  </header>
+
+  <section aria-labelledby="h-flow" data-testid="agents-flow">
+    <h1 id="h-flow" class="page-title">Agentes de QA en este flujo</h1>
+    <p class="q">Once agentes de IA acompañan cada cambio, de la especificación a la recomendación de salida. <b>Elige uno</b> para ver dónde interviene y qué hace. Las paradas del pipeline muestran cómo fue esta ejecución.</p>
+    <div class="chips" role="group" aria-label="Elegir un agente" id="chips"></div>
+    <div class="card flow-card">
+      <svg id="flow" role="group" aria-labelledby="flow-title" aria-describedby="flow-desc" data-testid="flow-svg">
+        <title id="flow-title">Flujo de QA con sus agentes</title>
+        <desc id="flow-desc">Línea con las paradas del ciclo y una calle por agente que une las paradas en las que interviene.</desc>
+      </svg>
+      <ul class="legend" id="legend" aria-label="Familias de agentes"></ul>
+    </div>
+    <div class="card agent-card" id="agent-card" aria-live="polite" data-testid="agent-card"></div>
+  </section>
+
+  <section aria-labelledby="h-all">
+    <h2 id="h-all">Los once agentes</h2>
+    <p class="q">Cada agente es un fichero versionado con su función, sus herramientas y lo que tiene prohibido. Proponen; las pruebas deterministas y una persona deciden.</p>
+    <ul class="agent-grid" id="agent-grid"></ul>
+    <details class="card"><summary>Ver como tabla</summary><div class="scroll" id="flow-table" data-testid="flow-table"></div></details>
+  </section>
+
+  <footer class="note" id="footer"></footer>
+</div>
+<script src="assets/agentes.js"></script>
+</body>
+</html>
