@@ -21,7 +21,7 @@ Público objetivo: proyecto **formativo y sin ánimo de lucro**, para personas q
 que se presenta el laboratorio. Todo lo visible (README, informe, specs) debe poder explicarse **desde cero** a
 alguien que no sabe de QA ni conoce el proyecto.
 
-> Estado: laboratorio completo (`QAL-001` a `QAL-010`, archivados). Un cambio nuevo empieza con una propuesta en
+> Estado: laboratorio completo (`QAL-001` a `QAL-011`, archivados). Un cambio nuevo empieza con una propuesta en
 > `openspec/changes/` y el siguiente ID libre de [`openspec/README.md`](openspec/README.md).
 
 ---
