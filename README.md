@@ -63,7 +63,9 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
 10. **Más allá de lo funcional.** Abre [`accesibilidad.feature`](tests/features/experience/accesibilidad.feature) y
    la [auditoría de experiencia](qa/agents/reviews/experiencia-2026-10-21.md). Verás que una barrera de
    accesibilidad, una página lenta o una prueba de carga con errores paran el pipeline igual que un fallo funcional, y
-   cómo el Auditor de experiencia encontró que faltaba el icono de la tienda (y se corrigió).
+   cómo el Auditor de experiencia encontró que faltaba el icono de la tienda (y se corrigió). Su
+   [antes y después del rediseño](qa/agents/reviews/experiencia-rediseno-2026-10-21.md) enseña lo contrario: un
+   cambio grande de la tienda, con fotos, que mantiene Lighthouse en 100.
 11. **Seguridad y cumplimiento.** Abre [`compliance/`](compliance/) y la página <http://localhost:3400/privacidad>.
    Verás que cuatro escáneres (Semgrep, `npm audit`, licencias y OWASP ZAP) corren en cada ejecución, que cada
    excepción está escrita con su motivo en lugar de "apagar" una regla, y que el SBOM de cada ejecución queda como
@@ -79,11 +81,17 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
    guardia le impidió "curarlo" relajando la aserción.
 13. **El pipeline en GitHub.** Abre la
    [pestaña Actions](https://github.com/tonyfht/qa-agentic-lab/actions/workflows/pipeline.yml) y entra en la última
-   ejecución. Verás las etapas por separado y, al final, un resumen con una fila por etapa.
-14. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás
-   preguntas respondidas con gráficos (¿estamos mejor que antes?, ¿qué ha hecho la IA?...) y, en la
-   trazabilidad, cada requisito con sus pruebas por tipo: por ejemplo, `CAT-004` cubierto a la vez por pruebas de
-   interfaz, de API y unitarias.
+   ejecución. Verás las etapas por separado y, al final, un resumen con la recomendación de salida, una fila por
+   etapa y, si algo ha fallado, el triaje de cada fallo.
+14. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás cada
+   sección respondiendo a una pregunta:
+   - ¿estamos mejor que antes?, ¿dónde se va el tiempo?, ¿dónde están los huecos?;
+   - ¿es usable y rápida?, ¿es segura y cumple?;
+   - ¿es estable la suite?, ¿qué han reparado los agentes?, ¿qué ha hecho la IA?
+
+   En la trazabilidad, cada requisito aparece con sus pruebas por tipo: por ejemplo, `CAT-004` cubierto a la vez
+   por pruebas de interfaz, de API y unitarias. Arriba, el botón **Agentes de QA en este flujo** abre la página de
+   los agentes.
 15. **¿Podemos salir?** Vuelve al principio del [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás
    la recomendación de salida (*sí*, *con reservas* o *no*) con sus motivos y la comparación con la ejecución
    anterior. La calcula una [regla que se puede leer](report/verdict.ts), no la IA. El
@@ -121,6 +129,10 @@ flowchart LR
   D --> F["7 · Publicar<br/>GitHub Pages, solo main"]
 ```
 
+Además, cada Pull Request pasa el **gobierno**: dice qué cambio de OpenSpec implementa, y si lo abre el Sanador, una
+guardia comprueba que no ha tocado ninguna aserción. Una ejecución con un defecto inyectado para la demostración
+nunca se publica.
+
 **Los agentes de QA.** Cada agente es un fichero versionado en [`.claude/agents/`](.claude/agents/) con su función,
 sus herramientas y lo que tiene prohibido. Los agentes proponen; las comprobaciones deterministas y una persona
 deciden.
@@ -131,16 +143,21 @@ flowchart LR
   R --> A["🧭 Analista<br/>requisitos → Gherkin"]
   A --> D["🧮 Diseñador de casos<br/>límites · pairwise · tablas"]
   D --> U["🤖 Automatizador<br/>steps en verde"]
+  D --> API["🔌 Agente de API<br/>contrato OpenAPI"]
   M[["🎭 Playwright MCP"]] -.-> A
   M -.-> U
   U --> PR["🔀 Pull Request"]
+  API --> PR
   PR --> H{"👤 Revisión humana<br/>+ pipeline"}
+  H --> AE["👁️ Auditor de experiencia<br/>accesibilidad · rendimiento"]
+  H --> AS["🛡️ Auditor de seguridad<br/>hallazgos por riesgo"]
   H -->|"🔴 falla"| T["🩺 Triaje<br/>¿de quién es el fallo?"]
   T -->|producto| B["🐞 Issue de defecto"]
   T -->|test| SA["🩹 Sanador<br/>localizadores, nunca aserciones"]
   T -->|inestable| FD["📉 Detector de inestables<br/>corrección o cuarentena"]
   SA --> PR
-  H --> L[("📒 Registro de actuaciones")]
+  AE --> L[("📒 Registro de actuaciones")]
+  AS --> L
   T --> L
   L --> I["📊 Informe<br/>¿qué ha hecho la IA?"]
   I --> RP["📣 Reportero<br/>¿podemos salir?"]
@@ -158,6 +175,10 @@ Once agentes de IA acompañan cada cambio, de la especificación a la recomendac
 trabajo concreto y algo que **no puede hacer**: así la IA ayuda en todo el ciclo sin decidir por nadie. Para verlos
 sobre el flujo, con lo que hicieron en la última ejecución, abre
 [**Agentes de QA en este flujo**](https://tonyfht.github.io/qa-agentic-lab/agentes.html) en el informe.
+
+<a href="https://tonyfht.github.io/qa-agentic-lab/agentes.html"><img src="docs/assets/agentes-flujo.webp" alt="Página Agentes de QA en este flujo: la línea del ciclo con sus paradas, del requisito al informe, y una calle por agente; el Triaje aparece seleccionado e interviene en el informe y tras un fallo" width="760"></a>
+
+*En la página puedes elegir cada agente: se resaltan sus paradas y aparece su ficha. Aquí, el Triaje.*
 
 **Requisitos y diseño**
 
@@ -285,6 +306,7 @@ npx playwright install chromium
 | Romper la tienda a propósito | `npm run qa -- --stage e2e --inject cupon` | Defectos: `cupon` (producto), `selector` (test), `caida` (entorno). Triaje en `reports/runs/<id>/triaje.md` tras `--stage report` |
 | Medir rendimiento y carga | `npm run qa -- --stage performance` | Lighthouse en 3 páginas y k6 con 20 usuarios (si está instalado) |
 | Ver el informe con mi histórico | `npm run report` | <http://localhost:3420> |
+| Ver los agentes sobre el flujo | `npm run report` | <http://localhost:3420/agentes.html> |
 
 **En GitHub, sin instalar nada:** entra en la
 [pestaña Actions](https://github.com/tonyfht/qa-agentic-lab/actions/workflows/pipeline.yml), pulsa **Run workflow** y
@@ -313,9 +335,13 @@ inventados).
 |---|---|
 | [`openspec/`](openspec/) | Especificaciones y cambios: la fuente de verdad |
 | [`app/`](app/), [`lib/`](lib/) | La Tienda en Casa (Next.js) y su API |
-| [`tests/`](tests/) | Escenarios Gherkin, pasos, pruebas unitarias y el reporter de resultados |
-| [`qa/`](qa/) | El orquestador del pipeline (`npm run qa`) y el formato de resultados |
-| [`report/`](report/) | El generador del informe de calidad |
+| [`public/images/`](public/images/) | Las fotos de la tienda y sus créditos ([`creditos.json`](public/images/creditos.json)) |
+| [`tests/`](tests/) | Escenarios Gherkin, pasos, pruebas unitarias, el reporter de resultados y las referencias visuales |
+| [`.claude/agents/`](.claude/agents/) | La definición de cada agente de QA: función, herramientas y lo que tiene prohibido |
+| [`qa/`](qa/) | El orquestador del pipeline (`npm run qa`), el formato de resultados, el registro y las revisiones de los agentes, el triaje, la estabilidad, la cuarentena y la guardia del Sanador |
+| [`compliance/`](compliance/) | La política de licencias y las excepciones de seguridad aceptadas, cada una con su motivo |
+| [`report/`](report/) | El generador del informe de calidad, la recomendación de salida y la página de agentes |
+| [`schemas/`](schemas/) | El formato publicado del resultado de cada ejecución (JSON Schema) |
 | [`.github/`](.github/) | Workflows, plantillas de PR e *issues* y Dependabot |
 
 ## Licencia

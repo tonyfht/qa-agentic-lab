@@ -105,10 +105,10 @@ las personas deciden.**
 | Diseño de pruebas | **Analista** y **Diseñador de casos** | Playwright MCP (explorar la tienda), *planner* de Playwright Test Agents | — |
 | Automatización | **Automatizador** y **Agente de API** | *generator* de Playwright Test Agents, especificación OpenAPI | Playwright, playwright-bdd, Vitest |
 | Ejecución | — | — | GitHub Actions, pipeline por etapas |
-| Mantenimiento | **Sanador** y **Detector de *flaky*** | *healer* de Playwright Test Agents, Playwright MCP | Reintentos e histórico |
+| Mantenimiento | **Sanador** y **Detector de inestables** | *healer* de Playwright Test Agents, Playwright MCP | Reintentos, histórico, cuarentena con caducidad y guardia de aserciones |
 | No funcional | **Auditor de experiencia**: accesibilidad, rendimiento, visual | — | axe, Lighthouse CI, comparación visual, k6 |
-| Seguridad y cumplimiento | **Auditor de seguridad y cumplimiento** | — | CodeQL o Semgrep, `npm audit`, SBOM, licencias, Gitleaks, OWASP ZAP |
-| Defectos | **Triaje**: clasifica y abre *issues* con evidencia | GitHub MCP | GitHub Issues |
+| Seguridad y cumplimiento | **Auditor de seguridad y cumplimiento** | — | Semgrep, `npm audit`, SBOM, licencias, Gitleaks, OWASP ZAP |
+| Defectos | **Triaje**: decide de quién es cada fallo y abre *issues* con evidencia | GitHub MCP | Reglas de triaje, GitHub Issues |
 | Informe y salida | **Reportero**: compara con el histórico, resumen ejecutivo, recomendación de salida | — | Informe propio, *quality gates* |
 
 Los agentes son subagentes de Claude Code versionados en `.claude/agents/`. Se ejecutan en local o en CI con la GitHub
@@ -129,7 +129,7 @@ se puede enseñar entero.
 | QAL-005 | Cuenta, checkout con pago simulado y pedidos; Agente de API | Flujo crítico E2E; contrato de la API | ✔ Hecho |
 | QAL-006 | Experiencia: accesibilidad, regresión visual, rendimiento y carga; Auditor de experiencia | Calidad no funcional con *quality gates* | ✔ Hecho |
 | QAL-007 | Seguridad y cumplimiento: SAST, dependencias, SBOM, licencias, secretos, DAST; Auditor de seguridad y cumplimiento | *Shift-left* de seguridad y evidencias de cumplimiento | ✔ Hecho |
-| QAL-008 | Agentes de operación: Sanador, Detector de *flaky* y Triaje, con modo de inyección de defectos | Auto-reparación y triaje en directo, con límites | ✔ Hecho |
+| QAL-008 | Agentes de operación: Sanador, Detector de inestables y Triaje, con modo de inyección de defectos | Auto-reparación y triaje en directo, con límites | ✔ Hecho |
 | QAL-009 | Informe completo: Reportero, resumen ejecutivo, recomendación de salida y todos los gráficos | El "wow" final | ✔ Hecho |
 | QAL-010 | La Tienda en Casa, de maqueta a tienda: identidad, fotos reales con crédito y mejoras de UX | Un rediseño grande con el mismo método: la suite anterior en verde sin tocar aserciones | ✔ Hecho |
 | QAL-011 | Los agentes de QA, en el flujo: página interactiva y presentaciones | Dónde actúa cada agente en el ciclo, de un vistazo | ✔ Hecho |
