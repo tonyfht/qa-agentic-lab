@@ -27,7 +27,7 @@ Rama: `change/qal-009-informe-completo`.
 
 ## 5. Verificación
 
-- [ ] 5.1 Pipeline en verde en el PR y el informe publicado con el veredicto tras fusionar. Se verifica con la
+- [x] 5.1 Pipeline en verde en el PR y el informe publicado con el veredicto tras fusionar. Se verifica con la
   ejecución de Actions y GitHub Pages.
 
 ## Testing

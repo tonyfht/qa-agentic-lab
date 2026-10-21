@@ -16,7 +16,7 @@ Este directorio gobierna el desarrollo de la tienda y del sistema de calidad con
 `QAL-XXX-nombre-descriptivo` (**Q**A **A**gentic **L**ab, 3 dígitos, kebab-case). En el archivo, OpenSpec antepone la
 fecha: `AAAA-MM-DD-qal-XXX-nombre/`.
 
-**Siguiente ID libre: `QAL-009`.**
+**Siguiente ID libre: `QAL-010`.**
 
 ## Estructura de un cambio
 
@@ -47,3 +47,4 @@ QAL-XXX-nombre/
 | [QAL-006](changes/archive/2026-10-21-qal-006-experiencia/) | Experiencia: accesibilidad, regresión visual, rendimiento (Lighthouse) y carga (k6), con auditor de experiencia | 2026-10-21 | Calidad no funcional + IA |
 | [QAL-007](changes/archive/2026-10-21-qal-007-seguridad-cumplimiento/) | Seguridad y cumplimiento: cabeceras, SAST, dependencias, licencias, SBOM y DAST, con auditor de seguridad | 2026-10-21 | Seguridad + cumplimiento + IA |
 | [QAL-008](changes/archive/2026-10-21-qal-008-agentes-operacion/) | Agentes de operación: triaje, Detector de inestables, cuarentena con caducidad, Sanador con guardia de aserciones e inyección de defectos | 2026-10-21 | Operación de la suite + IA |
+| [QAL-009](changes/archive/2026-10-21-qal-009-informe-completo/) | Informe completo: ¿Podemos salir? con recomendación determinista, huecos por capacidad, Reportero y guía final | 2026-10-21 | Informe + IA + guía |
