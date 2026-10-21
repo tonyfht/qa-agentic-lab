@@ -37,7 +37,10 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
 5. **Los agentes de IA.** Abre [`qa-disenador.md`](.claude/agents/qa-disenador.md) y después
    [`combinaciones.feature`](tests/features/catalog/combinaciones.feature). Verás qué puede y qué **no puede** hacer
    un agente, y su trabajo real: 9 combinaciones *pairwise* de filtros en lugar de 54. La
-   [revisión de la spec del catálogo](qa/agents/reviews/catalog.md) es obra del Revisor de specs.
+   [revisión de la spec del catálogo](qa/agents/reviews/catalog.md) es obra del Revisor de specs. Para conocer a
+   los once, lee [Conoce a los agentes](#conoce-a-los-agentes) o abre
+   [Agentes de QA en este flujo](https://tonyfht.github.io/qa-agentic-lab/agentes.html) y elige uno: verás en qué
+   paradas del ciclo interviene.
 6. **La tienda.** Ejecuta `npm run dev` (ver [Ejecútalo tú](#ejecútalo-tú)) y abre <http://localhost:3400>.
    Verás una tienda online de verdad, con fotos, categorías y ofertas. Busca "algodón" desde la cabecera (encuentra
    artículos escritos sin tilde) y en el catálogo prueba los filtros: se aplican al momento, cada uno queda como un
@@ -148,6 +151,117 @@ subagente qa-disenador sobre el catálogo"*) o desde GitHub con el workflow
 [Agentes de QA](.github/workflows/agents.yml). En GitHub necesitan la clave `ANTHROPIC_API_KEY` en los
 *secrets*; sin ella, el workflow se omite avisando. Se apoyan en los
 [Playwright Test Agents](https://playwright.dev/docs/test-agents) y en su servidor MCP ([`.mcp.json`](.mcp.json)).
+
+## Conoce a los agentes
+
+Once agentes de IA acompañan cada cambio, de la especificación a la recomendación de salida. Cada uno tiene un
+trabajo concreto y algo que **no puede hacer**: así la IA ayuda en todo el ciclo sin decidir por nadie. Para verlos
+sobre el flujo, con lo que hicieron en la última ejecución, abre
+[**Agentes de QA en este flujo**](https://tonyfht.github.io/qa-agentic-lab/agentes.html) en el informe.
+
+**Requisitos y diseño**
+
+### 🔎 Revisor de specs
+
+El primer lector de cada especificación. Antes de diseñar una sola prueba, busca lo que no se entiende, lo que falta
+y lo que no se puede comprobar ("rápido", "cómodo"...).
+- **Interviene en:** requisitos.
+- **No puede:** cambiar las specs; propone y una persona decide.
+- **Su trabajo:** la [revisión de la spec del catálogo](qa/agents/reviews/catalog.md) ·
+  [definición](.claude/agents/qa-revisor-specs.md).
+
+### 🧭 Analista
+
+Traduce los requisitos a escenarios Gherkin (*dado, cuando, entonces*) que entiende cualquiera, con su riesgo y su
+prioridad.
+- **Interviene en:** requisitos y diseño.
+- **No puede:** inventar comportamiento que la spec no pide.
+- **Su trabajo:** [los filtros del catálogo](tests/features/catalog/filtros.feature) ·
+  [definición](.claude/agents/qa-analista.md).
+
+### 🧮 Diseñador de casos
+
+Aplica técnicas de diseño de pruebas para probar más con menos casos: valores límite, tablas de decisión y
+*pairwise*.
+- **Interviene en:** diseño.
+- **No puede:** añadir casos sin declarar la técnica que los justifica.
+- **Su trabajo:** [9 combinaciones *pairwise* en lugar de 54](tests/features/catalog/combinaciones.feature) ·
+  [definición](.claude/agents/qa-disenador.md).
+
+**Automatización**
+
+### 🤖 Automatizador
+
+Escribe el código de Playwright que ejecuta cada escenario contra la tienda de verdad.
+- **Interviene en:** automatización y E2E.
+- **No puede:** entregar tests en rojo ni tapar la inestabilidad con esperas fijas.
+- **Su trabajo:** [los steps del carrito](tests/steps/cart.steps.ts) · [definición](.claude/agents/qa-automatizador.md).
+
+### 🔌 Agente de API
+
+Prueba la API contra su contrato OpenAPI. Un barrido comprueba que todas las lecturas públicas cumplen lo que el
+contrato promete.
+- **Interviene en:** automatización y E2E.
+- **No puede:** cambiar el contrato para que una respuesta lo cumpla.
+- **Su trabajo:** [el barrido de contrato](tests/support/contract-sweep.ts) · [definición](.claude/agents/qa-api.md).
+
+**Auditoría**
+
+### 👁️ Auditor de experiencia
+
+Traduce los números de accesibilidad, Lighthouse, regresión visual y carga a lo que notaría un cliente.
+- **Interviene en:** E2E y rendimiento.
+- **No puede:** relajar presupuestos, umbrales ni referencias visuales.
+- **Su trabajo:** [el antes y después del rediseño](qa/agents/reviews/experiencia-rediseno-2026-10-21.md) ·
+  [definición](.claude/agents/qa-auditor-experiencia.md).
+
+### 🛡️ Auditor de seguridad y cumplimiento
+
+Ordena los hallazgos de cuatro escáneres por riesgo real y revisa que cada excepción siga justificada. Encontró que
+las contraseñas podían acabar en la URL, algo que la herramienta solo marcaba como informativo.
+- **Interviene en:** seguridad.
+- **No puede:** aceptar excepciones ni rebajar la gravedad por su cuenta.
+- **Su trabajo:** [la primera auditoría de seguridad](qa/agents/reviews/seguridad-2026-10-21.md) ·
+  [definición](.claude/agents/qa-auditor-seguridad.md).
+
+**Operación**
+
+### 🩺 Triaje
+
+Cuando la suite se pone en rojo, responde primero a la pregunta que importa: ¿de quién es el fallo? Puede ser del
+producto, del test, del entorno o inestabilidad.
+- **Interviene en:** el informe y tras un fallo.
+- **No puede:** cambiar tests ni código; decide de quién es el fallo, no lo arregla.
+- **Su trabajo:** [el triaje de tres defectos inyectados](qa/agents/reviews/triaje-2026-10-21.md) ·
+  [definición](.claude/agents/qa-triaje.md).
+
+### 🩹 Sanador
+
+Repara los tests que se rompen por cambios que no son funcionales, como un identificador que ha cambiado. Una
+guardia automática bloquea su PR si toca una aserción.
+- **Interviene en:** tras un fallo; su arreglo vuelve a pasar el análisis estático.
+- **No puede:** tocar una aserción, un escenario ni la tienda.
+- **Su trabajo:** [la reparación de un localizador](qa/agents/reviews/sanador-2026-10-21.md) ·
+  [definición](.claude/agents/qa-sanador.md).
+
+### 📉 Detector de inestables
+
+Mide con el histórico qué tests solo pasan al reintentar y distingue si el problema es del test o de la máquina.
+- **Interviene en:** el informe y tras un fallo.
+- **No puede:** poner tests en cuarentena por su cuenta ni subir reintentos para tapar.
+- **Su trabajo:** [el análisis de estabilidad](qa/agents/reviews/estabilidad-2026-10-21.md) ·
+  [definición](.claude/agents/qa-detector-flaky.md).
+
+**Salida**
+
+### 📣 Reportero
+
+Cuenta en lenguaje de negocio la recomendación de salida (*¿podemos salir?*) y qué ha cambiado frente al histórico.
+La recomendación la calcula una regla; él la explica.
+- **Interviene en:** el informe y la publicación.
+- **No puede:** cambiar la recomendación ni suavizar un motivo de bloqueo.
+- **Su trabajo:** [el resumen ejecutivo](qa/agents/reviews/reportero-2026-10-21.md) ·
+  [definición](.claude/agents/qa-reportero.md).
 
 ## Ejecútalo tú
 

@@ -1,4 +1,4 @@
-import type { APIRequestContext } from '@playwright/test'
+import type { APIRequestContext, Page } from '@playwright/test'
 import { test as base, createBdd } from 'playwright-bdd'
 import { ContractChecker } from '../support/contract'
 
@@ -21,6 +21,8 @@ type World = {
   other?: { request: APIRequestContext; orderNumber?: string }
   sweep?: { operationId: string; status: number; errors: string[] }[]
   headers?: Record<string, string>
+  /** The agents page of the report (QAL-011): a popup opened from the report, or the main page. */
+  popup?: Page
   /** Name of the product added from a card or a suggestion (QAL-010). */
   added?: string
 }

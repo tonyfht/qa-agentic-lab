@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from
 import os from 'node:os'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { checkAgentDefinitions, readAgentActions, AGENTS } from '@/qa/agents/registry'
+import { checkAgentDefinitions, checkAgentFlow, readAgentActions, AGENTS, FLOW_STOPS } from '@/qa/agents/registry'
 import { lintFeatures, lintScenarios, parseFeature } from '@/qa/checks/gherkin'
 import { lintAllSpecs, lintSpec } from '@/qa/checks/specs'
 import { loadRequirementCatalog } from '@/qa/results/requirements'
@@ -69,7 +69,7 @@ describe('QA-043 Diseñador de casos con técnica declarada', () => {
 describe('QA-040 Agentes versionados con función y límites', () => {
   it('los agentes del laboratorio tienen definición completa', () => {
     expect(checkAgentDefinitions(root)).toEqual([])
-    expect(AGENTS.map((a) => a.id)).toEqual(['revisor-specs', 'analista', 'disenador', 'automatizador', 'api', 'auditor-experiencia', 'auditor-seguridad', 'sanador', 'detector-flaky', 'triaje', 'reportero'])
+    expect(AGENTS.map((a) => a.id)).toEqual(['revisor-specs', 'analista', 'disenador', 'automatizador', 'api', 'auditor-experiencia', 'auditor-seguridad', 'triaje', 'sanador', 'detector-flaky', 'reportero'])
   })
 
   it('una definición sin prohibiciones se señala con el agente y la sección', () => {
@@ -139,6 +139,28 @@ describe('QA-049 Auditor de seguridad y cumplimiento', () => {
     const forbidden = def.slice(def.indexOf('## Prohibido'), def.indexOf('## Registro'))
     expect(forbidden).toMatch(/Añadir o ampliar excepciones/)
     expect(forbidden).toMatch(/Rebajar la gravedad/)
+  })
+})
+
+describe('QA-057 Cada agente declara qué hace y dónde interviene', () => {
+  it('los 11 agentes tienen resumen, prohibición, familia, paradas válidas y una muestra que existe', () => {
+    expect(AGENTS).toHaveLength(11)
+    expect(checkAgentFlow(root, AGENTS)).toEqual([])
+  })
+
+  it('una parada desconocida o repetida falla nombrando al agente y la parada', () => {
+    const bad = { ...AGENTS[0], name: 'Agente de prueba', stops: ['spec', 'luna', 'spec'] as never }
+    expect(checkAgentFlow(root, [bad])).toEqual(['Agente de prueba: parada desconocida «luna»', 'Agente de prueba: paradas repetidas'])
+  })
+
+  it('sin resumen o sin paradas no es un agente completo', () => {
+    const bad = { ...AGENTS[0], name: 'Agente vacío', summary: ' ', stops: [] as never }
+    expect(checkAgentFlow(root, [bad])).toEqual(['Agente vacío: falta el resumen de lo que hace', 'Agente vacío: no interviene en ninguna parada del flujo'])
+  })
+
+  it('las paradas del pipeline coinciden con las etapas del orquestador', () => {
+    const stages = FLOW_STOPS.flatMap((s) => ('stage' in s ? [s.stage] : []))
+    expect(stages).toEqual(['static', 'build', 'e2e', 'performance', 'security', 'report'])
   })
 })
 

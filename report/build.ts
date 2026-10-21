@@ -37,6 +37,9 @@ export function buildSite({ root, history, outDir, runDir }: BuildSiteInput): st
   cpSync(path.join(template, 'index.html'), path.join(outDir, 'index.html'))
   cpSync(path.join(template, 'report.css'), path.join(assets, 'report.css'))
   cpSync(path.join(template, 'report.js'), path.join(assets, 'report.js'))
+  // QA-039: the agents page reuses data.js and the stylesheet; it needs no chart library.
+  cpSync(path.join(template, 'agentes.html'), path.join(outDir, 'agentes.html'))
+  cpSync(path.join(template, 'agentes.js'), path.join(assets, 'agentes.js'))
   cpSync(require.resolve('echarts/dist/echarts.min.js'), path.join(assets, 'echarts.min.js'))
   cpSync(path.join(root, 'docs', 'assets', 'logo.svg'), path.join(assets, 'logo.svg'))
 
