@@ -117,6 +117,26 @@
     ['Estado', 'Requisitos'],
     Object.entries(data.coverage).map(([k, v]) => [esc(LABEL[k]), v]),
   )
+  // Agents (QA-017)
+  const agents = data.agents
+  const totalActions = agents.byAgent.reduce((n, a) => n + a.count, 0)
+  $('agents-table').innerHTML = table(
+    ['Agente', 'Fase', 'Actuaciones'],
+    agents.byAgent.map((a) => [esc(a.name), esc(a.phase), a.count]),
+  )
+  const repo = 'https://github.com/tonyfht/qa-agentic-lab/blob/main/'
+  $('agents-latest').innerHTML = agents.latest.length
+    ? agents.latest
+        .map(
+          (x) =>
+            `<li><div class="who">${esc(x.agent)} · ${esc(x.action)}</div>` +
+            `<div class="when">${esc(new Date(x.date).toLocaleDateString('es-ES'))} · ${esc(x.change)}</div>` +
+            `<div>${esc(x.summary)}</div>` +
+            `<div class="when">${x.artifacts.map((p) => `<a href="${repo}${esc(p)}">${esc(p)}</a>`).join(' · ')}</div></li>`,
+        )
+        .join('')
+    : '<li data-testid="agents-empty">Todavía no hay actuaciones de agentes registradas.</li>'
+
   $('footer').textContent = `Informe generado el ${new Date(data.generatedAt).toLocaleString('es-ES')} · QA Agentic Lab`
 
   // Charts
@@ -211,6 +231,30 @@
       }],
     })
     charts.push(cv)
+
+    const agEl = $('agents-chart')
+    if (totalActions === 0) {
+      agEl.className = 'chart short empty'
+      agEl.setAttribute('data-testid', 'agents-chart-empty')
+      agEl.textContent = 'Los agentes todavía no han registrado actuaciones.'
+    } else {
+      const ag = echarts.init(agEl)
+      ag.setOption({
+        textStyle,
+        tooltip: { ...tooltip, trigger: 'item', formatter: (p) => `${p.name}: ${p.value} actuaciones` },
+        grid: { left: 140, right: 40, top: 8, bottom: 24 },
+        xAxis: { type: 'value', minInterval: 1, ...axis },
+        yAxis: { type: 'category', inverse: true, data: agents.byAgent.map((a) => a.name), ...axis, axisLabel: { color: css('--ink-2') } },
+        series: [{
+          type: 'bar',
+          barMaxWidth: 22,
+          data: agents.byAgent.map((a) => a.count),
+          itemStyle: { color: css('--accent'), borderRadius: [0, 4, 4, 0] },
+          label: { show: true, position: 'right', color: css('--ink-2') },
+        }],
+      })
+      charts.push(ag)
+    }
   }
 
   render()
