@@ -1,8 +1,8 @@
 # Auditoría de seguridad y cumplimiento — 2026-10-21
 
 **Agente:** Auditor de seguridad y cumplimiento ([definición](../../../.claude/agents/qa-auditor-seguridad.md)).
-**Ejecución auditada:** primera ejecución de la etapa "5 · Seguridad y cumplimiento" en GitHub Actions, rama
-`change/qal-007-seguridad-cumplimiento` (run 39635491606).
+**Ejecuciones auditadas:** primera y segunda ejecución de la etapa "5 · Seguridad y cumplimiento" en GitHub Actions, rama
+`change/qal-007-seguridad-cumplimiento` (runs 39635491606 y 39638189225).
 **Ejecutado por:** Claude Code (sesión del fundador, QAL-007).
 
 ## Resultado de la ejecución
@@ -33,6 +33,7 @@ Tres preguntas para cada uno: **¿se distribuye?** (producción frente a desarro
 | 9 | `braces`, `micromatch`, `fast-glob`, `eslint-config-next` y `@fission-ai/openspec` vulnerables | npm audit (alto) | Bajo: solo desarrollo, no llegan a la tienda | P3 | Esperar a que Dependabot proponga versiones corregidas. No se fuerza `overrides` sin probar | Abierto, vigilado |
 | 10 | *User Controllable HTML Element Attribute* (10031) en `/catalogo?category=` | ZAP (info) | Bajo: solo se acepta una categoría existente (`parseCatalogQuery`) y React escapa el valor | — | Ninguna; los escenarios de catálogo ya cubren valores inválidos | Revisado |
 | 11 | *Non-Storable Content* (10049) y *Authentication Request Identified* (10111) | ZAP (info) | Ninguno: es el comportamiento esperado de páginas con sesión | — | Ninguna | Revisado |
+| 12 | *Absence of Anti-CSRF Tokens* (10202), en la segunda ejecución, al declarar `method="post"` | ZAP (medio) | Medio: un sitio ajeno podría intentar escribir en el carrito o la cuenta de un cliente con sesión | P2 | La defensa no son tokens, sino tres capas: cookies `SameSite=Lax`, `form-action 'self'` y `proxy.ts`, que rechaza con 403 las escrituras que llegan desde otro sitio (requisito nuevo SEC-006, con escenarios). La alerta se acepta citando esas capas | Corregido y aceptado |
 
 ## Excepciones vigentes
 
@@ -40,6 +41,7 @@ Tres preguntas para cada uno: **¿se distribuye?** (producción frente a desarro
 |---|---|---|
 | `@img/sharp-*` LGPL-3.0 (`compliance/licencias.json`) | libvips se enlaza dinámicamente y no se modifica | Sí |
 | ZAP 10055 *script-src* y *style-src* | Next.js emite scripts y estilos en línea | Sí; revisar en cada versión mayor de Next.js |
+| ZAP 10202 tokens anti-CSRF | SameSite=Lax, `form-action 'self'` y origen comprobado en `proxy.ts` | Sí, mientras SEC-006 siga en verde |
 | `nosemgrep` en `qa/lib/exec.ts` (×2) | Comandos literales del orquestador | Sí, mientras ningún comando incluya entrada externa |
 
 ## Recomendación

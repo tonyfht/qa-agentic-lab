@@ -2,7 +2,7 @@
 
 ## Context
 
-Ver `proposal.md` y las specs `security` (SEC-001…005) y `compliance` (CMP-001…003), más QA-026, QA-027 y QA-049.
+Ver `proposal.md` y las specs `security` (SEC-001…006) y `compliance` (CMP-001…003), más QA-026, QA-027 y QA-049.
 
 **Punto de partida medido:**
 - `npm audit` de producción: 0 vulnerabilidades. De desarrollo: 6 altas, por la cadena `braces` y `micromatch` de
@@ -101,6 +101,9 @@ Scenario: La portada y la API devuelven las cabeceras de seguridad
 
 @security @p1 @SEC-005
 Scenario: Los formularios de cuenta y de pago no ponen datos en la URL
+
+@security @api @p1 @SEC-006
+Scenario: La API rechaza escrituras que llegan desde otro sitio
 ```
 
 ## Risks / Trade-offs
@@ -112,6 +115,9 @@ Scenario: Los formularios de cuenta y de pago no ponen datos en la URL
   SEC-005), cabeceras de aislamiento entre orígenes (ZAP 90004), acciones de GitHub fijadas a SHA, *cooldown* de
   Dependabot, `min-release-age` de npm y dos expresiones regulares dinámicas. Los dos `shell: true` del orquestador
   se aceptan con `nosemgrep` y su motivo: comandos literales, sin entrada externa.
+- **[Con `method="post"`, ZAP pide tokens anti-CSRF (10202)]** → la defensa es otra y se demuestra: cookies
+  `SameSite=Lax`, `form-action 'self'` y `proxy.ts`, que rechaza con 403 las escrituras desde otro sitio (SEC-006).
+  La alerta se acepta con ese motivo.
 - **[El paquete de licencias varía por plataforma (sharp)]** → las excepciones van por patrón (`@img/sharp-*`).
 - **[La imagen de ZAP tarda en descargarse en CI]** → unos 30 s. Es asumible.
 

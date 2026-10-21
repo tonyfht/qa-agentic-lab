@@ -34,14 +34,9 @@ export function tail(text: string, lines = 15): string {
 
 export function startBackground(command: string, cwd: string, env: Record<string, string | undefined> = {}): ChildProcess {
   // On POSIX the server gets its own process group so killTree can stop the shell and the server together.
-  return spawn(command, {
-    cwd,
-    env: { ...process.env, ...env },
-    // nosemgrep: javascript.lang.security.audit.spawn-shell-true.spawn-shell-true -- comando literal del orquestador, sin entrada externa
-    shell: true,
-    stdio: 'ignore',
-    detached: process.platform !== 'win32',
-  })
+  const options = { cwd, env: { ...process.env, ...env }, stdio: 'ignore' as const, detached: process.platform !== 'win32' }
+  // nosemgrep: javascript.lang.security.audit.spawn-shell-true.spawn-shell-true -- comando literal del orquestador, sin entrada externa
+  return spawn(command, { ...options, shell: true })
 }
 
 /** Kills a process and its children (the shell spawns the real server as a child). */

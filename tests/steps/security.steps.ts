@@ -1,4 +1,4 @@
-// Steps for QAL-007: security headers, sensitive forms, third parties and declared cookies (SEC-001, SEC-005, CMP-003).
+// Steps for QAL-007: security headers, sensitive forms, third parties and declared cookies (SEC-001, SEC-005, SEC-006, CMP-003).
 import { expect } from '@playwright/test'
 import { Then, When } from './fixtures'
 
@@ -54,4 +54,15 @@ Then('la tabla de cookies describe {string} y {string} como necesarias', async (
 Then('el formulario {string} se envía por POST', async ({ page }, name: string) => {
   // Without method="post" a submit before hydration would put credentials or card data in the URL (SEC-005).
   await expect(page.getByRole('form', { name })).toHaveAttribute('method', 'post')
+})
+
+// SEC-006: the same write, once from a foreign site and once from the store itself (Origin = baseURL).
+When('añado al carrito por la API desde el origen {string}', async ({ request, world }, origin: string) => {
+  const res = await request.post('/api/cart/items', { headers: { Origin: origin }, data: { slug: 'taza-desayuno-xl', quantity: 1 } })
+  world.api = { operationId: 'addCartItem', status: res.status(), body: await res.json() }
+})
+
+When('añado al carrito por la API desde el origen de la tienda', async ({ request, world, baseURL }) => {
+  const res = await request.post('/api/cart/items', { headers: { Origin: new URL(baseURL!).origin }, data: { slug: 'taza-desayuno-xl', quantity: 1 } })
+  world.api = { operationId: 'addCartItem', status: res.status(), body: await res.json() }
 })

@@ -36,3 +36,11 @@ Feature: Seguridad y privacidad desde el navegador
     And un carrito con "taza-desayuno-xl x1"
     When abro "/checkout"
     Then el formulario "Pago" se envía por POST
+
+  @SEC-006 @api
+  Scenario: La API rechaza escrituras que llegan desde otro sitio
+    When añado al carrito por la API desde el origen "https://atacante.example"
+    Then la API responde 403
+    And el error explica "Petición rechazada: llega desde otro sitio"
+    When añado al carrito por la API desde el origen de la tienda
+    Then la API responde 200

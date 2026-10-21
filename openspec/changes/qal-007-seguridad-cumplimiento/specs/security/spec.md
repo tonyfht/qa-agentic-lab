@@ -65,3 +65,14 @@ Los formularios que envían credenciales o datos de pago (entrar, registro y pag
 - **GIVEN** un cliente con sesión y un artículo en el carrito
 - **WHEN** se pide la página de pago
 - **THEN** el formulario de pago declara `method="post"`
+
+### Requirement: SEC-006 Escrituras desde otro sitio rechazadas
+La API SHALL rechazar con 403 toda petición que modifique datos (cualquier método salvo GET, HEAD y OPTIONS) cuando el navegador indique que llega desde otro sitio: `Sec-Fetch-Site: cross-site` o, sin esa cabecera, un `Origin` cuyo host no es el de la tienda. Es defensa en profundidad contra CSRF, además de las cookies `SameSite=Lax`.
+
+#### Scenario: Escritura desde un sitio ajeno
+- **WHEN** se añade un artículo al carrito por la API con `Origin: https://atacante.example`
+- **THEN** la API responde 403 explicando que la petición llega desde otro sitio
+
+#### Scenario: Escritura desde la propia tienda
+- **WHEN** se añade un artículo al carrito por la API con el origen de la tienda
+- **THEN** la API responde 200

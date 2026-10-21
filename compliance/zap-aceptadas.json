@@ -10,6 +10,11 @@
       "pluginid": "10055",
       "alerta": "CSP: style-src unsafe-inline",
       "motivo": "Next.js y los componentes de la tienda (ProductArt, barras de progreso) usan atributos style en línea. Los estilos en línea no ejecutan código; el riesgo residual es la exfiltración por CSS, que exige inyectar HTML, cosa que React impide."
+    },
+    {
+      "pluginid": "10202",
+      "alerta": "Absence of Anti-CSRF Tokens",
+      "motivo": "La protección contra CSRF no usa tokens en el formulario: las cookies de sesión y carrito son SameSite=Lax (un sitio ajeno no las envía en un POST), la CSP limita form-action a 'self' y la API rechaza con 403 cualquier escritura que llegue desde otro sitio (SEC-006, proxy.ts). Los formularios no se envían al servidor: JavaScript llama a la API."
     }
   ]
 }
