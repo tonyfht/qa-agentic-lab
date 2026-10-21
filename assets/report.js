@@ -37,15 +37,29 @@
     `${run.workflowRunUrl ? `<a href="${esc(run.workflowRunUrl)}">${esc(run.origin)}</a>` : esc(run.origin)} · ${esc(when)} · ` +
     '<button class="toggle" id="theme" type="button">Cambiar tema</button>'
 
-  const flaky = data.stages.length && data.traceability.flatMap((r) => r.tests).filter((t) => t.status === 'flaky').length
-  const notRun = data.stages.filter((s) => s.status === 'not_run' || s.status === 'skipped').length
-  $('banner').innerHTML =
-    (run.status === 'passed' ? badge('passed', '✔ Superada') : badge('failed', '✖ Fallida')) +
-    `<span>${
-      run.status === 'passed' ? 'Todas las etapas bloqueantes en verde.' : 'Al menos una etapa bloqueante ha fallado.'
-    }${flaky ? ` <b>${flaky} test${flaky > 1 ? 's' : ''} inestable${flaky > 1 ? 's' : ''}</b> que conviene revisar.` : ''}${
-      notRun ? ` ${notRun} etapa${notRun > 1 ? 's' : ''} sin ejecutar.` : ''
-    }</span>`
+  // Executive summary: release recommendation, comparison and the Reportero's reading (QA-036, QA-037)
+  const exec = data.executive
+  const VERDICT = { si: ['passed', '✔'], reservas: ['flaky', '⚠'], no: ['failed', '✖'] }
+  const REASON_ICON = { blocker: '✖', reservation: '⚠', ok: '✔' }
+  const [vClass, vIcon] = VERDICT[exec.verdict.verdict]
+  $('verdict').innerHTML = badge(vClass, `${vIcon} ${exec.verdict.title}`)
+  $('verdict-reasons').innerHTML = exec.verdict.reasons
+    .map((r) => `<li class="${r.kind}"><span class="k" aria-hidden="true">${REASON_ICON[r.kind]}</span><span>${esc(r.text)}</span></li>`)
+    .join('')
+  $('exec-compare').innerHTML = table(
+    ['', 'Ahora', 'Antes'],
+    exec.compare.map((c) => [
+      esc(c.label),
+      `<b>${esc(c.current)}</b>${c.better === null ? '' : ` <span class="delta ${c.better ? 'better' : 'worse'}">${c.better ? '▲ mejor' : '▼ peor'}</span>`}`,
+      esc(c.previous ?? '—'),
+    ]),
+  )
+  const repo = 'https://github.com/tonyfht/qa-agentic-lab/blob/main/'
+  $('exec-reporter').innerHTML = exec.reporter
+    ? `<p>${esc(exec.reporter.summary)}</p><p class="nodetail">${esc(new Date(exec.reporter.date).toLocaleDateString('es-ES'))} · ${esc(exec.reporter.change)} · ${exec.reporter.artifacts
+        .map((p) => `<a href="${repo}${esc(p)}">${esc(p)}</a>`)
+        .join(' · ')}</p>`
+    : '<p class="nodetail" data-testid="reporter-none">El Reportero todavía no ha escrito ninguna lectura.</p>'
 
   $('kpis').innerHTML = data.kpis
     .map(
@@ -117,6 +131,18 @@
     ['Estado', 'Requisitos'],
     Object.entries(data.coverage).map(([k, v]) => [esc(LABEL[k]), v]),
   )
+  // Gaps by capability (QA-038)
+  const CAPABILITY = {
+    account: 'Cuenta', cart: 'Carrito', catalog: 'Catálogo', checkout: 'Pago', compliance: 'Cumplimiento',
+    experience: 'Experiencia', 'lab-guide': 'Guía', orders: 'Pedidos', promotions: 'Cupones', 'qa-agents': 'Agentes de QA',
+    'quality-pipeline': 'Pipeline', 'quality-report': 'Informe', 'repo-governance': 'Gobierno', security: 'Seguridad',
+  }
+  const capName = (c) => CAPABILITY[c] ?? c
+  const GAP_STATES = [['passed', '--good'], ['flaky', '--warning'], ['failed', '--critical'], ['untested', '--skipped']]
+  $('gaps-table').innerHTML = table(
+    ['Capacidad', ...GAP_STATES.map(([k]) => LABEL[k])],
+    data.coverageByCapability.map((c) => [`${esc(capName(c.capability))} <span class="nodetail">${esc(c.capability)}</span>`, ...GAP_STATES.map(([k]) => c[k])]),
+  )
   // Experience (QA-018)
   const PAGE_NAMES = { '/': 'Portada', '/catalogo': 'Catálogo', '/producto/mantel-antimanchas': 'Ficha' }
   const exp = data.experience
@@ -177,7 +203,6 @@
     ['Agente', 'Fase', 'Actuaciones'],
     agents.byAgent.map((a) => [esc(a.name), esc(a.phase), a.count]),
   )
-  const repo = 'https://github.com/tonyfht/qa-agentic-lab/blob/main/'
   $('agents-latest').innerHTML = agents.latest.length
     ? agents.latest
         .map(
@@ -338,6 +363,25 @@
       }],
     })
     charts.push(cv)
+
+    const gp = echarts.init($('gaps'))
+    gp.setOption({
+      textStyle,
+      tooltip: { ...tooltip, trigger: 'axis', axisPointer: { type: 'shadow' } },
+      legend: { top: 0, textStyle, icon: 'roundRect', itemWidth: 10, itemHeight: 10 },
+      grid: { left: 120, right: 16, top: 40, bottom: 24 },
+      xAxis: { type: 'value', minInterval: 1, name: 'Requisitos', nameLocation: 'middle', nameGap: 26, nameTextStyle: { color: css('--muted') }, ...axis },
+      yAxis: { type: 'category', inverse: true, data: data.coverageByCapability.map((c) => capName(c.capability)), ...axis, axisLabel: { color: css('--ink-2') } },
+      series: GAP_STATES.map(([key, color]) => ({
+        name: LABEL[key],
+        type: 'bar',
+        stack: 'g',
+        barMaxWidth: 18,
+        data: data.coverageByCapability.map((c) => c[key]),
+        itemStyle: { color: css(color), borderColor: css('--surface'), borderWidth: 1 },
+      })),
+    })
+    charts.push(gp)
 
     // Lighthouse: pages × categories, with the budget as a reference line (one axis, 0–100).
     const lhEl = $('exp-lighthouse')

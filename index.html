@@ -17,7 +17,22 @@
   </header>
 
   <div class="banner demo" id="demo-banner" role="alert" data-testid="demo-banner" hidden></div>
-  <div class="banner" id="banner" role="status"></div>
+  <section aria-labelledby="h-exec" data-testid="executive">
+    <h2 id="h-exec">¿Podemos salir?</h2>
+    <p class="q">Recomendación calculada con reglas sobre esta ejecución y la anterior. La decisión de salir es de una persona.</p>
+    <div class="grid2">
+      <div class="card">
+        <div id="verdict" class="verdict" role="status"></div>
+        <ul id="verdict-reasons" class="reasons"></ul>
+      </div>
+      <div class="card">
+        <b>Frente a la ejecución anterior</b>
+        <div id="exec-compare"></div>
+        <b style="display:block;margin-top:12px">Lectura del Reportero</b>
+        <div id="exec-reporter"></div>
+      </div>
+    </div>
+  </section>
   <div class="tiles" id="kpis"></div>
 
   <section aria-labelledby="h-pipeline">
@@ -53,6 +68,15 @@
       </div>
     </section>
   </div>
+
+  <section aria-labelledby="h-gaps" data-testid="gaps">
+    <h2 id="h-gaps">Huecos</h2>
+    <p class="q"><b>¿Dónde están los huecos?</b> Requisitos de cada capacidad por estado: dónde falta probar o algo falla.</p>
+    <div class="card">
+      <div id="gaps" class="chart tall" role="img" aria-label="Requisitos por capacidad y estado"></div>
+      <details><summary>Ver como tabla</summary><div id="gaps-table" data-testid="capability-table"></div></details>
+    </div>
+  </section>
 
   <section aria-labelledby="h-trace" data-testid="traceability">
     <h2 id="h-trace">Trazabilidad</h2>
@@ -132,14 +156,6 @@
     <div class="grid2" style="margin-top:12px">
       <div class="card"><b>Fallos de esta ejecución</b><div id="ops-failures"></div></div>
       <div class="card"><b>Actuaciones</b><ol class="actions" id="ops-actions"></ol></div>
-    </div>
-  </section>
-
-  <section aria-labelledby="h-soon">
-    <h2 id="h-soon">Lo que irá apareciendo</h2>
-    <p class="q">El formato de resultados ya reserva su sitio; cada gráfico aparece cuando su cambio aporta los datos.</p>
-    <div class="soon">
-      <div><b>¿Podemos salir?</b>Resumen ejecutivo y recomendación del Reportero (QAL-009)</div>
     </div>
   </section>
 
