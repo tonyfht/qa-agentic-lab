@@ -49,7 +49,7 @@ Rama: `change/qal-002-catalogo`.
 
 ## 7. Verificación
 
-- [ ] 7.1 `npm run qa` en verde en local, y el PR en verde en CI con la trazabilidad de CAT-001…CAT-009 en el informe.
+- [x] 7.1 `npm run qa` en verde en local, y el PR en verde en CI con la trazabilidad de CAT-001…CAT-009 en el informe.
   Se verifica con la ejecución del PR.
 
 ## Workflow follow-up

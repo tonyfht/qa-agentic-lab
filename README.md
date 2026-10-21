@@ -27,7 +27,7 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
    que cumple todo el laboratorio y qué agente de IA actúa en cada fase del ciclo.
 2. **Las reglas del juego.** Abre [`AGENTS.md`](AGENTS.md). Verás los principios que siguen personas y agentes, por
    ejemplo que *la IA propone, pero las pruebas y las personas deciden*.
-3. **Una especificación.** Abre la [spec del catálogo](openspec/changes/qal-002-catalogo/specs/catalog/spec.md).
+3. **Una especificación.** Abre la [spec del catálogo](openspec/specs/catalog/spec.md).
    Verás requisitos con un identificador (`CAT-001`, `CAT-004`...) y escenarios *dado / cuando / entonces*,
    incluido qué pasa cuando algo falla (por ejemplo, un rango de precio invertido).
 4. **De la especificación al escenario.** Abre [`filtros.feature`](tests/features/catalog/filtros.feature). Verás
