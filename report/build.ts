@@ -1,6 +1,7 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
+import { readQuarantine } from '../qa/quarantine'
 import type { RunResult } from '../qa/results/schema'
 import { buildModel } from './model'
 
@@ -46,7 +47,11 @@ export function buildSite({ root, history, outDir, runDir }: BuildSiteInput): st
   }
   pruneDetail(outDir, history)
 
-  const model = buildModel(history, (runId) => existsSync(path.join(outDir, 'runs', runId, 'playwright', 'index.html')))
+  const model = buildModel(
+    history,
+    (runId) => existsSync(path.join(outDir, 'runs', runId, 'playwright', 'index.html')),
+    readQuarantine(root),
+  )
   // A script (not JSON fetched at runtime) so file:// works without CORS issues.
   writeFileSync(path.join(outDir, 'data.js'), `window.QAL_REPORT = ${JSON.stringify(model)};\n`)
   return path.join(outDir, 'index.html')

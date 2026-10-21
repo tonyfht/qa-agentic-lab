@@ -194,6 +194,30 @@
               "path"
             ],
             "additionalProperties": false
+          },
+          "triage": {
+            "type": "object",
+            "properties": {
+              "category": {
+                "type": "string",
+                "enum": [
+                  "producto",
+                  "test",
+                  "entorno",
+                  "inestable",
+                  "desconocido"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "category",
+              "reason"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
@@ -317,7 +341,10 @@
               "automatizador",
               "api",
               "auditor-experiencia",
-              "auditor-seguridad"
+              "auditor-seguridad",
+              "sanador",
+              "detector-flaky",
+              "triaje"
             ]
           },
           "change": {
@@ -354,6 +381,14 @@
         ],
         "additionalProperties": false
       }
+    },
+    "injectedDefect": {
+      "type": "string",
+      "enum": [
+        "cupon",
+        "selector",
+        "caida"
+      ]
     }
   },
   "required": [

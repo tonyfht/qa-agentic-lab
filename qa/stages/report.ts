@@ -1,9 +1,11 @@
-import { writeFileSync } from 'node:fs'
+import { appendFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { buildSite } from '../../report/build'
-import { gitInfo, historyFile, origin, siteDir } from '../lib/context'
+import { activeDefect } from '../../lib/qa/defects'
+import { gitInfo, historyFile, origin, reportLink, siteDir } from '../lib/context'
 import { assembleRun, readRunMeta } from '../results/assemble'
 import { appendRun, readHistory } from '../results/history'
+import { triageMarkdown } from '../triage/report'
 import type { StageDefinition } from './types'
 
 /** Assembles the run, validates it, appends it to the history and regenerates the report (QA-010, QA-012, QA-015). */
@@ -24,16 +26,23 @@ export function createReportStage(registry: () => StageDefinition[]): StageDefin
         self: { id: stage.id, name: stage.name, blocking: stage.blocking, status: 'passed', durationMs: 0 },
         origin: origin(),
         git: gitInfo(ctx.root),
+        injectedDefect: activeDefect() ?? readRunMeta(ctx.runDir)?.injectedDefect ?? null,
       })
       // The report's own duration covers assembling and building the site.
       const history = historyFile(ctx.root)
       const self = run.stages[run.stages.length - 1]
       self.durationMs = Date.now() - started
       writeFileSync(path.join(ctx.runDir, 'run.json'), JSON.stringify(run, null, 2))
-      appendRun(history, run)
+      // A run with an injected defect is shown but never enters the history (QA-029).
+      if (!run.injectedDefect) appendRun(history, run)
+
+      const triage = triageMarkdown(run, reportLink(ctx.root))
+      writeFileSync(path.join(ctx.runDir, 'triaje.md'), triage)
+      if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, '\n' + triage)
 
       const site = siteDir(ctx.root)
-      buildSite({ root: ctx.root, history: readHistory(history), outDir: site, runDir: ctx.runDir })
+      const shown = run.injectedDefect ? [...readHistory(history), run] : readHistory(history)
+      buildSite({ root: ctx.root, history: shown, outDir: site, runDir: ctx.runDir })
       ctx.log(`  · Informe generado en ${site}`)
       return { status: 'passed' }
     },

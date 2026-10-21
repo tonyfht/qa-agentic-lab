@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { getDb } from '@/lib/db/client'
+import { activeDefect } from '@/lib/qa/defects'
 import { maxQuantity, normalizeCode, priceCart, quantityProblem, couponProblem, type Coupon } from './pricing'
 
 export interface CartLine {
@@ -33,7 +34,8 @@ async function loadCoupon(code: string): Promise<Coupon | null> {
   const { rows } = await db.execute({
     sql: `SELECT k.code, k.kind, k.value, k.min_subtotal_cents, k.category, c.name AS category_name, k.valid_until
             FROM coupons k LEFT JOIN categories c ON c.slug = k.category WHERE k.code = ?`,
-    args: [normalizeCode(code)],
+    // Injected defect `cupon` (QA-029): the code is looked up as typed, so lowercase codes stop matching.
+    args: [activeDefect() === 'cupon' ? code.trim() : normalizeCode(code)],
   })
   const r = rows[0]
   if (!r) return null

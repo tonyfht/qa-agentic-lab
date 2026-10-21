@@ -76,3 +76,25 @@ Feature: Informe de calidad
     Given un histórico con 1 ejecución
     When abro el informe
     Then la sección de seguridad explica que no hay resultados
+
+  @QA-053
+  Scenario: El informe dice si la suite es estable
+    Given un histórico en el que un test fue inestable en 2 de 3 ejecuciones
+    When abro el informe
+    Then veo la pregunta "¿Es estable la suite?"
+    And el test "Carrito › Se conserva al recargar" aparece como inestable "2 de 3"
+
+  @QA-053
+  Scenario: Sin inestables la sección lo dice
+    Given un histórico con 2 ejecuciones
+    When abro el informe
+    Then la sección de estabilidad dice que ningún test ha sido inestable
+
+  @QA-054
+  Scenario: El informe dice qué han reparado los agentes y avisa del defecto inyectado
+    Given una ejecución con el defecto "cupon" inyectado, un fallo de producto y uno de test
+    When abro el informe
+    Then veo la pregunta "¿Qué han reparado los agentes?"
+    And el aviso de demostración nombra el defecto "cupon"
+    And el fallo "Un cupón válido descuenta" aparece como "Defecto del producto"
+    And el fallo "Filtrar por categoría" aparece como "Test roto"

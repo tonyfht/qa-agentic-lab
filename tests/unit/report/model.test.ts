@@ -131,6 +131,9 @@ describe('QA-017 Qué ha hecho la IA', () => {
       ['api', 0],
       ['auditor-experiencia', 0],
       ['auditor-seguridad', 0],
+      ['sanador', 0],
+      ['detector-flaky', 0],
+      ['triaje', 0],
     ])
     expect(agents.latest.map((a) => a.date.slice(0, 10))).toEqual(['2026-10-21', '2026-10-20', '2026-10-19'])
     expect(agents.latest[0].agent).toBe('Analista')

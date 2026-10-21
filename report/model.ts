@@ -1,7 +1,10 @@
 import { AGENTS } from '../qa/agents/registry'
 import { LIGHTHOUSE_BUDGET, LOAD_THRESHOLDS, type LighthousePage, type LoadResult } from '../qa/lib/budgets'
 import type { RunResult, StageResult, TestResult } from '../qa/results/schema'
+import type { QuarantineEntry } from '../qa/quarantine'
 import { blockingFindings } from '../qa/security/findings'
+import { STABILITY_WINDOW, stability } from '../qa/stability/stability'
+import { TRIAGE_LABELS, type TriageCategory } from '../qa/triage/classify'
 
 export type RequirementStatus = 'passed' | 'flaky' | 'failed' | 'untested'
 
@@ -75,8 +78,34 @@ export interface ReportModel {
   security: SecurityModel
   agents: {
     byAgent: { id: string; name: string; phase: string; count: number }[]
-    latest: { date: string; agent: string; change: string; action: string; summary: string; artifacts: string[] }[]
+    latest: AgentActionView[]
   }
+  stability: StabilityModel
+  operations: OperationsModel
+}
+
+export interface AgentActionView {
+  date: string
+  agent: string
+  change: string
+  action: string
+  summary: string
+  artifacts: string[]
+}
+
+export interface StabilityModel {
+  window: number
+  /** Per run: share of executed tests that needed a retry, in percent with one decimal. */
+  runs: { label: string; ratePct: number; flaky: number; executed: number }[]
+  unstable: { title: string; file: string; runs: number; flaky: number; ratePct: number; lastFlakyAt: string }[]
+  quarantine: QuarantineEntry[]
+}
+
+export interface OperationsModel {
+  injectedDefect: string | null
+  byCategory: { category: TriageCategory; label: string; count: number }[]
+  failures: { title: string; requirements: string[]; category: TriageCategory; label: string; reason: string }[]
+  actions: AgentActionView[]
 }
 
 export interface ExperienceModel {
@@ -155,6 +184,44 @@ export function securitySummary(run: RunResult): SecurityModel {
   }
 }
 
+const pct = (x: number) => Math.round(x * 1000) / 10
+
+/** QA-053: flaky rate per run, the most unstable tests of the window and the tests in quarantine. */
+export function stabilitySummary(history: RunResult[], quarantine: QuarantineEntry[]): StabilityModel {
+  const window = history.slice(-STABILITY_WINDOW)
+  const { runs, unstable } = stability(window)
+  return {
+    window: window.length,
+    runs: runs.map((r, i) => ({ label: runLabel(window[i]), ratePct: pct(r.rate), flaky: r.flaky, executed: r.executed })),
+    unstable: unstable.slice(0, 10).map((t) => ({ ...t, title: displayTitle(t.title), ratePct: pct(t.rate) })),
+    quarantine,
+  }
+}
+
+const OPERATION_AGENTS = ['sanador', 'detector-flaky', 'triaje']
+const TRIAGE_ORDER: TriageCategory[] = ['producto', 'test', 'entorno', 'inestable', 'desconocido']
+
+/** QA-054: triage of this run per category, each failure with its reason, and what the operation agents did. */
+export function operationsSummary(run: RunResult): OperationsModel {
+  const triaged = run.tests.filter((t) => t.triage)
+  const name = (id: string) => AGENTS.find((a) => a.id === id)?.name ?? id
+  return {
+    injectedDefect: run.injectedDefect ?? null,
+    byCategory: TRIAGE_ORDER.map((c) => ({ category: c, label: TRIAGE_LABELS[c], count: triaged.filter((t) => t.triage!.category === c).length })),
+    failures: triaged.map((t) => ({
+      title: displayTitle(t.title),
+      requirements: t.requirements,
+      category: t.triage!.category,
+      label: TRIAGE_LABELS[t.triage!.category],
+      reason: t.triage!.reason,
+    })),
+    actions: run.agentActions
+      .filter((x) => OPERATION_AGENTS.includes(x.agent))
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .map((x) => ({ date: x.date, agent: name(x.agent), change: x.change, action: x.action, summary: x.summary, artifacts: x.artifacts })),
+  }
+}
+
 /** QA-017: actions per agent (every known agent, even with zero) and the latest ones, newest first. */
 export function agentsSummary(run: RunResult): ReportModel['agents'] {
   const name = (id: string) => AGENTS.find((a) => a.id === id)?.name ?? id
@@ -226,7 +293,11 @@ function delta(current: number, previous: number | undefined, unit: string, high
  * Turns the history into what the report shows. Every figure answers one question (QA-014).
  * `detailHref` returns a link only when the technical detail of that run is actually published (QA-016).
  */
-export function buildModel(history: RunResult[], hasDetail: (runId: string) => boolean): ReportModel {
+export function buildModel(
+  history: RunResult[],
+  hasDetail: (runId: string) => boolean,
+  quarantine: QuarantineEntry[] = [],
+): ReportModel {
   if (history.length === 0) throw new Error('El histórico está vacío: ejecuta `npm run qa` primero')
   const run = history[history.length - 1]
   const prev = history.length > 1 ? history[history.length - 2] : undefined
@@ -305,5 +376,7 @@ export function buildModel(history: RunResult[], hasDetail: (runId: string) => b
     experience: experienceSummary(history),
     security: securitySummary(run),
     agents: agentsSummary(run),
+    stability: stabilitySummary(history, quarantine),
+    operations: operationsSummary(run),
   }
 }

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ProductCard } from '@/app/_components/ProductCard'
 import type { RawParams } from '@/lib/catalog/query'
 import { searchCatalog } from '@/lib/catalog/service'
+import { activeDefect } from '@/lib/qa/defects'
 import { SORT_LABELS, SORTS } from '@/lib/catalog/types'
 
 export const metadata: Metadata = { title: 'Catálogo' }
@@ -81,7 +82,8 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
           <h1 id="results-title" className="hidden text-3xl font-bold md:block">
             Catálogo
           </h1>
-          <p data-testid="results-total" aria-live="polite" className="text-store-muted">
+          {/* Injected defect `selector` (QA-029): same text, different test id. */}
+          <p data-testid={activeDefect() === 'selector' ? 'results-count' : 'results-total'} aria-live="polite" className="text-store-muted">
             {page.total} {page.total === 1 ? 'artículo' : 'artículos'}
           </p>
         </div>

@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { partialFile } from '../orchestrator'
 import type { StageDefinition, StagePartial } from '../stages/types'
 import { readAgentActions } from '../agents/registry'
+import { withTriage } from '../triage/classify'
 import { loadRequirementCatalog } from './requirements'
 import { SCHEMA_VERSION, validateRunResult, type RunResult, type StageResult } from './schema'
 
@@ -15,6 +16,7 @@ export interface AssembleInput {
   self: StageResult
   origin: RunResult['origin']
   git: RunResult['git']
+  injectedDefect?: string | null
 }
 
 /**
@@ -52,15 +54,16 @@ export function assembleRun(input: AssembleInput): RunResult {
     origin: input.origin,
     git: input.git,
     stages,
-    tests: partials.flatMap((p) => p.tests),
+    tests: withTriage(partials.flatMap((p) => p.tests)),
     requirements: loadRequirementCatalog(input.root),
     metrics: Object.assign({}, ...partials.map((p) => p.metrics ?? {})),
     findings: partials.flatMap((p) => p.findings ?? []),
     agentActions: readAgentActions(input.root).actions,
+    ...(input.injectedDefect ? { injectedDefect: input.injectedDefect } : {}),
   })
 }
 
-export function readRunMeta(runDir: string): { startedAt: string } | null {
+export function readRunMeta(runDir: string): { startedAt: string; injectedDefect?: string } | null {
   const file = `${runDir}/meta.json`
   return existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
 }

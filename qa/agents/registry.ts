@@ -11,6 +11,9 @@ export const AGENTS = [
   { id: 'api', file: 'qa-api.md', name: 'Agente de API', phase: 'Automatización' },
   { id: 'auditor-experiencia', file: 'qa-auditor-experiencia.md', name: 'Auditor de experiencia', phase: 'No funcional' },
   { id: 'auditor-seguridad', file: 'qa-auditor-seguridad.md', name: 'Auditor de seguridad y cumplimiento', phase: 'Seguridad y cumplimiento' },
+  { id: 'sanador', file: 'qa-sanador.md', name: 'Sanador', phase: 'Operación' },
+  { id: 'detector-flaky', file: 'qa-detector-flaky.md', name: 'Detector de inestables', phase: 'Operación' },
+  { id: 'triaje', file: 'qa-triaje.md', name: 'Triaje', phase: 'Operación' },
 ] as const
 
 export type AgentId = (typeof AGENTS)[number]['id']

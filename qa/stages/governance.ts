@@ -1,5 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { checkHealerDiff, HEALER_MARKER } from '../healer/guard'
+import { runCommand } from '../lib/exec'
 import type { StageDefinition } from './types'
 
 const CHANGE_ID = /\bQAL-(\d{3})\b/g
@@ -40,6 +42,14 @@ export function checkPullRequestBody(body: string, root: string, author = ''): {
   return { ok: true, message: `Implementa ${ids.map((n) => `QAL-${n}`).join(', ')}` }
 }
 
+/** QA-050: the Sanador's diff against the base branch goes through the assertion guard. */
+async function healerCheck(root: string, base: string): Promise<{ ok: boolean; message: string }> {
+  const { code, output } = await runCommand(`git diff ${base}...HEAD`, { cwd: root, quiet: true })
+  if (code !== 0) return { ok: false, message: `No se pudo obtener el diff contra ${base}: ${output.trim().slice(0, 300)}` }
+  const errors = checkHealerDiff(output)
+  return errors.length ? { ok: false, message: errors.join('; ') } : { ok: true, message: 'Solo cambia cómo se encuentran los elementos' }
+}
+
 function prBody(options: Record<string, string>): string | null {
   if (options['pr-body']) return readFileSync(options['pr-body'], 'utf8')
   return process.env.PR_BODY ?? null
@@ -55,12 +65,32 @@ export const governanceStage: StageDefinition = {
     prBody(ctx.options) === null ? 'Falta la descripción del PR (--pr-body <fichero> o PR_BODY)' : null,
   async run(ctx) {
     const started = Date.now()
-    const result = checkPullRequestBody(prBody(ctx.options) ?? '', ctx.root, process.env.PR_AUTHOR ?? '')
+    const body = prBody(ctx.options) ?? ''
+    const result = checkPullRequestBody(body, ctx.root, process.env.PR_AUTHOR ?? '')
     ctx.log(`  · ${result.message}`)
+    const healer = HEALER_MARKER.test(body) ? await healerCheck(ctx.root, ctx.options.base ?? process.env.PR_BASE ?? 'origin/main') : null
+    if (healer) ctx.log(`  · Guardia del Sanador: ${healer.ok ? 'sin cambios de aserciones' : healer.message}`)
+    const failures = [result, healer].filter((r) => r && !r.ok).map((r) => r!.message)
     return {
-      status: result.ok ? 'passed' : 'failed',
-      reason: result.ok ? undefined : result.message,
+      status: failures.length ? 'failed' : 'passed',
+      reason: failures.length ? failures.join(' | ') : undefined,
       tests: [
+        ...(healer
+          ? [
+              {
+                id: 'governance-healer-guard',
+                title: 'El PR del Sanador no cambia aserciones, escenarios ni la tienda',
+                file: '',
+                stage: 'governance',
+                status: healer.ok ? ('passed' as const) : ('failed' as const),
+                durationMs: Date.now() - started,
+                retries: 0,
+                requirements: ['QA-050'],
+                tags: ['@governance'],
+                message: healer.message,
+              },
+            ]
+          : []),
         {
           id: 'governance-change-id',
           title: 'El PR identifica el cambio de OpenSpec que implementa',

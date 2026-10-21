@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, rmSync } from 'node:fs'
 import path from 'node:path'
 import { chromium } from '@playwright/test'
 import {
@@ -11,6 +11,7 @@ import {
 } from '../lib/budgets'
 import { E2E_DATABASE_URL, E2E_PORT, resetE2eDatabase } from '../lib/e2e'
 import { commandExists, killTree, runCommand, startBackground, tail } from '../lib/exec'
+import { retryToolError } from '../lib/retry'
 import type { TestResult } from '../results/schema'
 import type { StageDefinition } from './types'
 
@@ -68,22 +69,32 @@ export const performanceStage: StageDefinition = {
         ctx.log(`  · Lighthouse ${page}`)
         const started = Date.now()
         const out = path.join(ctx.runDir, `lighthouse-${page.replace(/\W+/g, '_') || 'home'}.json`)
-        const { code, output } = await runCommand(
-          `npx lighthouse "${base}${page}" --chrome-path="${chromePath}" --chrome-flags="--headless=new --no-sandbox" ` +
-            `--preset=desktop --only-categories=performance,accessibility,best-practices,seo ` +
-            `--output=json --output-path="${out}" --quiet`,
-          { cwd: ctx.root, quiet: true },
-        )
-        if (code !== 0 || !existsSync(out)) {
-          tests.push(test(`lh-${page}`, `Presupuesto de rendimiento: ${page}`, ['EXP-004'], 'failed', Date.now() - started, `Lighthouse falló:\n${tail(output)}`))
+        const outcome = await retryToolError<LighthousePage>(async () => {
+          rmSync(out, { force: true })
+          const { code, output } = await runCommand(
+            `npx lighthouse "${base}${page}" --chrome-path="${chromePath}" --chrome-flags="--headless=new --no-sandbox" ` +
+              `--preset=desktop --only-categories=performance,accessibility,best-practices,seo ` +
+              `--output=json --output-path="${out}" --quiet`,
+            { cwd: ctx.root, quiet: true },
+          )
+          return code !== 0 || !existsSync(out)
+            ? { ok: false, error: `Lighthouse falló:\n${tail(output)}` }
+            : { ok: true, value: fromLighthouseReport(page, JSON.parse(readFileSync(out, 'utf8'))) }
+        })
+        const title = `Presupuesto de rendimiento: ${page}`
+        if (!outcome.value) {
+          tests.push(test(`lh-${page}`, title, ['EXP-004', 'QA-035'], 'failed', Date.now() - started, outcome.error ?? undefined))
           continue
         }
-        const result = fromLighthouseReport(page, JSON.parse(readFileSync(out, 'utf8')))
-        lighthouse.push(result)
-        const problems = lighthouseProblems(result)
-        tests.push(
-          test(`lh-${page}`, `Presupuesto de rendimiento: ${page}`, ['EXP-004'], problems.length ? 'failed' : 'passed', Date.now() - started, problems.join('; ') || undefined),
-        )
+        lighthouse.push(outcome.value)
+        const problems = lighthouseProblems(outcome.value)
+        // A budget miss fails; a run that only measured on the retry is flaky, with the tool error kept (QA-035).
+        const status = problems.length ? 'failed' : outcome.firstError ? 'flaky' : 'passed'
+        const message = problems.join('; ') || (outcome.firstError ? `Reintentado tras un error de la herramienta. ${outcome.firstError}` : undefined)
+        tests.push({
+          ...test(`lh-${page}`, title, outcome.firstError ? ['EXP-004', 'QA-035'] : ['EXP-004'], status, Date.now() - started, message),
+          retries: outcome.firstError ? 1 : 0,
+        })
       }
 
       const started = Date.now()
