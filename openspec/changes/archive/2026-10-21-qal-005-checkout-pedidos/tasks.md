@@ -42,7 +42,7 @@ Rama: `change/qal-005-checkout-pedidos`.
 
 ## 6. Verificación
 
-- [ ] 6.1 Pipeline en verde en local y en el PR. Se verifica con la ejecución del PR.
+- [x] 6.1 Pipeline en verde en local y en el PR. Se verifica con la ejecución del PR.
 
 ## Workflow follow-up
 
