@@ -16,8 +16,8 @@ Para enseñarlo hay una tienda online pequeña, **La Tienda en Casa**, construid
 cambio pasa por el mismo camino: especificación → código → escenarios en lenguaje natural (Gherkin) → pruebas →
 informe. Puedes recorrerlo con la guía de abajo o ejecutarlo tú mismo.
 
-> **Estado:** laboratorio completo. Los nueve cambios de la [hoja de ruta](openspec/PROJECT.md#hoja-de-ruta) están
-> hechos: una tienda con compra de principio a fin, seis etapas de calidad, once agentes de IA con sus límites y un
+> **Estado:** laboratorio completo. Los diez cambios de la [hoja de ruta](openspec/PROJECT.md#hoja-de-ruta) están
+> hechos: una tienda online con fotos y compra de principio a fin, seis etapas de calidad, once agentes de IA con sus límites y un
 > informe que termina en una recomendación de salida.
 
 ## Ruta de la visita
