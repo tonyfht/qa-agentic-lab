@@ -40,7 +40,7 @@ describe('QA-014 Gráficos que responden una pregunta', () => {
     const prev = sampleRun({ runId: 'a', requirements, tests: [test('passed')] })
     const curr = sampleRun({ runId: 'b', requirements, tests: [test('passed'), test('passed', ['QA-002'])] })
     const [passed, covered] = buildModel([prev, curr], () => false).kpis
-    expect(passed).toMatchObject({ value: '2 / 2', delta: '▲ 1 tests superados que la ejecución anterior', trend: 'better' })
+    expect(passed).toMatchObject({ value: '2 / 2', delta: '▲ 1 tests superados más que la ejecución anterior', trend: 'better' })
     expect(covered).toMatchObject({ value: '2 / 3', trend: 'better' })
   })
 
@@ -86,5 +86,16 @@ describe('QA-016 Detalle técnico enlazado', () => {
   it('sin detalle publicado no hay enlace', () => {
     const model = buildModel([sampleRun({ runId: 'r9', tests: [failing] })], () => false)
     expect(model.traceability[0].tests[0].detailHref).toBeNull()
+  })
+})
+
+describe('QA-014 Indicadores legibles', () => {
+  it('una duración menor se lee como mejora y con "menos"', () => {
+    const prev = sampleRun({ runId: 'a', startedAt: '2026-10-21T10:00:00.000Z', finishedAt: '2026-10-21T10:01:40.000Z' })
+    const curr = sampleRun({ runId: 'b', startedAt: '2026-10-21T11:00:00.000Z', finishedAt: '2026-10-21T11:01:36.000Z' })
+    expect(buildModel([prev, curr], () => false).kpis[3]).toMatchObject({
+      delta: '▼ 4 s menos que la ejecución anterior',
+      trend: 'better',
+    })
   })
 })

@@ -33,7 +33,7 @@ QAL-XXX-nombre/
 
 | ID | Nombre | Estado |
 |----|--------|--------|
-| [QAL-001](changes/qal-001-fundacion/) | Fundación del laboratorio | propuesta aprobada |
+| [QAL-001](changes/qal-001-fundacion/) | Fundación del laboratorio | implementado, pendiente de archivar |
 
 ## Cambios archivados
 
