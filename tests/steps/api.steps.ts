@@ -40,7 +40,9 @@ Then('la respuesta cumple el contrato publicado', async ({ world, contract }) =>
 
 Then('el error explica {string}', async ({ world }, reason: string) => {
   const body = world.api!.body as { error: string; details?: string[] }
-  expect([body.error, ...(body.details ?? [])].join('\n')).toContain(reason)
+  // Prices carry a non-breaking space before "€"; the Gherkin text uses a normal one.
+  const text = [body.error, ...(body.details ?? [])].join('\n').replace(/\s/g, ' ')
+  expect(text).toContain(reason.replace(/\s/g, ' '))
 })
 
 Then('la respuesta tiene {int} artículos de un total de {int}', async ({ world }, count: number, total: number) => {

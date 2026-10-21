@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { AddToCart } from '@/app/_components/AddToCart'
 import { ProductArt } from '@/app/_components/ProductArt'
 import { StockBadge } from '@/app/_components/StockBadge'
 import { getProduct } from '@/lib/catalog/repository'
+import { maxQuantity } from '@/lib/cart/pricing'
 import { formatPrice } from '@/lib/catalog/query'
 
 export const dynamic = 'force-dynamic'
@@ -43,6 +45,7 @@ export default async function ProductPage({ params }: Props) {
           </span>
         </p>
         <p className="text-lg text-store-muted">{product.description}</p>
+        <AddToCart slug={product.slug} max={maxQuantity(product.stock)} />
       </article>
     </main>
   )

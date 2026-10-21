@@ -13,6 +13,7 @@ type World = {
   reportIndex?: string
   requests: string[]
   api?: ApiCall
+  otherPageText?: string
 }
 
 export const test = base.extend<{ world: World; contract: ContractChecker }>({
