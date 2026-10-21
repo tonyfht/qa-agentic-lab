@@ -14,7 +14,6 @@ Rama: `change/qal-007-seguridad-cumplimiento`.
   unitarias sobre salidas reales recortadas (SEC-002…004, CMP-001).
 - [x] 2.3 Ejecutores (Semgrep, npm audit, licencias, SBOM y ZAP) con omisión explicada. Se verifica con la etapa en
   local (Semgrep y ZAP omitidos en Windows sin Docker) y en CI.
-
 - [x] 2.4 Correcciones de la primera ejecución en CI: formularios sensibles por POST (SEC-005), escrituras desde
   otro sitio rechazadas en `proxy.ts` (SEC-006), cabeceras de
   aislamiento, acciones fijadas a SHA, *cooldown* y edad mínima de versiones, sin `RegExp` dinámicas y excepciones
@@ -38,7 +37,7 @@ Rama: `change/qal-007-seguridad-cumplimiento`.
 
 ## 6. Verificación
 
-- [ ] 6.1 Pipeline en verde en el PR, con hallazgos reales de CI en el informe. Se verifica con la ejecución del PR.
+- [x] 6.1 Pipeline en verde en el PR, con hallazgos reales de CI en el informe. Se verifica con la ejecución del PR.
 
 ## Workflow follow-up
 
