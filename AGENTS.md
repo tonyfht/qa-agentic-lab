@@ -75,12 +75,15 @@ nombre (`### Requirement: CAT-001 Búsqueda por texto`). El mismo ID aparece com
 
 | Dominio | Prefijo |
 |---|---|
+| Escaparate (cabecera, portada, pie, fotos) | `SHOP` |
 | Catálogo | `CAT` |
 | Carrito | `CART` |
 | Promociones y cupones | `PROMO` |
 | Checkout y pago simulado | `CHK` |
 | Pedidos | `ORD` |
 | Cuenta y acceso | `ACC` |
+| Experiencia (accesibilidad, rendimiento, visual) | `EXP` |
+| Seguridad y cumplimiento | `SEC`, `CMP` |
 | Sistema de calidad (pipeline, agentes, informe) | `QA` |
 
 **Idioma.** Documentación, specs, Gherkin y textos de la tienda en **español**. Código e identificadores en inglés

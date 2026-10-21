@@ -12,9 +12,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   if (await currentAccount()) redirect(next)
   return (
     <main className="mx-auto max-w-md px-4 py-12">
-      <h1 className="mb-6 text-3xl font-bold">Entrar</h1>
+      <h1 className="mb-6 text-4xl font-semibold">Entrar</h1>
       <LoginForm next={next} />
-      <p className="mt-6 rounded-lg bg-white p-3 text-sm text-store-muted">
+      <p className="mt-6 rounded-xl border border-store-ink/10 bg-white p-4 text-sm text-store-muted">
         Cuenta de demostración: <code>cliente@ejemplo.test</code> / <code>Casa2026</code>
       </p>
     </main>

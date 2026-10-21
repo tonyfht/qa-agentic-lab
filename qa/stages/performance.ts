@@ -81,9 +81,10 @@ export const performanceStage: StageDefinition = {
             ? { ok: false, error: `Lighthouse falló:\n${tail(output)}` }
             : { ok: true, value: fromLighthouseReport(page, JSON.parse(readFileSync(out, 'utf8'))) }
         })
+        // The measured pages carry product photos since QAL-010: the same budget also proves EXP-006.
         const title = `Presupuesto de rendimiento: ${page}`
         if (!outcome.value) {
-          tests.push(test(`lh-${page}`, title, ['EXP-004', 'QA-035'], 'failed', Date.now() - started, outcome.error ?? undefined))
+          tests.push(test(`lh-${page}`, title, ['EXP-004', 'EXP-006', 'QA-035'], 'failed', Date.now() - started, outcome.error ?? undefined))
           continue
         }
         lighthouse.push(outcome.value)
@@ -92,7 +93,7 @@ export const performanceStage: StageDefinition = {
         const status = problems.length ? 'failed' : outcome.firstError ? 'flaky' : 'passed'
         const message = problems.join('; ') || (outcome.firstError ? `Reintentado tras un error de la herramienta. ${outcome.firstError}` : undefined)
         tests.push({
-          ...test(`lh-${page}`, title, outcome.firstError ? ['EXP-004', 'QA-035'] : ['EXP-004'], status, Date.now() - started, message),
+          ...test(`lh-${page}`, title, outcome.firstError ? ['EXP-004', 'EXP-006', 'QA-035'] : ['EXP-004', 'EXP-006'], status, Date.now() - started, message),
           retries: outcome.firstError ? 1 : 0,
         })
       }
