@@ -124,3 +124,15 @@ La etapa de análisis estático SHALL comprobar que cada requisito tiene identif
 - **GIVEN** un escenario etiquetado `@CAT-099` y ese requisito no existe en ninguna spec
 - **WHEN** se ejecuta el análisis estático
 - **THEN** la comprobación de etiquetado falla indicando el fichero, el escenario y la etiqueta
+
+### Requirement: QA-019 Etapa de rendimiento y carga
+El pipeline SHALL tener una etapa de rendimiento y carga, bloqueante, que levanta la tienda y ejecuta Lighthouse y la prueba de carga con el mismo comando en local y en CI, y SHALL dejar sus métricas en el resultado de la ejecución.
+
+#### Scenario: Etapa en CI
+- **WHEN** se ejecuta el pipeline en GitHub Actions
+- **THEN** la etapa "Rendimiento y carga" aparece como un paso propio con su estado y sus métricas en el resumen
+
+#### Scenario: Presupuesto incumplido
+- **GIVEN** una página que supera su presupuesto de rendimiento
+- **WHEN** se ejecuta la etapa
+- **THEN** la etapa falla y la ejecución queda en rojo

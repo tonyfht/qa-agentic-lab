@@ -12,7 +12,7 @@ Rama: `change/qal-006-experiencia`.
 
 - [x] 2.1 `snapshotPathTemplate` por plataforma, escenarios `@visual` y omisión con motivo sin referencias. Se verifica
   con el escenario omitido en local y una prueba del *step* (EXP-003).
-- [ ] 2.2 Workflow `visual-baselines.yml` que genera las referencias en Linux y las sube como artefacto. Se verifica con
+- [x] 2.2 Workflow `visual-baselines.yml` que genera las referencias en Linux y las sube como artefacto. Se verifica con
   una ejecución en GitHub tras fusionar y el PR de referencias.
 
 ## 3. Rendimiento y carga
@@ -21,8 +21,8 @@ Rama: `change/qal-006-experiencia`.
   de valores límite (EXP-004, EXP-005).
 - [x] 3.2 Etapa `performance` (Lighthouse por CLI y k6 si está instalado) con métricas en el parcial y en el resultado.
   Se verifica con `npm run qa -- --stage performance` en verde y con k6 omitido con motivo en local (QA-019).
-- [ ] 3.3 Script de carga `tests/load/tienda.js`. Se verifica con su ejecución en CI.
-- [ ] 3.4 *Job* de CI, renumeración de etapas, checks obligatorios y diagrama del README. Se verifica con las pruebas de
+- [x] 3.3 Script de carga `tests/load/tienda.js`. Se verifica con su ejecución en CI.
+- [x] 3.4 *Job* de CI, renumeración de etapas, checks obligatorios y diagrama del README. Se verifica con las pruebas de
   configuración del repositorio y la ejecución del PR.
 
 ## 4. Informe y agente
@@ -39,7 +39,7 @@ Rama: `change/qal-006-experiencia`.
 
 ## 6. Verificación
 
-- [ ] 6.1 Pipeline en verde en local y en el PR, con métricas reales en el informe. Se verifica con la ejecución del PR.
+- [x] 6.1 Pipeline en verde en local y en el PR, con métricas reales en el informe. Se verifica con la ejecución del PR.
 
 ## Workflow follow-up
 
