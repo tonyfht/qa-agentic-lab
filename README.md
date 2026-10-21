@@ -344,6 +344,33 @@ inventados).
 | [`schemas/`](schemas/) | El formato publicado del resultado de cada ejecución (JSON Schema) |
 | [`.github/`](.github/) | Workflows, plantillas de PR e *issues* y Dependabot |
 
+## Sobre el autor
+
+<table>
+<tr>
+<td width="120" valign="top">
+  <a href="https://antonioherrera.tech"><img src="https://antonioherrera.tech/images/AntonioHerreraGris.png" alt="Antonio Herrera" width="110"></a>
+</td>
+<td valign="top">
+
+**Antonio Herrera** · Fractional CTO y asesor tecnológico.<br>
+Construyo laboratorios abiertos para aprender a hacer QA con IA y gobernada por especificación, y los pruebo de verdad
+antes de publicarlos.
+
+[![Web](https://img.shields.io/badge/web-antonioherrera.tech-1f2328)](https://antonioherrera.tech)
+[![Guías](https://img.shields.io/badge/más-guías-C15F3C)](https://antonioherrera.tech/guias/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Antonio%20Herrera-0A66C2)](https://www.linkedin.com/in/antoniofranciscoherrera/)
+[![Newsletter](https://img.shields.io/badge/newsletter-LinkedIn-0A66C2)](https://www.linkedin.com/newsletters/6984444085109469184/)
+[![GitHub](https://img.shields.io/badge/GitHub-tonyfht-181717?logo=github)](https://github.com/tonyfht)
+
+</td>
+</tr>
+</table>
+
+¿Te ha servido? Dale una ⭐ al repositorio, compártelo o cuéntamelo en
+[LinkedIn](https://www.linkedin.com/in/antoniofranciscoherrera/). Si encuentras un error o un paso de la ruta que ya
+no funciona, abre un [issue](https://github.com/tonyfht/qa-agentic-lab/issues).
+
 ## Licencia
 
 [MIT](LICENSE). Proyecto formativo y sin ánimo de lucro.
