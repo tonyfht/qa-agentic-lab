@@ -34,7 +34,7 @@ function useForm(url: string, next: string) {
 export function LoginForm({ next }: { next: string }) {
   const { onSubmit, error, pending } = useForm('/api/account/login', next)
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4" aria-label="Entrar">
+    <form method="post" onSubmit={onSubmit} className="flex flex-col gap-4" aria-label="Entrar">
       <Field label="Correo" name="email" type="email" autoComplete="email" />
       <Field label="Contraseña" name="password" type="password" autoComplete="current-password" />
       {error && (
@@ -58,7 +58,7 @@ export function LoginForm({ next }: { next: string }) {
 export function RegisterForm({ next }: { next: string }) {
   const { onSubmit, error, fields, pending } = useForm('/api/account/register', next)
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4" aria-label="Registro">
+    <form method="post" onSubmit={onSubmit} className="flex flex-col gap-4" aria-label="Registro">
       <Field label="Nombre" name="name" autoComplete="given-name" error={fields.name} />
       <Field label="Correo" name="email" type="email" autoComplete="email" error={fields.email} />
       <Field label="Contraseña" name="password" type="password" autoComplete="new-password" error={fields.password} />

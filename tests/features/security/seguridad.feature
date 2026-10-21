@@ -22,3 +22,17 @@ Feature: Seguridad y privacidad desde el navegador
   Scenario: Las cookies están declaradas en la página de privacidad
     When abro "/privacidad"
     Then la tabla de cookies describe "session" y "cart_id" como necesarias
+
+  @SEC-005
+  Scenario: Los formularios de cuenta no ponen las credenciales en la URL
+    When abro "/cuenta/entrar"
+    Then el formulario "Entrar" se envía por POST
+    When abro "/cuenta/registro"
+    Then el formulario "Registro" se envía por POST
+
+  @SEC-005
+  Scenario: El formulario de pago no pone la tarjeta en la URL
+    Given un cliente nuevo con sesión
+    And un carrito con "taza-desayuno-xl x1"
+    When abro "/checkout"
+    Then el formulario "Pago" se envía por POST

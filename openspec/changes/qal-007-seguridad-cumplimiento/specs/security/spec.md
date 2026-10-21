@@ -8,11 +8,11 @@ navegador, análisis del código, dependencias vulnerables y análisis dinámico
 ## ADDED Requirements
 
 ### Requirement: SEC-001 Cabeceras de seguridad
-Todas las páginas y respuestas de la API SHALL incluir `Content-Security-Policy` (con `frame-ancestors 'none'`), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` y `Permissions-Policy` sin cámara, micrófono ni geolocalización.
+Todas las páginas y respuestas de la API SHALL incluir: `Content-Security-Policy` con `frame-ancestors 'none'`; `X-Content-Type-Options: nosniff`; `X-Frame-Options: DENY`; `Referrer-Policy: strict-origin-when-cross-origin`; `Permissions-Policy` sin cámara, micrófono ni geolocalización; y `same-origin` en COOP y CORP con COEP `require-corp`. SHALL NOT incluir `X-Powered-By`.
 
 #### Scenario: Página con cabeceras
 - **WHEN** se pide la portada
-- **THEN** la respuesta incluye las cinco cabeceras con esos valores
+- **THEN** la respuesta incluye las ocho cabeceras con esos valores y ninguna `X-Powered-By`
 
 #### Scenario: Respuesta de API con cabeceras
 - **WHEN** se pide `GET /api/products`
@@ -53,3 +53,15 @@ La tienda levantada en el propio entorno de pruebas SHALL analizarse con OWASP Z
 - **GIVEN** una alerta de riesgo medio que no está en la lista de aceptadas
 - **WHEN** se evalúa el resultado de ZAP
 - **THEN** la comprobación falla indicando la alerta y su identificador
+
+### Requirement: SEC-005 Datos sensibles fuera de la URL
+Los formularios que envían credenciales o datos de pago (entrar, registro y pago) SHALL declarar `method="post"`, de modo que, si el envío ocurre antes de que cargue JavaScript, el navegador no ponga esos datos en la URL, en el historial ni en los registros del servidor.
+
+#### Scenario: Formularios de cuenta
+- **WHEN** se abren las páginas de entrar y de registro
+- **THEN** su formulario declara `method="post"`
+
+#### Scenario: Formulario de pago
+- **GIVEN** un cliente con sesión y un artículo en el carrito
+- **WHEN** se pide la página de pago
+- **THEN** el formulario de pago declara `method="post"`

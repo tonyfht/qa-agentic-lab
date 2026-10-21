@@ -38,14 +38,14 @@ jobs:
               echo "Mientras tanto, los agentes se pueden ejecutar en local desde Claude Code (ver README)."
             } >> "$GITHUB_STEP_SUMMARY"
           fi
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: steps.key.outputs.has_key == 'true'
       - uses: ./.github/actions/setup
         if: steps.key.outputs.has_key == 'true'
       - name: Navegador para el MCP de Playwright
         if: steps.key.outputs.has_key == 'true'
         run: npx playwright install --with-deps chromium
-      - uses: anthropics/claude-code-action@v1
+      - uses: anthropics/claude-code-action@a5a423f75c251dcbff8a74e99f83b2cb03c72bfa # v1.0.256
         if: steps.key.outputs.has_key == 'true'
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}

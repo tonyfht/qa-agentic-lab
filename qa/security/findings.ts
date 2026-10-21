@@ -50,7 +50,7 @@ export type ZapAccepted = { pluginid: string; alerta: string; motivo: string }[]
 export function fromZap(json: ZapJson, accepted: ZapAccepted): Finding[] {
   return (json.site ?? []).flatMap((s) =>
     (s.alerts ?? []).map((a) => {
-      const ok = accepted.find((x) => x.pluginid === a.pluginid)
+      const ok = accepted.find((x) => x.pluginid === a.pluginid && x.alerta === a.alert)
       return {
         source: 'zap' as const,
         severity: ZAP_SEVERITY[a.riskcode] ?? 'info',
@@ -73,8 +73,20 @@ export interface InstalledPackage {
   license: string
 }
 
-const globMatch = (pattern: string, name: string) =>
-  new RegExp(`^${pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')}$`).test(name)
+/** Glob with `*` only, matched piece by piece so no pattern from the policy file becomes a regular expression. */
+export function globMatch(pattern: string, name: string): boolean {
+  const [first, ...rest] = pattern.split('*')
+  if (!name.startsWith(first)) return false
+  if (rest.length === 0) return name === first
+  let at = first.length
+  for (const [i, piece] of rest.entries()) {
+    if (i === rest.length - 1) return name.length - piece.length >= at && name.endsWith(piece)
+    const found = name.indexOf(piece, at)
+    if (found < 0) return false
+    at = found + piece.length
+  }
+  return true
+}
 
 /** SPDX expression check: with OR one allowed licence is enough, with AND every licence must be allowed. */
 export function licenseAllowed(expression: string, allowed: string[]): boolean {

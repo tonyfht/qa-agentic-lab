@@ -166,7 +166,7 @@ No usar puertos de otros proyectos de la máquina: 3000 (Aigovia), 3100/3110/312
 | Detector de *flaky* | Detecta tests inestables con el histórico y propone su corrección o cuarentena | Tras cada ejecución | QAL-008 |
 | Triaje | Clasifica fallos y abre *issues* de defecto con evidencia | Tras un fallo en CI | QAL-008 |
 | Auditor de experiencia | Interpreta accesibilidad, rendimiento, regresión visual y carga en lenguaje de negocio | Tras cada ejecución | [`qa-auditor-experiencia`](.claude/agents/qa-auditor-experiencia.md) |
-| Auditor de seguridad y cumplimiento | Prioriza hallazgos de SAST, dependencias, licencias, secretos y DAST | Tras cada ejecución | QAL-007 |
+| Auditor de seguridad y cumplimiento | Prioriza hallazgos de SAST, dependencias, licencias, secretos y DAST y revisa las excepciones | Tras cada ejecución | [`qa-auditor-seguridad`](.claude/agents/qa-auditor-seguridad.md) |
 | Reportero | Compara con el histórico, redacta el resumen ejecutivo y recomienda si se puede salir | Tras cada ejecución | QAL-009 |
 
 **Reglas para todo agente:** su definición tiene las secciones Función, Entradas, Salidas, Herramientas, Prohibido y

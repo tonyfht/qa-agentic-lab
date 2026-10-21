@@ -5,12 +5,16 @@ export interface CommandResult {
   output: string
 }
 
-/** Runs a shell command, streaming its output and keeping the last lines for the report. */
+/**
+ * Runs a shell command, streaming its output and keeping the last lines for the report.
+ * Commands are always literals built by the orchestrator, never outside input; the shell resolves `npx` (a .cmd on Windows).
+ */
 export function runCommand(
   command: string,
   options: { cwd: string; env?: Record<string, string | undefined>; quiet?: boolean } = { cwd: process.cwd() },
 ): Promise<CommandResult> {
   return new Promise((resolve) => {
+    // nosemgrep: javascript.lang.security.audit.spawn-shell-true.spawn-shell-true -- comando literal del orquestador, sin entrada externa
     const child = spawn(command, { cwd: options.cwd, env: { ...process.env, ...options.env }, shell: true })
     let output = ''
     const collect = (chunk: Buffer, stream: NodeJS.WriteStream) => {
@@ -33,6 +37,7 @@ export function startBackground(command: string, cwd: string, env: Record<string
   return spawn(command, {
     cwd,
     env: { ...process.env, ...env },
+    // nosemgrep: javascript.lang.security.audit.spawn-shell-true.spawn-shell-true -- comando literal del orquestador, sin entrada externa
     shell: true,
     stdio: 'ignore',
     detached: process.platform !== 'win32',
@@ -54,5 +59,5 @@ export function killTree(child: ChildProcess) {
 
 export function commandExists(command: string): boolean {
   const probe = process.platform === 'win32' ? 'where' : 'which'
-  return spawnSync(`${probe} ${command}`, { stdio: 'ignore', shell: true }).status === 0
+  return spawnSync(probe, [command], { stdio: 'ignore' }).status === 0
 }

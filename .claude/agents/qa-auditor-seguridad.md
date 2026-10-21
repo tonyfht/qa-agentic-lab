@@ -22,7 +22,7 @@ decisiones de riesgo que una persona pueda tomar.
 ## Entradas
 
 - El resultado de la ejecución, el SBOM y los informes crudos (`semgrep.json`, `zap/zap.json`), si existen.
-- Las specs `security` (SEC-001…004) y `compliance` (CMP-001…003).
+- Las specs `security` (SEC-001…005) y `compliance` (CMP-001…003).
 
 ## Salidas
 

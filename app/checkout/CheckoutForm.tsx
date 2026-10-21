@@ -30,7 +30,7 @@ export function CheckoutForm({ total }: { total: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-6" aria-label="Pago">
+    <form method="post" onSubmit={onSubmit} className="flex flex-col gap-6" aria-label="Pago">
       <fieldset className="flex flex-col gap-3 rounded-2xl bg-white p-4">
         <legend className="px-1 text-lg font-bold">Envío</legend>
         <Field label="Nombre completo" name="fullName" autoComplete="name" error={fields.fullName} />

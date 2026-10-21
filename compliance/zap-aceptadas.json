@@ -1,4 +1,15 @@
 {
   "$comment": "Alertas de OWASP ZAP aceptadas (SEC-004), por identificador de regla y con su motivo. Nunca se desactiva una regla: se acepta su resultado con una explicación revisable.",
-  "aceptadas": []
+  "aceptadas": [
+    {
+      "pluginid": "10055",
+      "alerta": "CSP: script-src unsafe-inline",
+      "motivo": "Next.js (App Router) inyecta en línea los scripts de hidratación y la carga de React Server Components. La alternativa, un nonce por petición desde proxy.ts, hace dinámicas todas las páginas y pierde la caché estática. Riesgo acotado: React escapa todo el contenido, ningún dato del usuario se pinta como HTML, script-src solo admite 'self' y object-src es 'none'. Revisar si Next.js ofrece hashes estáticos."
+    },
+    {
+      "pluginid": "10055",
+      "alerta": "CSP: style-src unsafe-inline",
+      "motivo": "Next.js y los componentes de la tienda (ProductArt, barras de progreso) usan atributos style en línea. Los estilos en línea no ejecutan código; el riesgo residual es la exfiltración por CSS, que exige inyectar HTML, cosa que React impide."
+    }
+  ]
 }

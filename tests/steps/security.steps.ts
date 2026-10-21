@@ -1,4 +1,4 @@
-// Steps for QAL-007: security headers, third parties and declared cookies (SEC-001, CMP-003).
+// Steps for QAL-007: security headers, sensitive forms, third parties and declared cookies (SEC-001, SEC-005, CMP-003).
 import { expect } from '@playwright/test'
 import { Then, When } from './fixtures'
 
@@ -8,6 +8,9 @@ const EXPECTED: Record<string, RegExp> = {
   'x-frame-options': /^DENY$/,
   'referrer-policy': /^strict-origin-when-cross-origin$/,
   'permissions-policy': /camera=\(\).*microphone=\(\).*geolocation=\(\)/,
+  'cross-origin-opener-policy': /^same-origin$/,
+  'cross-origin-resource-policy': /^same-origin$/,
+  'cross-origin-embedder-policy': /^require-corp$/,
 }
 
 When('pido la portada sin navegador', async ({ request, world }) => {
@@ -46,4 +49,9 @@ Then('la tabla de cookies describe {string} y {string} como necesarias', async (
     await expect(table.getByRole('row').filter({ hasText: name })).toContainText('Necesaria')
   }
   await expect(table.getByRole('row')).toHaveCount(3)
+})
+
+Then('el formulario {string} se envía por POST', async ({ page }, name: string) => {
+  // Without method="post" a submit before hydration would put credentials or card data in the URL (SEC-005).
+  await expect(page.getByRole('form', { name })).toHaveAttribute('method', 'post')
 })

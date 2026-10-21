@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { blockingFindings, checkLicenses, fromNpmAudit, fromSemgrep, fromZap, licenseAllowed } from '@/qa/security/findings'
+import { blockingFindings, checkLicenses, fromNpmAudit, fromSemgrep, fromZap, globMatch, licenseAllowed } from '@/qa/security/findings'
 
 const root = path.resolve(__dirname, '../../..')
 
@@ -55,6 +55,12 @@ describe('SEC-004 Análisis dinámico pasivo', () => {
     expect(blockingFindings(findings).map((x) => x.title)).toEqual(['CSP Header Not Set [10038]'])
   })
 
+  it('una excepción acepta solo su alerta: misma regla con otro nombre sigue bloqueando', () => {
+    const sameRule = { site: [{ alerts: [{ pluginid: '10055', alert: 'CSP: style-src unsafe-inline', riskcode: '2' }] }] }
+    const findings = fromZap(sameRule, [{ pluginid: '10055', alerta: 'CSP: script-src unsafe-inline', motivo: 'x' }])
+    expect(blockingFindings(findings)).toHaveLength(1)
+  })
+
   it('las alertas informativas nunca bloquean', () => {
     expect(blockingFindings(fromZap(zap, [])).some((x) => x.title.startsWith('Timestamp'))).toBe(false)
   })
@@ -81,6 +87,15 @@ describe('CMP-001 Licencias permitidas', () => {
       expect(finding.accepted).toMatch(/libvips/)
       expect(blockingFindings([finding])).toEqual([])
     }
+  })
+
+  it('el patrón de una excepción admite * sin convertirse en expresión regular', () => {
+    expect(globMatch('@img/sharp-*', '@img/sharp-win32-x64')).toBe(true)
+    expect(globMatch('@img/sharp-*', '@img/sharpie')).toBe(false)
+    expect(globMatch('a*b*c', 'axxbyyc')).toBe(true)
+    expect(globMatch('a*b*c', 'acb')).toBe(false)
+    expect(globMatch('a.b', 'axb')).toBe(false)
+    expect(globMatch('exacto', 'exacto')).toBe(true)
   })
 
   it('una licencia vacía es desconocida y bloquea', () => {

@@ -2,7 +2,7 @@
 
 ## Context
 
-Ver `proposal.md` y las specs `security` (SEC-001…004) y `compliance` (CMP-001…003), más QA-026, QA-027 y QA-049.
+Ver `proposal.md` y las specs `security` (SEC-001…005) y `compliance` (CMP-001…003), más QA-026, QA-027 y QA-049.
 
 **Punto de partida medido:**
 - `npm audit` de producción: 0 vulnerabilidades. De desarrollo: 6 altas, por la cadena `braces` y `micromatch` de
@@ -98,12 +98,20 @@ personal?), revisa que cada excepción siga justificada y propone correcciones. 
 ```gherkin
 @security @api @p1 @SEC-001
 Scenario: La portada y la API devuelven las cabeceras de seguridad
+
+@security @p1 @SEC-005
+Scenario: Los formularios de cuenta y de pago no ponen datos en la URL
 ```
 
 ## Risks / Trade-offs
 
-- **[ZAP alerta "CSP: script-src unsafe-inline"]** → se acepta con motivo y con la mejora con *nonces* propuesta,
-  visible en el informe.
+- **[ZAP alerta "CSP: script-src/style-src unsafe-inline"]** → se aceptan con motivo en
+  `compliance/zap-aceptadas.json` (regla y nombre de alerta) y con la mejora con *nonces* propuesta, visible en el
+  informe.
+- **[La primera ejecución de CI encontró más]** → corregido en el propio cambio: formularios sin `method` (ZAP 10024,
+  SEC-005), cabeceras de aislamiento entre orígenes (ZAP 90004), acciones de GitHub fijadas a SHA, *cooldown* de
+  Dependabot, `min-release-age` de npm y dos expresiones regulares dinámicas. Los dos `shell: true` del orquestador
+  se aceptan con `nosemgrep` y su motivo: comandos literales, sin entrada externa.
 - **[El paquete de licencias varía por plataforma (sharp)]** → las excepciones van por patrón (`@img/sharp-*`).
 - **[La imagen de ZAP tarda en descargarse en CI]** → unos 30 s. Es asumible.
 
