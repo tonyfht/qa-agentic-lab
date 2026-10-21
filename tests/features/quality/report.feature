@@ -63,3 +63,16 @@ Feature: Informe de calidad
     Given un histórico con 1 ejecución
     When abro el informe
     Then la sección de experiencia explica que no hay métricas de rendimiento
+
+  @QA-026
+  Scenario: El informe dice si la tienda es segura y cumple
+    Given un histórico cuya última ejecución tiene hallazgos de seguridad
+    When abro el informe
+    Then veo la pregunta "¿Es segura y cumple?"
+    And veo la excepción aceptada "CSP: script-src unsafe-inline [10055]" con su motivo
+
+  @QA-026
+  Scenario: Sin etapa de seguridad la sección lo explica
+    Given un histórico con 1 ejecución
+    When abro el informe
+    Then la sección de seguridad explica que no hay resultados

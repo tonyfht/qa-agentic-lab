@@ -1,6 +1,7 @@
 import { AGENTS } from '../qa/agents/registry'
 import { LIGHTHOUSE_BUDGET, LOAD_THRESHOLDS, type LighthousePage, type LoadResult } from '../qa/lib/budgets'
 import type { RunResult, StageResult, TestResult } from '../qa/results/schema'
+import { blockingFindings } from '../qa/security/findings'
 
 export type RequirementStatus = 'passed' | 'flaky' | 'failed' | 'untested'
 
@@ -27,6 +28,12 @@ export interface TraceRow {
 }
 
 const KINDS: [string, string][] = [
+  ['@a11y', 'accesibilidad'],
+  ['@visual', 'visual'],
+  ['@performance', 'rendimiento'],
+  ['@load', 'carga'],
+  ['@security', 'seguridad'],
+  ['@compliance', 'cumplimiento'],
   ['@e2e', 'E2E'],
   ['@api', 'API'],
   ['@unit', 'unitaria'],
@@ -65,6 +72,7 @@ export interface ReportModel {
   traceability: TraceRow[]
   untraced: { title: string; file: string }[]
   experience: ExperienceModel
+  security: SecurityModel
   agents: {
     byAgent: { id: string; name: string; phase: string; count: number }[]
     latest: { date: string; agent: string; change: string; action: string; summary: string; artifacts: string[] }[]
@@ -108,6 +116,42 @@ export function experienceSummary(history: RunResult[]): ExperienceModel {
     a11y: run.tests.filter((t) => t.tags.includes('@a11y')).map((t) => ({ title: displayTitle(t.title), status: t.status })),
     budget: LIGHTHOUSE_BUDGET,
     thresholds: LOAD_THRESHOLDS,
+  }
+}
+
+export const SEVERITIES = ['critical', 'high', 'medium', 'low', 'info'] as const
+export const SOURCES = ['semgrep', 'npm-audit', 'licenses', 'zap'] as const
+
+export interface SecurityModel {
+  ran: boolean
+  checks: { title: string; status: TestResult['status']; message?: string }[]
+  bySource: Record<(typeof SOURCES)[number], Record<(typeof SEVERITIES)[number], number>>
+  blocking: number
+  accepted: { title: string; source: string; reason: string }[]
+  production: Record<(typeof SEVERITIES)[number], number>
+  sbomComponents: number | null
+  licensedPackages: number | null
+}
+
+/** QA-026: is it secure and compliant? Findings by source and severity, exceptions with their reason, SBOM, licences. */
+export function securitySummary(run: RunResult): SecurityModel {
+  const zero = () => Object.fromEntries(SEVERITIES.map((s) => [s, 0])) as Record<(typeof SEVERITIES)[number], number>
+  const bySource = Object.fromEntries(SOURCES.map((s) => [s, zero()])) as SecurityModel['bySource']
+  const production = zero()
+  for (const f of run.findings) {
+    bySource[f.source][f.severity] += 1
+    if (f.scope !== 'development') production[f.severity] += 1
+  }
+  const metrics = run.metrics as { sbom?: { components: number }; licenses?: { packages: number } }
+  return {
+    ran: run.stages.some((s) => s.id === 'security' && (s.status === 'passed' || s.status === 'failed')),
+    checks: run.tests.filter((t) => t.stage === 'security').map((t) => ({ title: t.title, status: t.status, message: t.message })),
+    bySource,
+    blocking: blockingFindings(run.findings).length,
+    accepted: run.findings.filter((f) => f.accepted).map((f) => ({ title: f.title, source: f.source, reason: f.accepted! })),
+    production,
+    sbomComponents: metrics.sbom?.components ?? null,
+    licensedPackages: metrics.licenses?.packages ?? null,
   }
 }
 
@@ -259,6 +303,7 @@ export function buildModel(history: RunResult[], hasDetail: (runId: string) => b
     traceability,
     untraced: untraced.map((t) => ({ title: t.title, file: t.file })),
     experience: experienceSummary(history),
+    security: securitySummary(run),
     agents: agentsSummary(run),
   }
 }

@@ -143,3 +143,27 @@ Then('la experiencia muestra un p95 de {string}', async ({ page }, value: string
 Then('la sección de experiencia explica que no hay métricas de rendimiento', async ({ page }) => {
   await expect(page.getByTestId('experience-empty')).toContainText('No hay métricas de rendimiento')
 })
+
+Given('un histórico cuya última ejecución tiene hallazgos de seguridad', async ({ world }) => {
+  const outDir = mkdtempSync(path.join(os.tmpdir(), 'qal-report-'))
+  const last = sampleRun({
+    runId: 'run-2',
+    origin: { kind: 'ci', runNumber: 2 },
+    stages: [{ id: 'security', name: 'Seguridad y cumplimiento', blocking: true, status: 'passed', durationMs: 1000 }],
+    findings: [
+      { source: 'zap', severity: 'medium', title: 'CSP: script-src unsafe-inline [10055]', accepted: 'Next.js emite scripts en línea' },
+      { source: 'npm-audit', severity: 'high', title: 'braces vulnerable', scope: 'development' },
+    ],
+    metrics: { sbom: { format: 'CycloneDX', components: 42, file: 'sbom.cdx.json' } },
+  })
+  world.reportIndex = buildSite({ root, history: [...runs(1), last], outDir })
+})
+
+Then('veo la excepción aceptada {string} con su motivo', async ({ page }, title: string) => {
+  const row = page.getByTestId('security').getByRole('row').filter({ hasText: title })
+  await expect(row).toContainText('Next.js emite scripts en línea')
+})
+
+Then('la sección de seguridad explica que no hay resultados', async ({ page }) => {
+  await expect(page.getByTestId('security-empty')).toContainText('No hay resultados de seguridad')
+})

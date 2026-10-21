@@ -8,11 +8,11 @@ const MAINTENANCE_BOTS = new Set(['dependabot[bot]'])
 
 function changeExists(root: string, number: string): boolean {
   const changes = path.join(root, 'openspec', 'changes')
-  const matches = (dir: string, pattern: RegExp) => existsSync(dir) && readdirSync(dir).some((d) => pattern.test(d))
-  return (
-    matches(changes, new RegExp(`^qal-${number}-`, 'i')) ||
-    matches(path.join(changes, 'archive'), new RegExp(`^\\d{4}-\\d{2}-\\d{2}-qal-${number}-`, 'i'))
-  )
+  const prefix = `qal-${number}-`
+  const matches = (dir: string, name: (d: string) => string) =>
+    existsSync(dir) && readdirSync(dir).some((d) => name(d).toLowerCase().startsWith(prefix))
+  // Archived changes carry an AAAA-MM-DD- prefix (11 characters).
+  return matches(changes, (d) => d) || matches(path.join(changes, 'archive'), (d) => (/^\d{4}-\d{2}-\d{2}-/.test(d) ? d.slice(11) : ''))
 }
 
 /** QA-021: every PR names the OpenSpec change it implements, or declares itself maintenance. */

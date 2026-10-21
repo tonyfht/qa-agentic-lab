@@ -1,4 +1,5 @@
 # Dependencias vigiladas (QA-024): una propuesta semanal agrupada por ecosistema, sujeta al mismo pipeline.
+# Cooldown: una versión nueva espera 7 días antes de proponerse (cadena de suministro).
 version: 2
 updates:
   - package-ecosystem: npm
@@ -6,6 +7,8 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    cooldown:
+      default-days: 7
     groups:
       npm:
         patterns: ['*']
@@ -14,6 +17,8 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    cooldown:
+      default-days: 7
     groups:
       actions:
         patterns: ['*']

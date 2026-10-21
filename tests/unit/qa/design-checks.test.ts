@@ -45,7 +45,7 @@ describe('QA-009 Calidad de especificaciones y escenarios', () => {
     const errors = lintScenarios(parseFeature('Feature: X\n  @CAT-099\n  Scenario: Huérfano\n', 'x.feature'), known)
     expect(errors).toEqual([
       'x.feature:3 «Huérfano»: el requisito @CAT-099 no existe',
-      'x.feature:3 «Huérfano»: sin etiqueta de tipología (@e2e, @api, @a11y, @visual, @performance, @load, @security)',
+      'x.feature:3 «Huérfano»: sin etiqueta de tipología (@e2e, @api, @a11y, @visual, @performance, @load, @security, @compliance)',
       'x.feature:3 «Huérfano»: sin prioridad (@p1, @p2, @p3)',
     ])
   })
@@ -69,7 +69,7 @@ describe('QA-043 Diseñador de casos con técnica declarada', () => {
 describe('QA-040 Agentes versionados con función y límites', () => {
   it('los agentes del laboratorio tienen definición completa', () => {
     expect(checkAgentDefinitions(root)).toEqual([])
-    expect(AGENTS.map((a) => a.id)).toEqual(['revisor-specs', 'analista', 'disenador', 'automatizador', 'api', 'auditor-experiencia'])
+    expect(AGENTS.map((a) => a.id)).toEqual(['revisor-specs', 'analista', 'disenador', 'automatizador', 'api', 'auditor-experiencia', 'auditor-seguridad'])
   })
 
   it('una definición sin prohibiciones se señala con el agente y la sección', () => {
@@ -124,10 +124,29 @@ describe('QA-048 Auditor de experiencia', () => {
   })
 })
 
+describe('QA-049 Auditor de seguridad y cumplimiento', () => {
+  const def = readFileSync(path.join(root, '.claude/agents/qa-auditor-seguridad.md'), 'utf8')
+
+  it('su auditoría prioriza cada hallazgo con fuente, riesgo real y propuesta', () => {
+    const dir = path.join(root, 'qa/agents/reviews')
+    const audits = readdirSync(dir).filter((f) => f.startsWith('seguridad-'))
+    expect(audits.length).toBeGreaterThan(0)
+    const audit = readFileSync(path.join(dir, audits[0]), 'utf8')
+    expect(audit).toMatch(/\| # \| Hallazgo \| Fuente \| Riesgo real \| Prioridad \| Propuesta \| Estado \|/)
+  })
+
+  it('tiene prohibido añadir excepciones o rebajar la gravedad por su cuenta', () => {
+    const forbidden = def.slice(def.indexOf('## Prohibido'), def.indexOf('## Registro'))
+    expect(forbidden).toMatch(/Añadir o ampliar excepciones/)
+    expect(forbidden).toMatch(/Rebajar la gravedad/)
+  })
+})
+
 describe('QA-041 Revisor de especificaciones', () => {
   it('cada revisión es una tabla de hallazgos con requisito, tipo, gravedad y propuesta', () => {
     const dir = path.join(root, 'qa/agents/reviews')
-    const reviews = readdirSync(dir).filter((f) => !f.startsWith('experiencia-') && f.endsWith('.md'))
+    // Dated files (<tema>-AAAA-MM-DD.md) are the auditors' reports; the rest are spec reviews.
+    const reviews = readdirSync(dir).filter((f) => f.endsWith('.md') && !/-\d{4}-\d{2}-\d{2}\.md$/.test(f))
     expect(reviews.length).toBeGreaterThanOrEqual(3)
     for (const f of reviews) {
       expect(readFileSync(path.join(dir, f), 'utf8'), f).toMatch(/\| # \| Requisito \| Tipo \| Gravedad \| Qué dice \| Propuesta \|/)

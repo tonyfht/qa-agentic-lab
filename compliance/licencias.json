@@ -1,0 +1,11 @@
+{
+  "$comment": "Política de licencias de producción (CMP-001). Una excepción nombra el paquete (admite *), la licencia y el motivo. Se revisa en cada auditoría de seguridad.",
+  "permitidas": ["MIT", "ISC", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "0BSD", "CC0-1.0", "CC-BY-4.0", "Unlicense", "BlueOak-1.0.0"],
+  "excepciones": [
+    {
+      "paquete": "@img/sharp-*",
+      "licencia": "LGPL-3.0",
+      "motivo": "libvips, librería nativa de imágenes opcional de Next.js: se enlaza dinámicamente y no se modifica, lo que la LGPL permite sin obligar a liberar el código de la tienda."
+    }
+  ]
+}

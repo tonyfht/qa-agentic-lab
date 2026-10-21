@@ -20,6 +20,7 @@ type World = {
   orders: string[]
   other?: { request: APIRequestContext; orderNumber?: string }
   sweep?: { operationId: string; status: number; errors: string[] }[]
+  headers?: Record<string, string>
 }
 
 export const test = base.extend<{ world: World; contract: ContractChecker }>({

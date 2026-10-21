@@ -28,11 +28,11 @@ jobs:
     name: 1 · Análisis estático
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # Gitleaks revisa todo el historial
       - uses: ./.github/actions/setup
-      - uses: actions/cache@v6
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -45,7 +45,7 @@ jobs:
             | tar -xz -C "$HOME/.local/bin" gitleaks
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - run: npm run qa -- --stage static
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: partial-static
@@ -58,10 +58,10 @@ jobs:
     name: 2 · Tienda en el runner
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup
       - run: npm run qa -- --stage build
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: partial-build
@@ -69,7 +69,7 @@ jobs:
             reports/runs/${{ env.QA_RUN_ID }}/meta.json
             reports/runs/${{ env.QA_RUN_ID }}/stages/build.json
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: store-build
           include-hidden-files: true
@@ -83,21 +83,21 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup
-      - uses: actions/cache@v6
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - run: npx playwright install --with-deps chromium
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: store-build
           path: .next
       - run: npm run qa -- --stage e2e
         env:
           QA_REUSE_BUILD: '1' # usa la build del job anterior en lugar de repetirla
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: partial-e2e
@@ -113,9 +113,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup
-      - uses: actions/cache@v6
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -127,14 +127,14 @@ jobs:
           curl -sSL https://github.com/grafana/k6/releases/download/v2.3.0/k6-v2.3.0-linux-amd64.tar.gz \
             | tar -xz --strip-components=1 -C "$HOME/.local/bin" k6-v2.3.0-linux-amd64/k6
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: store-build
           path: .next
       - run: npm run qa -- --stage performance
         env:
           QA_REUSE_BUILD: '1'
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: partial-performance
@@ -143,15 +143,51 @@ jobs:
             reports/runs/${{ env.QA_RUN_ID }}/stages/performance.json
           if-no-files-found: ignore
 
+  security:
+    name: 5 · Seguridad y cumplimiento
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+      - name: Instalar Semgrep
+        run: pipx install semgrep
+      - name: Descargar la imagen de OWASP ZAP
+        run: docker pull ghcr.io/zaproxy/zaproxy:stable
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: store-build
+          path: .next
+      - run: npm run qa -- --stage security
+        env:
+          QA_REUSE_BUILD: '1'
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: partial-security
+          path: |
+            reports/runs/${{ env.QA_RUN_ID }}/meta.json
+            reports/runs/${{ env.QA_RUN_ID }}/stages/security.json
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: evidencias-seguridad
+          path: |
+            reports/runs/${{ env.QA_RUN_ID }}/sbom.cdx.json
+            reports/runs/${{ env.QA_RUN_ID }}/semgrep.json
+            reports/runs/${{ env.QA_RUN_ID }}/zap/zap.json
+          if-no-files-found: ignore
+
   report:
-    name: 5 · Informe
-    needs: [static, build, e2e, performance]
+    name: 6 · Informe
+    needs: [static, build, e2e, performance, security]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: partial-*
           merge-multiple: true
@@ -163,11 +199,11 @@ jobs:
             git show FETCH_HEAD:history/runs.ndjson > reports/history/runs.ndjson 2>/dev/null || rm -f reports/history/runs.ndjson
           fi
       - run: npm run qa -- --stage report
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: quality-report
           path: reports/site/
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: run-result
           path: |
@@ -177,7 +213,7 @@ jobs:
 
   # Solo main publica el informe y alimenta el histórico público (QA-013). Un PR nunca lo modifica.
   publish:
-    name: 6 · Publicar en GitHub Pages
+    name: 7 · Publicar en GitHub Pages
     needs: report
     if: always() && needs.report.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
@@ -187,9 +223,9 @@ jobs:
       group: pages-publish
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: run-result
           path: reports/runs/${{ env.QA_RUN_ID }}

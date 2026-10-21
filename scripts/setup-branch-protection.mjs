@@ -14,6 +14,7 @@ const REQUIRED_CHECKS = [
   '2 · Tienda en el runner',
   '3 · Smoke y E2E',
   '4 · Rendimiento y carga',
+  '5 · Seguridad y cumplimiento',
   'Gobierno del PR',
 ]
 

@@ -77,6 +77,24 @@
     <div class="card" style="margin-top:12px"><b>Accesibilidad (WCAG 2.1 AA)</b><ul id="exp-a11y" class="a11y"></ul></div>
   </section>
 
+  <section aria-labelledby="h-sec" data-testid="security">
+    <h2 id="h-sec">Seguridad y cumplimiento</h2>
+    <p class="q"><b>¿Es segura y cumple?</b> Hallazgos de SAST, dependencias, licencias y DAST de esta ejecución, con las excepciones aceptadas.</p>
+    <div class="tiles" id="sec-kpis"></div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="card">
+        <div id="sec-chart" class="chart short" role="img" aria-label="Hallazgos por fuente y gravedad"></div>
+        <details><summary>Ver como tabla</summary><div id="sec-table"></div></details>
+      </div>
+      <div class="card">
+        <b>Controles de esta ejecución</b>
+        <ul id="sec-checks" class="a11y"></ul>
+        <b style="display:block;margin-top:12px">Excepciones aceptadas</b>
+        <div id="sec-accepted"></div>
+      </div>
+    </div>
+  </section>
+
   <section aria-labelledby="h-agents" data-testid="agents">
     <h2 id="h-agents">Agentes de IA</h2>
     <p class="q"><b>¿Qué ha hecho la IA?</b> Actuaciones registradas por cada agente y las últimas que han hecho.</p>
@@ -95,7 +113,6 @@
     <div class="soon">
       <div><b>¿Qué han reparado los agentes?</b>Tests reparados y defectos abiertos por el Sanador y el Triaje (QAL-008)</div>
       <div><b>¿Es estable la suite?</b>Tasa de tests inestables por ejecución (QAL-008)</div>
-      <div><b>¿Es segura y cumple?</b>Hallazgos de seguridad, dependencias y licencias (QAL-007)</div>
       <div><b>¿Podemos salir?</b>Resumen ejecutivo y recomendación del Reportero (QAL-009)</div>
     </div>
   </section>

@@ -130,6 +130,7 @@ describe('QA-017 Qué ha hecho la IA', () => {
       ['automatizador', 0],
       ['api', 0],
       ['auditor-experiencia', 0],
+      ['auditor-seguridad', 0],
     ])
     expect(agents.latest.map((a) => a.date.slice(0, 10))).toEqual(['2026-10-21', '2026-10-20', '2026-10-19'])
     expect(agents.latest[0].agent).toBe('Analista')
@@ -159,5 +160,28 @@ describe('QA-018 Es usable y rápida', () => {
   it('sin métricas no inventa datos', () => {
     const { experience } = buildModel([sampleRun()], () => false)
     expect(experience).toMatchObject({ lighthouse: [], load: null, a11y: [] })
+  })
+})
+
+describe('QA-026 Es segura y cumple', () => {
+  it('cuenta hallazgos por fuente y gravedad, separa producción y lista las excepciones', () => {
+    const run = sampleRun({
+      stages: [{ id: 'security', name: 'Seguridad y cumplimiento', blocking: true, status: 'passed', durationMs: 1 }],
+      findings: [
+        { source: 'zap', severity: 'medium', title: 'CSP', accepted: 'motivo' },
+        { source: 'npm-audit', severity: 'high', title: 'braces', scope: 'development' },
+        { source: 'semgrep', severity: 'low', title: 'x' },
+      ],
+      metrics: { sbom: { components: 42 }, licenses: { packages: 42 } },
+    })
+    const { security } = buildModel([run], () => false)
+    expect(security).toMatchObject({ ran: true, blocking: 0, sbomComponents: 42, licensedPackages: 42 })
+    expect(security.bySource.zap.medium).toBe(1)
+    expect(security.production.high).toBe(0)
+    expect(security.accepted).toEqual([{ title: 'CSP', source: 'zap', reason: 'motivo' }])
+  })
+
+  it('sin la etapa no se da por ejecutada', () => {
+    expect(buildModel([sampleRun()], () => false).security.ran).toBe(false)
   })
 })

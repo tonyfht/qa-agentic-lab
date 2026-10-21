@@ -157,6 +157,6 @@ describe('QA-019 Etapa de rendimiento y carga', () => {
     const perf = registry.find((s) => s.id === 'performance')!
     expect(perf).toMatchObject({ name: 'Rendimiento y carga', blocking: true, dependsOn: ['build'] })
     expect(ids.indexOf('performance')).toBe(ids.indexOf('e2e') + 1)
-    expect(ids.indexOf('report')).toBe(ids.indexOf('performance') + 1)
+    expect(ids.indexOf('security')).toBe(ids.indexOf('performance') + 1)
   })
 })

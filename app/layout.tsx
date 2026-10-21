@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SiteFooter } from './_components/SiteFooter'
 import { SiteHeader } from './_components/SiteHeader'
 import './globals.css'
 
@@ -13,6 +14,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="min-h-screen antialiased">
         <SiteHeader />
         {children}
+        <SiteFooter />
       </body>
     </html>
   )

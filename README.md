@@ -54,14 +54,21 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
    la [auditoría de experiencia](qa/agents/reviews/experiencia-2026-10-21.md). Verás que una barrera de
    accesibilidad, una página lenta o una prueba de carga con errores paran el pipeline igual que un fallo funcional, y
    cómo el Auditor de experiencia encontró que faltaba el icono de la tienda (y se corrigió).
-11. **El pipeline en GitHub.** Abre la
+11. **Seguridad y cumplimiento.** Abre [`compliance/`](compliance/) y la página <http://localhost:3400/privacidad>.
+   Verás que cuatro escáneres (Semgrep, `npm audit`, licencias y OWASP ZAP) corren en cada ejecución, que cada
+   excepción está escrita con su motivo en lugar de "apagar" una regla, y que el SBOM de cada ejecución queda como
+   evidencia en el artefacto **evidencias-seguridad** de GitHub Actions. Después lee la
+   [primera auditoría de seguridad](qa/agents/reviews/seguridad-2026-10-21.md): un agente ordena los hallazgos por
+   riesgo real, y el más grave (contraseñas que podían acabar en la URL) lo había marcado la herramienta como
+   simplemente informativo.
+12. **El pipeline en GitHub.** Abre la
    [pestaña Actions](https://github.com/tonyfht/qa-agentic-lab/actions/workflows/pipeline.yml) y entra en la última
    ejecución. Verás las etapas por separado y, al final, un resumen con una fila por etapa.
-12. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás
+13. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás
    preguntas respondidas con gráficos (¿estamos mejor que antes?, ¿qué ha hecho la IA?...) y, en la
    trazabilidad, cada requisito con sus pruebas por tipo: por ejemplo, `CAT-004` cubierto a la vez por pruebas de
    interfaz, de API y unitarias.
-13. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
+14. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
    qué especificación implementa; si no lo dice, el pipeline lo para.
 
 ## Cómo funciona
@@ -86,9 +93,11 @@ flowchart LR
   A["1 · Análisis estático<br/>lint · tipos · unitarias · specs<br/>enlaces · diagramas · secretos"] --> D
   B["2 · Tienda en el runner<br/>build y arranque"] --> E["3 · Smoke y E2E<br/>Gherkin · API · accesibilidad · visual"]
   B --> P["4 · Rendimiento y carga<br/>Lighthouse · k6"]
-  E --> D["5 · Informe<br/>histórico y gráficos"]
+  B --> S["5 · Seguridad y cumplimiento<br/>Semgrep · npm audit · licencias · SBOM · ZAP"]
+  E --> D["6 · Informe<br/>histórico y gráficos"]
   P --> D
-  D --> F["6 · Publicar<br/>GitHub Pages, solo main"]
+  S --> D
+  D --> F["7 · Publicar<br/>GitHub Pages, solo main"]
 ```
 
 **Los agentes de QA.** Cada agente es un fichero versionado en [`.claude/agents/`](.claude/agents/) con su función,
@@ -117,8 +126,8 @@ subagente qa-disenador sobre el catálogo"*) o desde GitHub con el workflow
 
 ## Ejecútalo tú
 
-**Requisitos previos:** [Node.js 24](https://nodejs.org) y Git. Opcionales: [Gitleaks](https://github.com/gitleaks/gitleaks) y [k6](https://grafana.com/docs/k6/latest/set-up/install-k6/)
-para la búsqueda de secretos y la prueba de carga (sin ellos, esas comprobaciones constan como omitidas, nunca como superadas).
+**Requisitos previos:** [Node.js 24](https://nodejs.org) y Git. Opcionales: [Gitleaks](https://github.com/gitleaks/gitleaks), [k6](https://grafana.com/docs/k6/latest/set-up/install-k6/), [Semgrep](https://semgrep.dev/docs/getting-started/) (Linux o macOS) y Docker (para OWASP ZAP)
+para secretos, carga, SAST y DAST: sin ellos, esas comprobaciones constan como omitidas con el motivo, nunca como superadas. En GitHub Actions corren todas.
 
 ```bash
 git clone https://github.com/tonyfht/qa-agentic-lab.git

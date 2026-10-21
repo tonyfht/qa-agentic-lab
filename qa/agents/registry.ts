@@ -10,6 +10,7 @@ export const AGENTS = [
   { id: 'automatizador', file: 'qa-automatizador.md', name: 'Automatizador', phase: 'Automatización' },
   { id: 'api', file: 'qa-api.md', name: 'Agente de API', phase: 'Automatización' },
   { id: 'auditor-experiencia', file: 'qa-auditor-experiencia.md', name: 'Auditor de experiencia', phase: 'No funcional' },
+  { id: 'auditor-seguridad', file: 'qa-auditor-seguridad.md', name: 'Auditor de seguridad y cumplimiento', phase: 'Seguridad y cumplimiento' },
 ] as const
 
 export type AgentId = (typeof AGENTS)[number]['id']
