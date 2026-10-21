@@ -131,6 +131,7 @@ se puede enseñar entero.
 | QAL-007 | Seguridad y cumplimiento: SAST, dependencias, SBOM, licencias, secretos, DAST; Auditor de seguridad y cumplimiento | *Shift-left* de seguridad y evidencias de cumplimiento | ✔ Hecho |
 | QAL-008 | Agentes de operación: Sanador, Detector de *flaky* y Triaje, con modo de inyección de defectos | Auto-reparación y triaje en directo, con límites | ✔ Hecho |
 | QAL-009 | Informe completo: Reportero, resumen ejecutivo, recomendación de salida y todos los gráficos | El "wow" final | ✔ Hecho |
+| QAL-010 | La Tienda en Casa, de maqueta a tienda: identidad, fotos reales con crédito y mejoras de UX | Un rediseño grande con el mismo método: la suite anterior en verde sin tocar aserciones | ✔ Hecho |
 
 ## Decisiones cerradas
 
