@@ -16,7 +16,7 @@ Este directorio gobierna el desarrollo de la tienda y del sistema de calidad con
 `QAL-XXX-nombre-descriptivo` (**Q**A **A**gentic **L**ab, 3 dígitos, kebab-case). En el archivo, OpenSpec antepone la
 fecha: `AAAA-MM-DD-qal-XXX-nombre/`.
 
-**Siguiente ID libre: `QAL-005`.**
+**Siguiente ID libre: `QAL-006`.**
 
 ## Estructura de un cambio
 
@@ -43,3 +43,4 @@ QAL-XXX-nombre/
 | [QAL-002](changes/archive/2026-10-21-qal-002-catalogo/) | Catálogo: búsqueda, filtros, ficha de producto y API con contrato | 2026-10-21 | Producto |
 | [QAL-003](changes/archive/2026-10-21-qal-003-agentes-diseno/) | Agentes de diseño: revisor, analista, diseñador y automatizador, con comprobaciones deterministas y registro | 2026-10-21 | Calidad + IA |
 | [QAL-004](changes/archive/2026-10-21-qal-004-carrito-cupones/) | Carrito, stock y cupones, diseñado por los agentes (tabla de decisión, valores límite) | 2026-10-21 | Producto |
+| [QAL-005](changes/archive/2026-10-21-qal-005-checkout-pedidos/) | Cuenta, checkout con pago simulado, pedidos atómicos y agente de API con barrido de contrato | 2026-10-21 | Producto + IA |
