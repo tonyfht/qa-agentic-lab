@@ -58,3 +58,21 @@ export const products: ProductSeed[] = [
   { slug: 'lampara-pie-arco', name: 'Lámpara de pie en arco', description: 'Lámpara de 180 cm con brazo regulable y base de mármol.', category: 'iluminacion', priceCents: 12990, stock: 2, rating: 4.7, isNew: false },
   { slug: 'aplique-pared-laton', name: 'Aplique de pared de latón', description: 'Aplique orientable con acabado de latón envejecido.', category: 'iluminacion', priceCents: 5490, stock: 10, rating: 4.4, isNew: false },
 ]
+
+export interface CouponSeed {
+  code: string
+  kind: 'percent' | 'fixed' | 'shipping'
+  value: number
+  minSubtotalCents: number
+  category: string | null
+  validUntil: string
+}
+
+// Coupons chosen to exercise each branch of the promotions decision table (PROMO-002).
+export const coupons: CouponSeed[] = [
+  { code: 'BIENVENIDA10', kind: 'percent', value: 10, minSubtotalCents: 3000, category: null, validUntil: '2099-12-31' },
+  { code: 'CASA5', kind: 'fixed', value: 500, minSubtotalCents: 2500, category: null, validUntil: '2099-12-31' },
+  { code: 'TEXTIL15', kind: 'percent', value: 15, minSubtotalCents: 0, category: 'textil', validUntil: '2099-12-31' },
+  { code: 'ENVIOGRATIS', kind: 'shipping', value: 0, minSubtotalCents: 0, category: null, validUntil: '2099-12-31' },
+  { code: 'VERANO2026', kind: 'percent', value: 20, minSubtotalCents: 0, category: null, validUntil: '2026-09-30' },
+]

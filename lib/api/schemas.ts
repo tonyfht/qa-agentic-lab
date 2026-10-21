@@ -62,3 +62,49 @@ export const CatalogQueryParams = z.object({
 
 export type HealthResponse = z.infer<typeof HealthResponse>
 export type ApiError = z.infer<typeof ApiError>
+
+export const CartItem = z
+  .object({
+    slug: z.string(),
+    name: z.string(),
+    category: z.string(),
+    priceCents: z.number().int().nonnegative(),
+    quantity: z.number().int().positive(),
+    maxQuantity: z.number().int().nonnegative().openapi({ description: 'Máximo permitido: el stock, hasta 10' }),
+    lineTotalCents: z.number().int().nonnegative(),
+  })
+  .openapi('CartItem')
+
+export const CartTotals = z
+  .object({
+    subtotalCents: z.number().int().nonnegative(),
+    discountCents: z.number().int().nonnegative(),
+    shippingCents: z.number().int().nonnegative(),
+    totalCents: z.number().int().nonnegative(),
+    vatIncludedCents: z.number().int().nonnegative().openapi({ description: 'IVA (21 %) incluido en el total' }),
+  })
+  .openapi('CartTotals')
+
+export const CouponStatus = z
+  .object({
+    code: z.string().openapi({ example: 'BIENVENIDA10' }),
+    applied: z.boolean(),
+    reason: z.string().optional().openapi({ description: 'Por qué no descuenta, si no se aplica' }),
+  })
+  .openapi('CouponStatus')
+
+export const Cart = z
+  .object({
+    items: z.array(CartItem),
+    units: z.number().int().nonnegative(),
+    totals: CartTotals,
+    coupon: CouponStatus.nullable(),
+  })
+  .openapi('Cart')
+
+export const AddItemBody = z.object({
+  slug: z.string().openapi({ example: 'manta-punto-gruesa' }),
+  quantity: z.number().int().openapi({ example: 2 }),
+})
+export const QuantityBody = z.object({ quantity: z.number().int().openapi({ example: 3, description: '0 elimina la línea' }) })
+export const CouponBody = z.object({ code: z.string().openapi({ example: 'BIENVENIDA10' }) })

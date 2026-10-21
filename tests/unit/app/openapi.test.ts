@@ -28,3 +28,16 @@ describe('CAT-008 API del catálogo con contrato publicado', () => {
     for (const s of ['Product', 'ProductList', 'Category', 'ApiError']) expect(doc.components?.schemas).toHaveProperty(s)
   })
 })
+
+describe('CART-001 API del carrito documentada', () => {
+  const doc = buildOpenApiDocument()
+
+  it('documenta las operaciones del carrito con sus errores', () => {
+    expect(doc.paths?.['/api/cart']?.get?.operationId).toBe('getCart')
+    expect(Object.keys(doc.paths?.['/api/cart/items']?.post?.responses ?? {})).toEqual(['200', '400', '404', '409'])
+    expect(doc.paths?.['/api/cart/items/{slug}']?.patch?.operationId).toBe('setCartItemQuantity')
+    expect(doc.paths?.['/api/cart/items/{slug}']?.delete?.operationId).toBe('removeCartItem')
+    expect(Object.keys(doc.paths?.['/api/cart/coupon']?.post?.responses ?? {})).toEqual(['200', '400'])
+    for (const s of ['Cart', 'CartItem', 'CartTotals', 'CouponStatus']) expect(doc.components?.schemas).toHaveProperty(s)
+  })
+})

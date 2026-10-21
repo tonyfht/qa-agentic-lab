@@ -16,7 +16,7 @@ Para enseñarlo hay una tienda online pequeña, **La Tienda en Casa**, construid
 cambio pasa por el mismo camino: especificación → código → escenarios en lenguaje natural (Gherkin) → pruebas →
 informe. Puedes recorrerlo con la guía de abajo o ejecutarlo tú mismo.
 
-> **Estado:** la tienda ya tiene catálogo con búsqueda, filtros y API (`QAL-002`). La hoja de ruta
+> **Estado:** la tienda tiene catálogo y carrito con cupones (`QAL-002`, `QAL-004`), y los agentes de diseño ya trabajan sobre cada cambio (`QAL-003`). La hoja de ruta
 > completa está en [`openspec/PROJECT.md`](openspec/PROJECT.md#hoja-de-ruta).
 
 ## Ruta de la visita
@@ -42,14 +42,18 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
 7. **La API y su contrato.** Con la tienda abierta, mira <http://localhost:3400/api/openapi.json> y
    <http://localhost:3400/api/products?minPrice=19,90&maxPrice=19,90>. Verás el contrato publicado y la misma
    búsqueda que en la web; cada escenario de API comprueba que la respuesta cumple ese contrato.
-8. **El pipeline en GitHub.** Abre la
+8. **El carrito y la tabla de decisión.** Abre
+   [`cupones-y-totales.feature`](tests/features/cart/cupones-y-totales.feature). Verás una **tabla de decisión**:
+   cada fila es una regla de cupón (no existe, caducado, no aplicable, sin mínimo) con el mensaje exacto que ve el
+   cliente. Después añade algo al carrito en <http://localhost:3400> y prueba el cupón `VERANO2026` o `BIENVENIDA10`.
+9. **El pipeline en GitHub.** Abre la
    [pestaña Actions](https://github.com/tonyfht/qa-agentic-lab/actions/workflows/pipeline.yml) y entra en la última
    ejecución. Verás las etapas por separado y, al final, un resumen con una fila por etapa.
-9. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás
+10. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás
    preguntas respondidas con gráficos (¿estamos mejor que antes?, ¿qué ha hecho la IA?...) y, en la
    trazabilidad, cada requisito con sus pruebas por tipo: por ejemplo, `CAT-004` cubierto a la vez por pruebas de
    interfaz, de API y unitarias.
-10. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
+11. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
    qué especificación implementa; si no lo dice, el pipeline lo para.
 
 ## Cómo funciona
@@ -117,6 +121,7 @@ npx playwright install chromium
 |---|---|---|
 | Abrir la tienda | `npm run dev` | <http://localhost:3400> |
 | Ver el contrato de la API | `npm run dev` | <http://localhost:3400/api/openapi.json> |
+| Probar el carrito y los cupones | `npm run dev` | <http://localhost:3400/carrito> (cupones: `BIENVENIDA10`, `CASA5`, `TEXTIL15`, `ENVIOGRATIS`, `VERANO2026`) |
 | Ejecutar todo el pipeline | `npm run qa` | Resumen en la consola |
 | Ejecutar una sola etapa | `npm run qa -- --stage e2e` | Etapas: `static`, `build`, `e2e`, `report` |
 | Ver el informe con mi histórico | `npm run report` | <http://localhost:3420> |
