@@ -12,13 +12,13 @@ por especificación (SDD)**. Tiene dos mitades en un mismo repositorio:
 | Mitad | Qué es | Dónde vive |
 |---|---|---|
 | **Producto** | *La Tienda en Casa*: e-commerce pequeño de artículos para el hogar (catálogo con búsqueda y filtros, carrito, cupones, checkout con pago simulado, pedidos) | `app/` |
-| **Sistema de calidad** | Pruebas de todas las tipologías, pipeline por etapas, agentes de QA, trazabilidad y portal de calidad | `tests/`, `.claude/agents/`, `.github/workflows/`, `portal/` |
+| **Sistema de calidad** | Pruebas de todas las tipologías, pipeline por etapas, agentes de QA, trazabilidad e informe de calidad con histórico | `tests/`, `.claude/agents/`, `.github/workflows/`, `report/` |
 
 La tienda existe **para ser probada**: es deliberadamente pequeña. Si una funcionalidad no sirve para enseñar una
 técnica o tipología de prueba, no se construye.
 
 Público objetivo: proyecto **formativo y sin ánimo de lucro**, para personas que se inician en QA y para clientes a los
-que se presenta el laboratorio. Todo lo visible (README, portal, informes, specs) debe poder explicarse **desde cero** a
+que se presenta el laboratorio. Todo lo visible (README, informe, specs) debe poder explicarse **desde cero** a
 alguien que no sabe de QA ni conoce el proyecto.
 
 > Estado: fundación. El stack, la estructura y el pipeline los fija el cambio `QAL-001` (ver `openspec/changes/`).
@@ -40,6 +40,12 @@ alguien que no sabe de QA ni conoce el proyecto.
    reales: usuarios, direcciones y tarjetas son ficticios.
 7. **Solo se atacan sistemas propios.** Carga (k6) y escaneo activo de seguridad (ZAP) se ejecutan contra la tienda
    levantada en el propio runner o en nuestro despliegue, nunca contra terceros.
+8. **Lo mismo en local que en CI.** Cada etapa del pipeline es un script de npm; GitHub Actions solo los llama.
+   `npm run qa` reproduce en local lo que hace CI, con el mismo resultado y el mismo informe.
+9. **Cada cambio deja el laboratorio enseñable.** Si añade algo visible, actualiza la ruta de la visita y los diagramas
+   del README, y aporta sus datos al informe.
+
+Visión, requisitos transversales (RT-1 a RT-5) y hoja de ruta: [`openspec/PROJECT.md`](openspec/PROJECT.md).
 
 ---
 
@@ -75,7 +81,7 @@ nombre (`### Requirement: CAT-001 Búsqueda por texto`). El mismo ID aparece com
 | Checkout y pago simulado | `CHK` |
 | Pedidos | `ORD` |
 | Cuenta y acceso | `ACC` |
-| Sistema de calidad (pipeline, agentes, portal) | `QA` |
+| Sistema de calidad (pipeline, agentes, informe) | `QA` |
 
 **Idioma.** Documentación, specs, Gherkin y textos de la tienda en **español**. Código e identificadores en inglés
 técnico. Palabras clave estructurales de OpenSpec (`Requirement`, `Scenario`, `SHALL`, `MUST`) y de Gherkin en inglés
@@ -95,7 +101,7 @@ tests/
   e2e/ api/ unit/ ... → automatización por tipología
 .claude/agents/       → definición versionada de los agentes de QA
 .github/workflows/    → pipeline por etapas
-portal/               → portal de calidad publicado en GitHub Pages
+report/               → generador del informe de calidad (local y GitHub Pages)
 openspec/             → specs, cambios y archivo (fuente de verdad)
 ```
 
@@ -109,7 +115,7 @@ La demo completa se puede levantar en local además de en la demo pública.
 |---|---|
 | **3400** | La Tienda en Casa (`npm run dev` / `npm start`) |
 | **3410** | Tienda levantada por las pruebas E2E (Playwright) |
-| **3420** | Vista previa local del portal de calidad |
+| **3420** | Vista previa local del informe de calidad (`npm run report`) |
 
 No usar puertos de otros proyectos de la máquina: 3000 (Aigovia), 3100/3110/3120/3150/3200 (Pensend y su comité),
 3333, 5173 y 54321. Un puerto nuevo se elige libre y se añade a esta tabla.
@@ -120,13 +126,19 @@ No usar puertos de otros proyectos de la máquina: 3000 (Aigovia), 3100/3110/312
 
 | Agente | Función | Cuándo actúa |
 |---|---|---|
+| Revisor de specs | Detecta ambigüedad, requisitos no comprobables y huecos antes de diseñar pruebas | Requisitos |
 | Analista | Explora la tienda y convierte las specs en `.feature` con riesgos y prioridades | Diseño |
 | Diseñador de casos | Aplica técnicas (equivalencia, valores límite, tablas de decisión, *pairwise*) a los escenarios | Diseño |
-| Automatizador | Implementa los *steps* y tests, y solo entrega lo que pasa | Diseño |
-| Agente de API | Diseña pruebas de contrato y negocio desde la especificación OpenAPI | Diseño |
+| Automatizador | Implementa los *steps* y tests, y solo entrega lo que pasa | Automatización |
+| Agente de API | Diseña pruebas de contrato y negocio desde la especificación OpenAPI | Automatización |
 | Sanador | Repara tests rotos por cambios no funcionales; abre PR con evidencia | Tras un fallo en CI |
+| Detector de *flaky* | Detecta tests inestables con el histórico y propone su corrección o cuarentena | Tras cada ejecución |
 | Triaje | Clasifica fallos y abre *issues* de defecto con evidencia | Tras un fallo en CI |
-| Auditor no funcional | Interpreta accesibilidad, rendimiento y seguridad en lenguaje de negocio | Tras cada ejecución |
-| Reportero | Compara con ejecuciones anteriores, redacta el resumen y publica el portal | Tras cada ejecución |
+| Auditor de experiencia | Interpreta accesibilidad, rendimiento y regresión visual en lenguaje de negocio | Tras cada ejecución |
+| Auditor de seguridad y cumplimiento | Prioriza hallazgos de SAST, dependencias, licencias, secretos y DAST | Tras cada ejecución |
+| Reportero | Compara con el histórico, redacta el resumen ejecutivo y recomienda si se puede salir | Tras cada ejecución |
+
+Herramientas por fase (Playwright MCP, Playwright Test Agents, GitHub MCP, GitHub Action de Claude Code...): mapa en
+[`openspec/PROJECT.md`](openspec/PROJECT.md).
 
 Las *quality gates* son deterministas; un agente solo puede explicar por qué una gate bloquea, no levantarla.

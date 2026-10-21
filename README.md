@@ -1,7 +1,8 @@
 # QA Agentic Lab
 
-Laboratorio público de **automatización de pruebas con agentes de IA**, gobernado por **especificación (SDD con
-OpenSpec)**.
+**Otra forma de hacer QA**: ni la tradicional ni solo automatización, sino apoyada en la IA en todo el ciclo de vida
+del software (requisitos, pruebas, seguridad, cumplimiento e informe), y gobernada por **especificación (SDD con
+OpenSpec)**. Proyecto formativo y abierto.
 
 Sobre una tienda online pequeña construida para la ocasión, **La Tienda en Casa**, el laboratorio enseña de principio a
 fin:

@@ -12,7 +12,7 @@ context: |
   Dos mitades en un repositorio:
   - Producto: "La Tienda en Casa", e-commerce pequeño de artículos para el hogar (app/).
   - Sistema de calidad: pruebas de todas las tipologías, pipeline por etapas, agentes de QA,
-    trazabilidad y portal de calidad en GitHub Pages.
+    trazabilidad e informe de calidad propio con histórico (local y GitHub Pages).
   Proyecto formativo y sin ánimo de lucro, para personas que se inician en QA y para clientes:
   todo lo visible debe poder explicarse desde cero a quien no sabe de QA.
 
@@ -43,6 +43,8 @@ rules:
     - "Incluir siempre: fuera de alcance, riesgos y criterios de éxito verificables"
     - "Incluir sección 'Valor para la demo': qué se enseña al cliente con este cambio y en qué tipología de prueba"
     - "Incluir sección 'Testing scope': tipologías de prueba afectadas y nivel de riesgo (bajo/medio/alto)"
+    - "Respetar los requisitos transversales RT-1 a RT-5 de openspec/PROJECT.md e indicar cómo los cumple el cambio"
+    - "Indicar qué aporta el cambio al README (paso de la ruta de la visita, diagramas) y al informe (datos, gráficos)"
   specs:
     - "Usar lenguaje RFC 2119: MUST/SHALL obligatorio, SHOULD recomendado, MAY opcional"
     - "Cada requisito MUST empezar su nombre por su ID de trazabilidad (p. ej. 'CAT-001 Búsqueda por texto')"

@@ -5,7 +5,8 @@ Este directorio gobierna el desarrollo de la tienda y del sistema de calidad con
 
 ## Referencias
 
-- [`PROJECT.md`](PROJECT.md): visión, decisiones cerradas y decisiones abiertas.
+- [`PROJECT.md`](PROJECT.md): visión, requisitos transversales, mapa de IA por fase, hoja de ruta y decisiones
+  cerradas. Es la propuesta global del proyecto.
 - [`config.yaml`](config.yaml): contexto y reglas por artefacto que aplica OpenSpec.
 - [`specs/`](specs/): fuente de verdad por dominio (se construye con `/opsx:sync` al archivar).
 - [`changes/`](changes/): cambios en curso; [`changes/archive/`](changes/archive/): cambios cerrados.
@@ -32,7 +33,7 @@ QAL-XXX-nombre/
 
 | ID | Nombre | Estado |
 |----|--------|--------|
-| [QAL-001](changes/qal-001-fundacion/) | Fundación del laboratorio | propuesta aprobada |
+| [QAL-001](changes/qal-001-fundacion/) | Fundación del laboratorio | borrador (revisión 2) |
 
 ## Cambios archivados
 
