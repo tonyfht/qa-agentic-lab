@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { resetE2eDatabase } from '../lib/e2e'
 import { runCommand, tail } from '../lib/exec'
 import type { TestResult } from '../results/schema'
 import type { StageDefinition } from './types'
@@ -13,6 +14,7 @@ export const e2eStage: StageDefinition = {
   blocking: true,
   dependsOn: ['build'],
   async run(ctx) {
+    resetE2eDatabase(ctx.root)
     const env = { QA_RUN_DIR: ctx.runDir }
     const gen = await runCommand('npx bddgen', { cwd: ctx.root, env })
     if (gen.code !== 0) return { status: 'failed', reason: `No se pudieron generar los tests desde Gherkin:\n${tail(gen.output)}` }

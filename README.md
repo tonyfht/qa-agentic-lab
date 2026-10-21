@@ -16,7 +16,7 @@ Para enseñarlo hay una tienda online pequeña, **La Tienda en Casa**, construid
 cambio pasa por el mismo camino: especificación → código → escenarios en lenguaje natural (Gherkin) → pruebas →
 informe. Puedes recorrerlo con la guía de abajo o ejecutarlo tú mismo.
 
-> **Estado:** fundación terminada (`QAL-001`, archivado). La tienda solo tiene su portada; el catálogo llega en `QAL-002`. La hoja de ruta
+> **Estado:** la tienda ya tiene catálogo con búsqueda, filtros y API (`QAL-002`). La hoja de ruta
 > completa está en [`openspec/PROJECT.md`](openspec/PROJECT.md#hoja-de-ruta).
 
 ## Ruta de la visita
@@ -27,21 +27,24 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
    que cumple todo el laboratorio y qué agente de IA actúa en cada fase del ciclo.
 2. **Las reglas del juego.** Abre [`AGENTS.md`](AGENTS.md). Verás los principios que siguen personas y agentes, por
    ejemplo que *la IA propone, pero las pruebas y las personas deciden*.
-3. **Una especificación.** Abre la [spec del pipeline](openspec/specs/quality-pipeline/spec.md).
-   Verás requisitos con un identificador (`QA-001`, `QA-002`...) y escenarios *dado / cuando / entonces*, incluido
-   qué pasa cuando algo falla.
-4. **De la especificación al escenario.** Abre [`smoke.feature`](tests/features/quality/smoke.feature). Verás el
-   requisito `QA-001` convertido en un escenario Gherkin que cualquiera puede leer, con la etiqueta `@QA-001` que lo
-   une a su requisito.
-5. **La tienda.** Ejecuta `npm run dev` (ver [Ejecútalo tú](#ejecútalo-tú)) y abre <http://localhost:3400>. Verás
-   la portada de La Tienda en Casa.
-6. **El pipeline en GitHub.** Abre la
+3. **Una especificación.** Abre la [spec del catálogo](openspec/changes/qal-002-catalogo/specs/catalog/spec.md).
+   Verás requisitos con un identificador (`CAT-001`, `CAT-004`...) y escenarios *dado / cuando / entonces*,
+   incluido qué pasa cuando algo falla (por ejemplo, un rango de precio invertido).
+4. **De la especificación al escenario.** Abre [`filtros.feature`](tests/features/catalog/filtros.feature). Verás
+   `CAT-004` convertido en escenarios Gherkin legibles por cualquiera, con una tabla de **valores límite**
+   (19,90 € exactos, un céntimo por encima y por debajo) y la etiqueta `@CAT-004` que los une a su requisito.
+5. **La tienda.** Ejecuta `npm run dev` (ver [Ejecútalo tú](#ejecútalo-tú)) y abre <http://localhost:3400/catalogo>.
+   Verás el catálogo: busca "algodón" (encuentra artículos escritos sin tilde), filtra por precio u ordena.
+6. **La API y su contrato.** Con la tienda abierta, mira <http://localhost:3400/api/openapi.json> y
+   <http://localhost:3400/api/products?minPrice=19,90&maxPrice=19,90>. Verás el contrato publicado y la misma
+   búsqueda que en la web; cada escenario de API comprueba que la respuesta cumple ese contrato.
+7. **El pipeline en GitHub.** Abre la
    [pestaña Actions](https://github.com/tonyfht/qa-agentic-lab/actions/workflows/pipeline.yml) y entra en la última
    ejecución. Verás las etapas por separado y, al final, un resumen con una fila por etapa.
-7. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás cuatro
-   preguntas respondidas con gráficos: si estamos mejor o peor que antes, dónde se va el tiempo, cuánto de lo
-   especificado está probado y qué requisitos fallan.
-8. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
+8. **El informe de calidad.** Abre el [informe publicado](https://tonyfht.github.io/qa-agentic-lab/). Verás cuatro
+   preguntas respondidas con gráficos y, en la trazabilidad, cada requisito con sus pruebas por tipo: por ejemplo,
+   `CAT-004` cubierto a la vez por pruebas de interfaz, de API y unitarias.
+9. **El gobierno.** Abre la [plantilla de Pull Request](.github/pull_request_template.md). Verás que todo cambio dice
    qué especificación implementa; si no lo dice, el pipeline lo para.
 
 ## Cómo funciona
@@ -84,6 +87,7 @@ npx playwright install chromium
 | Quiero... | Comando | Dónde lo veo |
 |---|---|---|
 | Abrir la tienda | `npm run dev` | <http://localhost:3400> |
+| Ver el contrato de la API | `npm run dev` | <http://localhost:3400/api/openapi.json> |
 | Ejecutar todo el pipeline | `npm run qa` | Resumen en la consola |
 | Ejecutar una sola etapa | `npm run qa -- --stage e2e` | Etapas: `static`, `build`, `e2e`, `report` |
 | Ver el informe con mi histórico | `npm run report` | <http://localhost:3420> |

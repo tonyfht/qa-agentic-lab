@@ -1,9 +1,10 @@
 import { existsSync } from 'node:fs'
 import path from 'node:path'
+import { E2E_DATABASE_URL, E2E_PORT, resetE2eDatabase } from '../lib/e2e'
 import { killTree, runCommand, startBackground, tail } from '../lib/exec'
 import type { StageDefinition } from './types'
 
-export const E2E_PORT = 3410
+
 
 async function waitForHealth(url: string, timeoutMs: number): Promise<{ ok: boolean; body?: unknown }> {
   const deadline = Date.now() + timeoutMs
@@ -31,8 +32,9 @@ export const buildStage: StageDefinition = {
     const build = await runCommand('npx next build', { cwd: ctx.root })
     if (build.code !== 0) return { status: 'failed', reason: `La build falló:\n${tail(build.output)}` }
 
+    resetE2eDatabase(ctx.root)
     const started = Date.now()
-    const server = startBackground(`npx next start -p ${E2E_PORT}`, ctx.root)
+    const server = startBackground(`npx next start -p ${E2E_PORT}`, ctx.root, { DATABASE_URL: E2E_DATABASE_URL })
     try {
       const health = await waitForHealth(`http://localhost:${E2E_PORT}/api/health`, 60_000)
       const ok = health.ok && (health.body as { status?: string })?.status === 'ok'

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildModel, displayTitle, formatDuration, requirementStatus, runLabel } from '@/report/model'
+import { buildModel, displayTitle, formatDuration, requirementStatus, runLabel, testKind } from '@/report/model'
 import type { TestResult } from '@/qa/results/schema'
 import { sampleRun } from '@/tests/support/sample-runs'
 
@@ -97,5 +97,17 @@ describe('QA-014 Indicadores legibles', () => {
       delta: '▼ 4 s menos que la ejecución anterior',
       trend: 'better',
     })
+  })
+})
+
+describe('QA-011 Tipo de prueba en la trazabilidad', () => {
+  it('reconoce E2E, API, unitaria, arranque, estática y gobierno por sus etiquetas', () => {
+    const kind = (tags: string[]) => testKind({ ...sampleRun().tests[0], tags })
+    expect(kind(['@CAT-004', '@api'])).toBe('API')
+    expect(kind(['@e2e', '@api'])).toBe('E2E')
+    expect(kind(['@unit'])).toBe('unitaria')
+    expect(kind(['@static'])).toBe('estática')
+    expect(kind(['@build'])).toBe('arranque')
+    expect(kind([])).toBe('otra')
   })
 })

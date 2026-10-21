@@ -26,6 +26,7 @@ export interface TraceRow {
 
 const KINDS: [string, string][] = [
   ['@e2e', 'E2E'],
+  ['@api', 'API'],
   ['@unit', 'unitaria'],
   ['@build', 'arranque'],
   ['@static', 'estática'],

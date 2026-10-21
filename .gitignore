@@ -22,3 +22,6 @@ Thumbs.db
 .features-gen/
 next-env.d.ts
 *.tsbuildinfo
+
+# Local SQLite databases (created on first use)
+.data/

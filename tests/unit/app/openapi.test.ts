@@ -16,3 +16,15 @@ describe('QA-001 Contrato OpenAPI de la tienda', () => {
     expect(doc.components?.schemas).toHaveProperty('HealthResponse')
   })
 })
+
+describe('CAT-008 API del catálogo con contrato publicado', () => {
+  const doc = buildOpenApiDocument()
+
+  it('documenta las operaciones del catálogo con sus respuestas de error', () => {
+    expect(doc.paths?.['/api/products']?.get?.operationId).toBe('listProducts')
+    expect(Object.keys(doc.paths?.['/api/products']?.get?.responses ?? {})).toEqual(['200', '400'])
+    expect(Object.keys(doc.paths?.['/api/products/{slug}']?.get?.responses ?? {})).toEqual(['200', '404'])
+    expect(doc.paths?.['/api/categories']?.get?.operationId).toBe('listCategories')
+    for (const s of ['Product', 'ProductList', 'Category', 'ApiError']) expect(doc.components?.schemas).toHaveProperty(s)
+  })
+})
