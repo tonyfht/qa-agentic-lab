@@ -4,6 +4,7 @@ import type { StageDefinition } from './types'
 
 const CHANGE_ID = /\bQAL-(\d{3})\b/g
 const MAINTENANCE = /^\s*-\s*\[x\]\s*.*mantenimiento/im
+const MAINTENANCE_BOTS = new Set(['dependabot[bot]'])
 
 function changeExists(root: string, number: string): boolean {
   const changes = path.join(root, 'openspec', 'changes')
@@ -15,7 +16,9 @@ function changeExists(root: string, number: string): boolean {
 }
 
 /** QA-021: every PR names the OpenSpec change it implements, or declares itself maintenance. */
-export function checkPullRequestBody(body: string, root: string): { ok: boolean; message: string } {
+export function checkPullRequestBody(body: string, root: string, author = ''): { ok: boolean; message: string } {
+  // Dependency update bots cannot tick the checkbox; their PRs are maintenance by definition.
+  if (MAINTENANCE_BOTS.has(author)) return { ok: true, message: `PR de mantenimiento de ${author}` }
   const ids = [...new Set([...body.matchAll(CHANGE_ID)].map((m) => m[1]))]
   if (ids.length === 0) {
     return MAINTENANCE.test(body)
@@ -52,7 +55,7 @@ export const governanceStage: StageDefinition = {
     prBody(ctx.options) === null ? 'Falta la descripción del PR (--pr-body <fichero> o PR_BODY)' : null,
   async run(ctx) {
     const started = Date.now()
-    const result = checkPullRequestBody(prBody(ctx.options) ?? '', ctx.root)
+    const result = checkPullRequestBody(prBody(ctx.options) ?? '', ctx.root, process.env.PR_AUTHOR ?? '')
     ctx.log(`  · ${result.message}`)
     return {
       status: result.ok ? 'passed' : 'failed',

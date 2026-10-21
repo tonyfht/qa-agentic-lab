@@ -1,0 +1,19 @@
+# Dependencias vigiladas (QA-024): una propuesta semanal agrupada por ecosistema, sujeta al mismo pipeline.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      npm:
+        patterns: ['*']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ['*']

@@ -8,7 +8,6 @@ type World = {
 }
 
 export const test = base.extend<{ world: World }>({
-  // eslint-disable-next-line no-empty-pattern
   world: async ({}, provide) => provide({ requests: [] }),
 })
 

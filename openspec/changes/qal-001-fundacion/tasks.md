@@ -103,7 +103,7 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
 
 ## 9. Gobierno del repositorio
 
-- [ ] 9.1 Plantilla de PR (ID QAL, casilla de mantenimiento, lista de README e informe) y plantillas de *issue*
+- [x] 9.1 Plantilla de PR (ID QAL, casilla de mantenimiento, lista de README e informe) y plantillas de *issue*
   (defecto y requisito). Se verifica con una prueba de que existen con sus campos obligatorios (QA-022, QA-034).
 - [ ] 9.2 Etapa `governance` y workflow `governance.yml`. Se verifica con pruebas de ID válido, sin ID, ID inexistente
   y mantenimiento (QA-021).
@@ -116,12 +116,12 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
 
 - [ ] 10.1 Logo definitivo en `docs/assets/logo.svg`, que se adapta al tema. Se verifica con el README en GitHub en
   tema claro y oscuro (QA-030).
-- [ ] 10.2 Párrafo de propósito sin jerga, ruta de la visita numerada (tienda, spec, `.feature`, ejecución de Actions
+- [x] 10.2 Párrafo de propósito sin jerga, ruta de la visita numerada (tienda, spec, `.feature`, ejecución de Actions
   e informe) y "Ejecútalo tú" (requisitos previos, `npm run dev`, `npm run qa` y botón de Actions). Se verifica
   siguiendo la ruta de principio a fin y con el comprobador de enlaces en verde (QA-031, QA-033).
 - [ ] 10.3 Diagramas Mermaid del ciclo SDD y del pipeline con sus etapas reales. Se verifica con el validador Mermaid
   en verde y la comparación con una ejecución de Actions (QA-032).
-- [ ] 10.4 Actualizar `AGENTS.md`: quitar las marcas *(pendiente QAL-001)* de lo ya fijado y documentar los comandos.
+- [x] 10.4 Actualizar `AGENTS.md`: quitar las marcas *(pendiente QAL-001)* de lo ya fijado y documentar los comandos.
   Se verifica con una revisión y el comprobador de enlaces en verde.
 
 ## 11. Verificación integrada

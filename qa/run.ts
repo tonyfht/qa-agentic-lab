@@ -1,7 +1,8 @@
-import { appendFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { reportLink, resolveRunId, runDirFor } from './lib/context'
 import { executePlan, planStages, renderSummary, runFailed, UnknownStageError } from './orchestrator'
+import type { RunResult } from './results/schema'
 import { registry } from './stages/registry'
 
 // Usage: npm run qa [-- --stage <id>] [--<option> <value>]
@@ -41,7 +42,17 @@ async function main() {
   const partials = await executePlan(plan, { root, runId, runDir, options, log: console.log }, target)
 
   const stages = partials.map((p) => p.stage)
-  const summary = renderSummary(stages, partials.flatMap((p) => p.tests), reportLink(root))
+  // After the report stage the summary covers the whole run (in CI, the stages ran in other jobs).
+  const runFile = path.join(runDir, 'run.json')
+  const whole =
+    (!target || target === 'report') && existsSync(runFile)
+      ? (JSON.parse(readFileSync(runFile, 'utf8')) as RunResult)
+      : null
+  const summary = renderSummary(
+    whole?.stages ?? stages,
+    whole?.tests ?? partials.flatMap((p) => p.tests),
+    reportLink(root),
+  )
   console.log('\n' + summary)
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary)
 

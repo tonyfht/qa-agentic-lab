@@ -41,6 +41,11 @@ describe('QA-021 Cada PR identifica su cambio', () => {
     expect(checkPullRequestBody('- [x] Es mantenimiento (sin cambio de OpenSpec)', root)).toMatchObject({ ok: true })
   })
 
+  it('los PR de Dependabot son mantenimiento aunque no lleven ID', () => {
+    expect(checkPullRequestBody('Bumps next from 16.4.2 to 16.5.0', root, 'dependabot[bot]')).toMatchObject({ ok: true })
+    expect(checkPullRequestBody('Bumps next', root, 'alguien')).toMatchObject({ ok: false })
+  })
+
   it('una casilla de mantenimiento sin marcar no basta', () => {
     expect(checkPullRequestBody('- [ ] Es mantenimiento (sin cambio de OpenSpec)', root).ok).toBe(false)
   })

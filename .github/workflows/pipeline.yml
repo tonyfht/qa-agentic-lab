@@ -1,0 +1,176 @@
+# Pipeline de calidad de QA Agentic Lab.
+# Cada job ejecuta una etapa con el MISMO comando que se usa en local (npm run qa -- --stage <id>): este fichero no
+# contiene lógica de pruebas (QA-003). No usa ningún secreto: cualquiera puede lanzarlo desde la pestaña Actions.
+name: Pipeline de calidad
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '30 5 * * *' # cada día a las 05:30 UTC
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pipeline-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  QA_RUN_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}
+  QA_REPORT_URL: ${{ github.ref == 'refs/heads/main' && format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) || format('{0}/{1}/actions/runs/{2}#artifacts', github.server_url, github.repository, github.run_id) }}
+
+jobs:
+  static:
+    name: 1 · Análisis estático
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # Gitleaks revisa todo el historial
+      - uses: ./.github/actions/setup
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Navegador para validar los diagramas Mermaid
+        run: npx playwright install --with-deps chromium
+      - name: Instalar Gitleaks
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            | tar -xz -C "$HOME/.local/bin" gitleaks
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - run: npm run qa -- --stage static
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: partial-static
+          path: |
+            reports/runs/${{ env.QA_RUN_ID }}/meta.json
+            reports/runs/${{ env.QA_RUN_ID }}/stages/static.json
+          if-no-files-found: ignore
+
+  build:
+    name: 2 · Tienda en el runner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - run: npm run qa -- --stage build
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: partial-build
+          path: |
+            reports/runs/${{ env.QA_RUN_ID }}/meta.json
+            reports/runs/${{ env.QA_RUN_ID }}/stages/build.json
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v7
+        with:
+          name: store-build
+          include-hidden-files: true
+          path: |
+            .next
+            !.next/cache
+          retention-days: 1
+
+  e2e:
+    name: 3 · Smoke y E2E
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install --with-deps chromium
+      - uses: actions/download-artifact@v8
+        with:
+          name: store-build
+          path: .next
+      - run: npm run qa -- --stage e2e
+        env:
+          QA_REUSE_BUILD: '1' # usa la build del job anterior en lugar de repetirla
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: partial-e2e
+          path: |
+            reports/runs/${{ env.QA_RUN_ID }}/meta.json
+            reports/runs/${{ env.QA_RUN_ID }}/stages/e2e.json
+            reports/runs/${{ env.QA_RUN_ID }}/e2e-tests.json
+            reports/runs/${{ env.QA_RUN_ID }}/playwright-report/
+          if-no-files-found: ignore
+
+  report:
+    name: 4 · Informe
+    needs: [static, build, e2e]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: partial-*
+          merge-multiple: true
+          path: reports/runs/${{ env.QA_RUN_ID }}
+      - name: Traer el histórico público (solo lectura)
+        run: |
+          mkdir -p reports/history
+          if git fetch --depth=1 origin gh-pages 2>/dev/null; then
+            git show FETCH_HEAD:history/runs.ndjson > reports/history/runs.ndjson 2>/dev/null || rm -f reports/history/runs.ndjson
+          fi
+      - run: npm run qa -- --stage report
+      - uses: actions/upload-artifact@v7
+        with:
+          name: quality-report
+          path: reports/site/
+      - uses: actions/upload-artifact@v7
+        with:
+          name: run-result
+          path: |
+            reports/runs/${{ env.QA_RUN_ID }}/run.json
+            reports/runs/${{ env.QA_RUN_ID }}/playwright-report/
+          if-no-files-found: ignore
+
+  # Solo main publica el informe y alimenta el histórico público (QA-013). Un PR nunca lo modifica.
+  publish:
+    name: 5 · Publicar en GitHub Pages
+    needs: report
+    if: always() && needs.report.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: pages-publish
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v8
+        with:
+          name: run-result
+          path: reports/runs/${{ env.QA_RUN_ID }}
+      - name: Preparar la rama gh-pages
+        run: |
+          if git fetch origin gh-pages 2>/dev/null; then
+            git worktree add pages FETCH_HEAD
+          else
+            git worktree add --orphan -b gh-pages pages
+          fi
+      - run: npx tsx qa/publish.ts pages "reports/runs/${QA_RUN_ID}"
+      - name: Subir el informe
+        working-directory: pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "informe: ejecución #${{ github.run_number }} (${GITHUB_SHA::7})"
+          git push origin HEAD:gh-pages
