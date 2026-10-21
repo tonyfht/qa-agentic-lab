@@ -38,7 +38,7 @@ Rama: `change/qal-010-tienda-retail`.
 
 - [x] 5.1 Suite completa en verde sin cambiar aserciones, y Lighthouse dentro de presupuesto (EXP-006). Se verifica
   con `npm run qa`.
-- [ ] 5.2 Referencias visuales regeneradas en Linux y revisadas. Se verifica con el workflow *Referencias visuales*
+- [x] 5.2 Referencias visuales regeneradas en Linux y revisadas. Se verifica con el workflow *Referencias visuales*
   y con el PR.
 - [x] 5.3 Auditoría de experiencia antes y después. Se verifica con la revisión del Auditor de experiencia y su
   registro.
