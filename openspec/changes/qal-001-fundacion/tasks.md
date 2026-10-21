@@ -94,9 +94,9 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
 - [x] 8.1 `pipeline.yml` con *jobs* `static`, `build`, `e2e` y `report`, que solo llaman a
   `npm run qa -- --stage <id>`, con parciales por artefacto y cachés de `node_modules` y navegadores. Se verifica con
   un PR que muestra los cuatro *jobs* separados en verde (QA-003).
-- [ ] 8.2 Disparadores: PR a `main`, push a `main`, `workflow_dispatch` y `schedule` diario. Se verifica con una
+- [x] 8.2 Disparadores: PR a `main`, push a `main`, `workflow_dispatch` y `schedule` diario. Se verifica con una
   ejecución manual sin secretos en verde (QA-004).
-- [ ] 8.3 *Job* `publish`, solo en `main`, con `concurrency: pages-publish`: histórico en `gh-pages`, regeneración,
+- [x] 8.3 *Job* `publish`, solo en `main`, con `concurrency: pages-publish`: histórico en `gh-pages`, regeneración,
   detalle en `runs/<n>/playwright/` con poda a 30 y Pages desde `gh-pages`. Se verifica con dos ejecuciones en `main`
   que dejan dos registros y el informe público actualizado (QA-013, QA-015).
 - [x] 8.4 En PR, el informe solo como artefacto. Se verifica con un PR que no cambia `gh-pages` (QA-013).
@@ -107,7 +107,7 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
   (defecto y requisito). Se verifica con una prueba de que existen con sus campos obligatorios (QA-022, QA-034).
 - [x] 9.2 Etapa `governance` y workflow `governance.yml`. Se verifica con pruebas de ID válido, sin ID, ID inexistente
   y mantenimiento (QA-021).
-- [ ] 9.3 `CODEOWNERS` y `dependabot.yml` (npm y github-actions, semanal). Se verifica con la pestaña *Insights →
+- [x] 9.3 `CODEOWNERS` y `dependabot.yml` (npm y github-actions, semanal). Se verifica con la pestaña *Insights →
   Dependency graph → Dependabot* activa (QA-024).
 - [x] 9.4 `scripts/setup-branch-protection.mjs` y su ejecución. Se verifica con un push directo a `main` rechazado y
   un PR con comprobaciones requeridas (QA-020).
@@ -126,7 +126,7 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
 
 ## 11. Verificación integrada
 
-- [ ] 11.1 Recorrer los criterios de éxito 1–7 de `proposal.md` y anotar la evidencia de cada uno (enlace a la
+- [x] 11.1 Recorrer los criterios de éxito 1–7 de `proposal.md` y anotar la evidencia de cada uno (enlace a la
   ejecución, captura o comando) en el PR del cambio.
 
 ## Workflow follow-up

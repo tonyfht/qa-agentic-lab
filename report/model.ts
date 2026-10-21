@@ -109,7 +109,8 @@ function delta(current: number, previous: number | undefined, unit: string, high
   const diff = current - previous
   if (diff === 0) return { delta: 'Igual que la ejecución anterior', trend: 'same' }
   const better = higherIsBetter ? diff > 0 : diff < 0
-  return { delta: `${diff > 0 ? '▲' : '▼'} ${Math.abs(diff)} ${unit} que la ejecución anterior`, trend: better ? 'better' : 'worse' }
+  const text = `${diff > 0 ? '▲' : '▼'} ${Math.abs(diff)} ${unit} ${diff > 0 ? 'más' : 'menos'} que la ejecución anterior`
+  return { delta: text, trend: better ? 'better' : 'worse' }
 }
 
 /**
