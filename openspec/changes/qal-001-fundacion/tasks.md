@@ -91,7 +91,7 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
 
 ## 8. Pipeline en GitHub Actions
 
-- [ ] 8.1 `pipeline.yml` con *jobs* `static`, `build`, `e2e` y `report`, que solo llaman a
+- [x] 8.1 `pipeline.yml` con *jobs* `static`, `build`, `e2e` y `report`, que solo llaman a
   `npm run qa -- --stage <id>`, con parciales por artefacto y cachés de `node_modules` y navegadores. Se verifica con
   un PR que muestra los cuatro *jobs* separados en verde (QA-003).
 - [ ] 8.2 Disparadores: PR a `main`, push a `main`, `workflow_dispatch` y `schedule` diario. Se verifica con una
@@ -99,27 +99,27 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
 - [ ] 8.3 *Job* `publish`, solo en `main`, con `concurrency: pages-publish`: histórico en `gh-pages`, regeneración,
   detalle en `runs/<n>/playwright/` con poda a 30 y Pages desde `gh-pages`. Se verifica con dos ejecuciones en `main`
   que dejan dos registros y el informe público actualizado (QA-013, QA-015).
-- [ ] 8.4 En PR, el informe solo como artefacto. Se verifica con un PR que no cambia `gh-pages` (QA-013).
+- [x] 8.4 En PR, el informe solo como artefacto. Se verifica con un PR que no cambia `gh-pages` (QA-013).
 
 ## 9. Gobierno del repositorio
 
 - [x] 9.1 Plantilla de PR (ID QAL, casilla de mantenimiento, lista de README e informe) y plantillas de *issue*
   (defecto y requisito). Se verifica con una prueba de que existen con sus campos obligatorios (QA-022, QA-034).
-- [ ] 9.2 Etapa `governance` y workflow `governance.yml`. Se verifica con pruebas de ID válido, sin ID, ID inexistente
+- [x] 9.2 Etapa `governance` y workflow `governance.yml`. Se verifica con pruebas de ID válido, sin ID, ID inexistente
   y mantenimiento (QA-021).
 - [ ] 9.3 `CODEOWNERS` y `dependabot.yml` (npm y github-actions, semanal). Se verifica con la pestaña *Insights →
   Dependency graph → Dependabot* activa (QA-024).
-- [ ] 9.4 `scripts/setup-branch-protection.mjs` y su ejecución. Se verifica con un push directo a `main` rechazado y
+- [x] 9.4 `scripts/setup-branch-protection.mjs` y su ejecución. Se verifica con un push directo a `main` rechazado y
   un PR con comprobaciones requeridas (QA-020).
 
 ## 10. README guiado
 
-- [ ] 10.1 Logo definitivo en `docs/assets/logo.svg`, que se adapta al tema. Se verifica con el README en GitHub en
+- [x] 10.1 Logo definitivo en `docs/assets/logo.svg`, que se adapta al tema. Se verifica con el README en GitHub en
   tema claro y oscuro (QA-030).
 - [x] 10.2 Párrafo de propósito sin jerga, ruta de la visita numerada (tienda, spec, `.feature`, ejecución de Actions
   e informe) y "Ejecútalo tú" (requisitos previos, `npm run dev`, `npm run qa` y botón de Actions). Se verifica
   siguiendo la ruta de principio a fin y con el comprobador de enlaces en verde (QA-031, QA-033).
-- [ ] 10.3 Diagramas Mermaid del ciclo SDD y del pipeline con sus etapas reales. Se verifica con el validador Mermaid
+- [x] 10.3 Diagramas Mermaid del ciclo SDD y del pipeline con sus etapas reales. Se verifica con el validador Mermaid
   en verde y la comparación con una ejecución de Actions (QA-032).
 - [x] 10.4 Actualizar `AGENTS.md`: quitar las marcas *(pendiente QAL-001)* de lo ya fijado y documentar los comandos.
   Se verifica con una revisión y el comprobador de enlaces en verde.
