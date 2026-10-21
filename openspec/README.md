@@ -16,7 +16,7 @@ Este directorio gobierna el desarrollo de la tienda y del sistema de calidad con
 `QAL-XXX-nombre-descriptivo` (**Q**A **A**gentic **L**ab, 3 dígitos, kebab-case). En el archivo, OpenSpec antepone la
 fecha: `AAAA-MM-DD-qal-XXX-nombre/`.
 
-**Siguiente ID libre: `QAL-002`.**
+**Siguiente ID libre: `QAL-003`.**
 
 ## Estructura de un cambio
 
@@ -40,3 +40,4 @@ QAL-XXX-nombre/
 | ID | Nombre | Fecha | Tipo |
 |----|--------|-------|------|
 | [QAL-001](changes/archive/2026-10-21-qal-001-fundacion/) | Fundación del laboratorio: arnés, pipeline con paridad local/CI, resultados e histórico, informe propio, README guiado y gobierno | 2026-10-21 | Fundacional |
+| [QAL-002](changes/archive/2026-10-21-qal-002-catalogo/) | Catálogo: búsqueda, filtros, ficha de producto y API con contrato | 2026-10-21 | Producto |
