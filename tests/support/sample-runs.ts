@@ -1,4 +1,4 @@
-import type { RunResult } from '@/qa/results/schema'
+import type { RunResult } from '../../qa/results/schema'
 
 export function sampleRun(overrides: Partial<RunResult> = {}): RunResult {
   return {

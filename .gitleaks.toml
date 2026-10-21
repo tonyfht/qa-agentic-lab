@@ -1,0 +1,13 @@
+# Gitleaks configuration (QA-023). Default rules plus documented exceptions.
+# Every exception says why it is safe. Never disable a rule to make the pipeline pass.
+title = "QA Agentic Lab"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Ficheros generados que no contienen secretos"
+paths = [
+  '''package-lock\.json''',
+  '''schemas/run-result\.v\d+\.json''',
+]

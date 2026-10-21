@@ -1,5 +1,8 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { findBrokenLinks, markdownFiles, mermaidBlocks } from '../checks/markdown'
+import { validateMermaid } from '../checks/mermaid'
+import { scanSecrets } from '../checks/secrets'
 import type { TestResult } from '../results/schema'
 import { runCommand, tail } from '../lib/exec'
 import { fromVitestJson } from '../lib/vitest-results'
@@ -38,6 +41,37 @@ export const staticChecks: StaticCheck[] = [
         ? { status: 'passed' }
         : { status: 'failed', message: `Ficheros con CRLF en el índice:\n${crlf.join('\n')}` }
     },
+  },
+  {
+    id: 'links',
+    title: 'Enlaces internos de la documentación',
+    requirements: ['QA-031'],
+    async run(ctx) {
+      const broken = findBrokenLinks(ctx.root, markdownFiles(ctx.root))
+      return broken.length === 0
+        ? { status: 'passed' }
+        : { status: 'failed', message: broken.map((b) => `${b.file}: ${b.target} (${b.reason})`).join('\n') }
+    },
+  },
+  {
+    id: 'mermaid',
+    title: 'Sintaxis de los diagramas Mermaid',
+    requirements: ['QA-032'],
+    async run(ctx) {
+      const errors = await validateMermaid(mermaidBlocks(ctx.root, markdownFiles(ctx.root)))
+      return errors.length === 0
+        ? { status: 'passed' }
+        : {
+            status: 'failed',
+            message: errors.map((e) => `${e.block.file}, diagrama ${e.block.index}: ${e.message.split('\n')[0]}`).join('\n'),
+          }
+    },
+  },
+  {
+    id: 'secrets',
+    title: 'Búsqueda de secretos (Gitleaks)',
+    requirements: ['QA-023'],
+    run: (ctx) => scanSecrets(ctx.root),
   },
 ]
 

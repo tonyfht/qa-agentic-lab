@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { serializedJsonSchema, SCHEMA_FILE } from '@/qa/results/export-schema'
 import { RunResultValidationError, validateRunResult } from '@/qa/results/schema'
-import { sampleRun } from './fixtures'
+import { sampleRun } from '@/tests/support/sample-runs'
 
 describe('QA-010 Resultado de ejecución con esquema versionado', () => {
   it('acepta un resultado válido e indica su schemaVersion', () => {

@@ -3,7 +3,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { appendRun, readHistory } from '@/qa/results/history'
-import { sampleRun } from './fixtures'
+import { sampleRun } from '@/tests/support/sample-runs'
 
 const tmpFile = () => path.join(mkdtempSync(path.join(os.tmpdir(), 'qal-hist-')), 'history', 'runs.ndjson')
 

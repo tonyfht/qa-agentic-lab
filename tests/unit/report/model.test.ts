@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildModel, displayTitle, formatDuration, requirementStatus, runLabel } from '@/report/model'
 import type { TestResult } from '@/qa/results/schema'
-import { sampleRun } from '../qa/results/fixtures'
+import { sampleRun } from '@/tests/support/sample-runs'
 
 const test = (status: TestResult['status'], requirements = ['QA-001'], extra: Partial<TestResult> = {}): TestResult => ({
   id: `${status}-${Math.random()}`,

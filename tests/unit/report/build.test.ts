@@ -3,7 +3,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { buildSite, DETAIL_RETENTION } from '@/report/build'
-import { sampleRun } from '../qa/results/fixtures'
+import { sampleRun } from '@/tests/support/sample-runs'
 
 const root = path.resolve(__dirname, '../../..')
 const tmp = (p: string) => mkdtempSync(path.join(os.tmpdir(), p))

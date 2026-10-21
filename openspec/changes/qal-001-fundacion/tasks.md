@@ -65,13 +65,13 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
 
 ## 6. Comprobaciones de la etapa `static`
 
-- [ ] 6.1 Comprobador de enlaces internos de Markdown (ficheros y anclas). Se verifica con pruebas de un enlace válido,
+- [x] 6.1 Comprobador de enlaces internos de Markdown (ficheros y anclas). Se verifica con pruebas de un enlace válido,
   un fichero inexistente y un ancla inexistente (QA-031).
-- [ ] 6.2 Validador de bloques Mermaid con `mermaid.parse()` en Chromium. Se verifica con pruebas de un diagrama
+- [x] 6.2 Validador de bloques Mermaid con `mermaid.parse()` en Chromium. Se verifica con pruebas de un diagrama
   válido y uno con sintaxis rota (QA-032).
-- [ ] 6.3 Gitleaks con `.gitleaks.toml` (excepciones con motivo) y omisión con motivo si no está instalado. Se verifica
+- [x] 6.3 Gitleaks con `.gitleaks.toml` (excepciones con motivo) y omisión con motivo si no está instalado. Se verifica
   con pruebas de un secreto falso detectado, una excepción respetada y la omisión (QA-023).
-- [ ] 6.4 Etapa `static` completa (lint, tipos, unitarias, enlaces, Mermaid, secretos). Se verifica con
+- [x] 6.4 Etapa `static` completa (lint, tipos, unitarias, enlaces, Mermaid, secretos). Se verifica con
   `npm run qa -- --stage static` en verde.
 
 ## 7. Informe propio
@@ -81,10 +81,10 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
   y abre desde disco sin peticiones de red (QA-015).
 - [x] 7.2 Indicadores con diferencia frente a la ejecución anterior, tira del pipeline y tabla de trazabilidad con
   requisitos sin pruebas. Se verifica con pruebas del cálculo de diferencias y de cobertura (QA-011, QA-014).
-- [ ] 7.3 Gráficos de tendencia, tiempo por etapa y cobertura, cada uno con su pregunta, su tabla alternativa y su
+- [x] 7.3 Gráficos de tendencia, tiempo por etapa y cobertura, cada uno con su pregunta, su tabla alternativa y su
   estado vacío. Se verifica con una prueba E2E sobre el informe generado: preguntas visibles, mensaje con un solo
   registro y tabla accesible (QA-014).
-- [ ] 7.4 Enlace al detalle técnico, o aviso sin enlace roto si no existe. Se verifica con una prueba E2E sobre un
+- [x] 7.4 Enlace al detalle técnico, o aviso sin enlace roto si no existe. Se verifica con una prueba E2E sobre un
   test fallido con y sin traza (QA-016).
 - [x] 7.5 `npm run report`: construye con el histórico local de `reports/` y sirve en el 3420. Se verifica tras dos
   `npm run qa`, con dos puntos en la tendencia en `http://localhost:3420` (QA-015).

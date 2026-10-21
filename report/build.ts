@@ -4,7 +4,8 @@ import path from 'node:path'
 import type { RunResult } from '../qa/results/schema'
 import { buildModel } from './model'
 
-const require = createRequire(import.meta.url)
+// Resolved from the repo root: works the same under tsx, Vitest (ESM) and Playwright (CJS).
+const require = createRequire(path.join(process.cwd(), 'package.json'))
 
 /** Runs whose Playwright detail is kept in the site; the summarised history is never pruned. */
 export const DETAIL_RETENTION = 30

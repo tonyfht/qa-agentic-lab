@@ -54,5 +54,5 @@ export function killTree(child: ChildProcess) {
 
 export function commandExists(command: string): boolean {
   const probe = process.platform === 'win32' ? 'where' : 'which'
-  return spawnSync(probe, [command], { stdio: 'ignore', shell: process.platform === 'win32' }).status === 0
+  return spawnSync(`${probe} ${command}`, { stdio: 'ignore', shell: true }).status === 0
 }
