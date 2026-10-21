@@ -1,6 +1,6 @@
 # QAL-001 — Fundación del laboratorio
 
-**Estado:** borrador · **Fecha:** 2026-10-21 · **Tipo:** fundacional
+**Estado:** aprobado (2026-10-21) · **Fecha:** 2026-10-21 · **Tipo:** fundacional
 
 ## Why
 
@@ -61,6 +61,7 @@ Ninguna (proyecto nuevo).
 | D6 | Demo pública | **Vercel (plan Hobby) + Turso** (libSQL gestionado) | Render o Fly.io con SQLite en disco | Despliegue y vista previa por PR sin configurar nada. El uso es formativo y sin ánimo de lucro, compatible con el plan gratuito. Si algún día pasa a uso comercial, se revisa |
 | D7 | Gestor de paquetes y Node | **npm** y **Node 24 LTS** | pnpm | Lo mismo que el resto de proyectos |
 | D8 | Informes | **Allure** como informe detallado, enlazado desde el portal propio | Solo el informe HTML de Playwright | Ya probado en `poc_QA_E-commerce`. El portal añade la capa ejecutiva y la trazabilidad |
+| D9 | Ejecución en local y puertos | **La demo completa también se levanta en local** (`npm run dev` y `npm run build && npm start`) en el **3400**. Las pruebas E2E usan el **3410** y la vista previa del portal el **3420** | Puertos por defecto (3000, 5173) | Son puertos que no han usado otros proyectos (3000, 3100, 3110, 3120, 3150, 3200, 3333, 5173, 54321 están ocupados o reservados). Separar dev y E2E permite tener la tienda abierta mientras corren las pruebas |
 
 ## Hoja de ruta propuesta (cambios posteriores)
 
@@ -113,7 +114,9 @@ Tipologías que aparecen: análisis estático y smoke E2E.
    el pipeline en verde.
 2. Una ejecución del pipeline sobre un PR muestra las etapas por separado y termina en verde. Un PR sin ID QAL en la
    descripción falla la comprobación de gobierno.
-3. `npm ci && npm run dev` levanta la tienda en local con datos de ejemplo, sin `.env` obligatorio.
+3. `npm ci && npm run dev` levanta la tienda en `http://localhost:3400` con datos de ejemplo, sin `.env` obligatorio.
+   `npm run build && npm start` sirve la misma demo en modo producción en el mismo puerto, y las pruebas en local
+   corren contra el 3410 sin chocar con la tienda abierta.
 4. El escenario smoke `@QA-001` aparece en el informe con su ID de requisito.
 5. El portal está publicado en GitHub Pages desde `main` y enlaza el último informe. Un PR no lo modifica.
 

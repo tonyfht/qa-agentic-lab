@@ -101,6 +101,21 @@ openspec/             → specs, cambios y archivo (fuente de verdad)
 
 ---
 
+## Puertos en local
+
+La demo completa se puede levantar en local además de en la demo pública.
+
+| Puerto | Uso |
+|---|---|
+| **3400** | La Tienda en Casa (`npm run dev` / `npm start`) |
+| **3410** | Tienda levantada por las pruebas E2E (Playwright) |
+| **3420** | Vista previa local del portal de calidad |
+
+No usar puertos de otros proyectos de la máquina: 3000 (Aigovia), 3100/3110/3120/3150/3200 (Pensend y su comité),
+3333, 5173 y 54321. Un puerto nuevo se elige libre y se añade a esta tabla.
+
+---
+
 ## Agentes de QA *(pendiente de su cambio propio)*
 
 | Agente | Función | Cuándo actúa |
