@@ -84,6 +84,9 @@ export default async function CartPage() {
             Te faltan {formatPrice(missing)} para el envío gratis.
           </p>
         )}
+        <Link href="/checkout" className="rounded-lg bg-store-terracotta px-4 py-3 text-center font-semibold text-white hover:bg-store-terracotta-dark">
+          Tramitar pedido
+        </Link>
       </aside>
     </main>
   )

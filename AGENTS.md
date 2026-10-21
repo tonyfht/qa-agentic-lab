@@ -161,7 +161,7 @@ No usar puertos de otros proyectos de la máquina: 3000 (Aigovia), 3100/3110/312
 | Analista | Explora la tienda y convierte las specs en `.feature` con riesgos y prioridades | Diseño | [`qa-analista`](.claude/agents/qa-analista.md) |
 | Diseñador de casos | Aplica técnicas (equivalencia, valores límite, tablas de decisión, *pairwise*) a los escenarios | Diseño | [`qa-disenador`](.claude/agents/qa-disenador.md) |
 | Automatizador | Implementa los *steps* y tests, y solo entrega lo que pasa | Automatización | [`qa-automatizador`](.claude/agents/qa-automatizador.md) |
-| Agente de API | Diseña pruebas de contrato y negocio desde la especificación OpenAPI | Automatización | QAL-005 |
+| Agente de API | Diseña pruebas de contrato y negocio desde la especificación OpenAPI y mantiene el barrido de contrato | Automatización | [`qa-api`](.claude/agents/qa-api.md) |
 | Sanador | Repara tests rotos por cambios no funcionales; abre PR con evidencia | Tras un fallo en CI | QAL-008 |
 | Detector de *flaky* | Detecta tests inestables con el histórico y propone su corrección o cuarentena | Tras cada ejecución | QAL-008 |
 | Triaje | Clasifica fallos y abre *issues* de defecto con evidencia | Tras un fallo en CI | QAL-008 |

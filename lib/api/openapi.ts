@@ -2,16 +2,23 @@ import { OpenAPIRegistry, OpenApiGeneratorV31 } from '@asteasolutions/zod-to-ope
 import { z } from 'zod'
 import { appVersion } from '@/lib/version'
 import {
+  Account,
   AddItemBody,
   ApiError,
   Cart,
   CatalogQueryParams,
   Category,
+  CheckoutBody,
   CouponBody,
   HealthResponse,
+  LoginBody,
+  OkResponse,
+  Order,
+  OrderSummary,
   Product,
   ProductList,
   QuantityBody,
+  RegisterBody,
 } from './schemas'
 
 const json = (schema: z.ZodType, description: string) => ({ description, content: { 'application/json': { schema } } })
@@ -125,6 +132,76 @@ export function buildOpenApiDocument() {
     summary: 'Quitar el cupón',
     tags: ['Carrito'],
     responses: { 200: json(Cart, 'El carrito sin cupón') },
+  })
+
+  const err = (description: string) => json(ApiError, description)
+  const unauthorized = { 401: err('Sin sesión iniciada') }
+
+  registry.registerPath({
+    method: 'post',
+    path: '/api/account/register',
+    operationId: 'register',
+    summary: 'Crear una cuenta (inicia la sesión)',
+    tags: ['Cuenta'],
+    request: body(RegisterBody),
+    responses: { 201: json(Account, 'Cuenta creada'), 400: err('Datos no válidos (ver fields)'), 409: err('El correo ya existe') },
+  })
+  registry.registerPath({
+    method: 'post',
+    path: '/api/account/login',
+    operationId: 'login',
+    summary: 'Iniciar sesión (cookie session, HttpOnly)',
+    tags: ['Cuenta'],
+    request: body(LoginBody),
+    responses: { 200: json(Account, 'Sesión iniciada'), 400: err('Petición no válida'), 401: err('Correo o contraseña incorrectos') },
+  })
+  registry.registerPath({
+    method: 'post',
+    path: '/api/account/logout',
+    operationId: 'logout',
+    summary: 'Cerrar la sesión',
+    tags: ['Cuenta'],
+    responses: { 200: json(OkResponse, 'Sesión cerrada') },
+  })
+  registry.registerPath({
+    method: 'get',
+    path: '/api/account/me',
+    operationId: 'me',
+    summary: 'Cliente con la sesión iniciada',
+    tags: ['Cuenta'],
+    responses: { 200: json(Account, 'El cliente'), ...unauthorized },
+  })
+  registry.registerPath({
+    method: 'post',
+    path: '/api/checkout',
+    operationId: 'checkout',
+    summary: 'Pagar el carrito con el pago simulado y crear el pedido',
+    tags: ['Checkout'],
+    request: body(CheckoutBody),
+    responses: {
+      201: json(Order, 'Pedido creado'),
+      400: err('Carrito vacío o datos de envío o tarjeta no válidos (ver fields)'),
+      ...unauthorized,
+      402: err('Pago rechazado (tarjeta rechazada, fondos insuficientes o caducada)'),
+      409: err('No hay stock suficiente de algún artículo'),
+    },
+  })
+  registry.registerPath({
+    method: 'get',
+    path: '/api/orders',
+    operationId: 'listOrders',
+    summary: 'Pedidos del cliente, del más reciente al más antiguo',
+    tags: ['Pedidos'],
+    responses: { 200: json(z.array(OrderSummary), 'Los pedidos'), ...unauthorized },
+  })
+  registry.registerPath({
+    method: 'get',
+    path: '/api/orders/{number}',
+    operationId: 'getOrder',
+    summary: 'Detalle de un pedido propio',
+    tags: ['Pedidos'],
+    request: { params: z.object({ number: z.string().openapi({ example: 'TC-000001' }) }) },
+    responses: { 200: json(Order, 'El pedido'), ...unauthorized, 404: err('No existe (o no es de este cliente)') },
   })
 
   return new OpenApiGeneratorV31(registry.definitions).generateDocument({

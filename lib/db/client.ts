@@ -1,7 +1,8 @@
 import { mkdirSync } from 'node:fs'
 import path from 'node:path'
 import { createClient, type Client } from '@libsql/client'
-import { categories, coupons, products } from './seed-data'
+import { hashPassword } from '@/lib/account/password'
+import { categories, coupons, demoCustomer, products } from './seed-data'
 
 // One local SQLite file, created and seeded on first use: no setup locally, in CI or in E2E (RT-2).
 const DEFAULT_URL = `file:${path.join('.data', 'tienda.db')}`
@@ -43,6 +44,44 @@ const SCHEMA = [
      quantity INTEGER NOT NULL CHECK (quantity > 0),
      PRIMARY KEY (cart_id, slug)
    )`,
+  `CREATE TABLE IF NOT EXISTS users (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     name TEXT NOT NULL,
+     email TEXT NOT NULL UNIQUE,
+     password_hash TEXT NOT NULL,
+     created_at TEXT NOT NULL
+   )`,
+  `CREATE TABLE IF NOT EXISTS sessions (
+     id TEXT PRIMARY KEY,
+     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+     expires_at TEXT NOT NULL
+   )`,
+  `CREATE TABLE IF NOT EXISTS orders (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     user_id INTEGER NOT NULL REFERENCES users(id),
+     created_at TEXT NOT NULL,
+     status TEXT NOT NULL,
+     subtotal_cents INTEGER NOT NULL,
+     discount_cents INTEGER NOT NULL,
+     shipping_cents INTEGER NOT NULL,
+     total_cents INTEGER NOT NULL,
+     vat_included_cents INTEGER NOT NULL,
+     coupon_code TEXT,
+     ship_name TEXT NOT NULL,
+     ship_address TEXT NOT NULL,
+     ship_city TEXT NOT NULL,
+     ship_postal_code TEXT NOT NULL,
+     card_brand TEXT NOT NULL,
+     card_last4 TEXT NOT NULL
+   )`,
+  `CREATE TABLE IF NOT EXISTS order_lines (
+     order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+     slug TEXT NOT NULL,
+     name TEXT NOT NULL,
+     unit_price_cents INTEGER NOT NULL,
+     quantity INTEGER NOT NULL,
+     PRIMARY KEY (order_id, slug)
+   )`,
 ]
 
 async function init(): Promise<Client> {
@@ -81,6 +120,12 @@ async function init(): Promise<Client> {
     })),
     'write',
   )
+
+  // Fictitious demo customer with a public password: this is a demonstration store (QAL-005).
+  await db.execute({
+    sql: `INSERT OR IGNORE INTO users (name, email, password_hash, created_at) VALUES (?, ?, ?, ?)`,
+    args: [demoCustomer.name, demoCustomer.email, hashPassword(demoCustomer.password), new Date().toISOString()],
+  })
   return db
 }
 
