@@ -1,4 +1,4 @@
-import { AGENTS } from '../qa/agents/registry'
+import { AGENTS, FLOW_STOPS, type AgentFamily } from '../qa/agents/registry'
 import { LIGHTHOUSE_BUDGET, LOAD_THRESHOLDS, type LighthousePage, type LoadResult } from '../qa/lib/budgets'
 import type { RunResult, StageResult, TestResult } from '../qa/results/schema'
 import type { QuarantineEntry } from '../qa/quarantine'
@@ -84,7 +84,25 @@ export interface ReportModel {
   stability: StabilityModel
   operations: OperationsModel
   executive: ExecutiveModel
+  agentsFlow: AgentsFlowModel
   coverageByCapability: ({ capability: string } & Record<RequirementStatus, number>)[]
+}
+
+export interface AgentsFlowModel {
+  /** Stops of the flow; `status` is the stage status in this run, null outside the pipeline or when it has no stage. */
+  stops: { id: string; short: string; name: string; inPipeline: boolean; status: StageResult['status'] | null }[]
+  agents: {
+    id: string
+    name: string
+    family: AgentFamily
+    summary: string
+    forbidden: string
+    stops: string[]
+    definition: string
+    sample: string
+    actions: number
+    latest: AgentActionView | null
+  }[]
 }
 
 export interface ExecutiveModel {
@@ -229,6 +247,36 @@ export function operationsSummary(run: RunResult): OperationsModel {
       .filter((x) => OPERATION_AGENTS.includes(x.agent))
       .sort((a, b) => b.date.localeCompare(a.date))
       .map((x) => ({ date: x.date, agent: name(x.agent), change: x.change, action: x.action, summary: x.summary, artifacts: x.artifacts })),
+  }
+}
+
+/** QA-039: the flow stops with this run's stage status and every agent with where it acts and what it did. */
+export function agentsFlow(run: RunResult): AgentsFlowModel {
+  const stageStatus = (id?: string) => (id ? (run.stages.find((s) => s.id === id)?.status ?? null) : null)
+  return {
+    stops: FLOW_STOPS.map((s) => ({
+      id: s.id,
+      short: s.short,
+      name: s.name,
+      inPipeline: !['spec', 'design', 'automation', 'failure'].includes(s.id),
+      status: stageStatus('stage' in s ? s.stage : undefined),
+    })),
+    agents: AGENTS.map((a) => {
+      const mine = run.agentActions.filter((x) => x.agent === a.id).sort((x, y) => y.date.localeCompare(x.date))
+      const last = mine[0]
+      return {
+        id: a.id,
+        name: a.name,
+        family: a.family,
+        summary: a.summary,
+        forbidden: a.forbidden,
+        stops: [...a.stops],
+        definition: `.claude/agents/${a.file}`,
+        sample: a.sample,
+        actions: mine.length,
+        latest: last ? { date: last.date, agent: a.name, change: last.change, action: last.action, summary: last.summary, artifacts: last.artifacts } : null,
+      }
+    }),
   }
 }
 
@@ -426,6 +474,7 @@ export function buildModel(
     stability: stabilitySummary(history, quarantine),
     operations: operationsSummary(run),
     executive: executiveSummary(history),
+    agentsFlow: agentsFlow(run),
     coverageByCapability: coverageByCapability(traceability),
   }
 }

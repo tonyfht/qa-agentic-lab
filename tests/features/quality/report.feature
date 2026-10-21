@@ -120,3 +120,33 @@ Feature: Informe de calidad
     When abro el informe
     Then veo la pregunta "¿Dónde están los huecos?"
     And la tabla de huecos muestra "quality-pipeline" con 0 sin pruebas
+
+  @QA-039
+  Scenario: Desde el informe se abren los agentes de QA en el flujo
+    Given un histórico con 2 ejecuciones
+    When abro el informe
+    And pulso "Agentes de QA en este flujo"
+    Then veo la línea del flujo con 11 paradas y 11 agentes
+
+  @QA-039
+  Scenario: Elegir un agente resalta solo sus paradas
+    Given un histórico con 2 ejecuciones
+    When abro la página de agentes del informe
+    And elijo al agente "Auditor de seguridad y cumplimiento"
+    Then sus paradas resaltadas son "Seguridad"
+    And las calles de los demás agentes quedan atenuadas
+    And su ficha dice "Prioriza los hallazgos"
+
+  @QA-039
+  Scenario: La página de agentes muestra cómo fue cada etapa
+    Given un histórico cuya última ejecución tiene la etapa E2E fallida
+    When abro la página de agentes del informe
+    Then la parada "E2E" se muestra como fallida
+    And la tabla alternativa lista a los 11 agentes
+
+  @QA-039 @a11y
+  Scenario: La página de agentes es accesible
+    Given un histórico con 2 ejecuciones
+    When abro la página de agentes del informe
+    And elijo al agente "Triaje"
+    Then la página no tiene violaciones de accesibilidad graves ni críticas

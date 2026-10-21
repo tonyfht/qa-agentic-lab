@@ -342,9 +342,9 @@
               "api",
               "auditor-experiencia",
               "auditor-seguridad",
+              "triaje",
               "sanador",
               "detector-flaky",
-              "triaje",
               "reportero"
             ]
           },

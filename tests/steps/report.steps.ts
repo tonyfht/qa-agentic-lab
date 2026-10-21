@@ -236,6 +236,72 @@ Then('la sección de seguridad explica que no hay resultados', async ({ page }) 
   await expect(page.getByTestId('security-empty')).toContainText('No hay resultados de seguridad')
 })
 
+// QA-039: the agents page, opened from the report or directly.
+Given('un histórico cuya última ejecución tiene la etapa E2E fallida', async ({ world }) => {
+  const outDir = mkdtempSync(path.join(os.tmpdir(), 'qal-report-'))
+  const last = sampleRun({
+    runId: 'run-2',
+    status: 'failed',
+    origin: { kind: 'ci', runNumber: 2 },
+    stages: [
+      { id: 'static', name: 'Análisis estático', blocking: true, status: 'passed', durationMs: 1000 },
+      { id: 'e2e', name: 'Smoke y E2E', blocking: true, status: 'failed', durationMs: 1000 },
+    ],
+  })
+  world.reportIndex = buildSite({ root, history: [...runs(1), last], outDir })
+})
+
+When('pulso {string}', async ({ page, world }, name: string) => {
+  const [popup] = await Promise.all([page.waitForEvent('popup'), page.getByRole('link', { name }).click()])
+  await popup.waitForLoadState()
+  world.popup = popup
+})
+
+When('abro la página de agentes del informe', async ({ page, world }) => {
+  await page.goto(pathToFileURL(path.join(path.dirname(world.reportIndex!), 'agentes.html')).href)
+  world.popup = page
+})
+
+Then('veo la línea del flujo con {int} paradas y {int} agentes', async ({ world }, stops: number, agents: number) => {
+  const p = world.popup!
+  await expect(p.getByRole('heading', { level: 1, name: 'Agentes de QA en este flujo' })).toBeVisible()
+  await expect(p.locator('#flow .stop')).toHaveCount(stops)
+  await expect(p.locator('#flow .lane')).toHaveCount(agents)
+})
+
+When('elijo al agente {string}', async ({ world }, name: string) => {
+  await world.popup!.getByRole('group', { name: 'Elegir un agente' }).getByRole('button', { name }).click()
+})
+
+Then('sus paradas resaltadas son {string}', async ({ world }, names: string) => {
+  const p = world.popup!
+  const mine = await p.locator('#flow .stop.mine .stop-name').allTextContents()
+  expect(mine.map((t) => t.replace(/\s*[✔✖○]$/, ''))).toEqual(names.split(', '))
+})
+
+Then('las calles de los demás agentes quedan atenuadas', async ({ world }) => {
+  const p = world.popup!
+  await expect(p.locator('#flow')).toHaveClass(/has-selection/)
+  await expect(p.locator('#flow .lane.on')).toHaveCount(1)
+  await expect(p.locator('#flow .lane[aria-pressed="false"]')).toHaveCount(10)
+})
+
+Then('su ficha dice {string}', async ({ world }, text: string) => {
+  await expect(world.popup!.getByTestId('agent-card')).toContainText(text)
+})
+
+Then('la parada {string} se muestra como fallida', async ({ world }, name: string) => {
+  const stop = world.popup!.locator('#flow .stop').filter({ hasText: name })
+  await expect(stop).toHaveClass(/st-failed/)
+  await expect(stop).toContainText('✖')
+})
+
+Then('la tabla alternativa lista a los {int} agentes', async ({ world }, count: number) => {
+  const p = world.popup!
+  await p.getByText('Ver como tabla').click()
+  await expect(p.getByTestId('flow-table').locator('tbody tr')).toHaveCount(count)
+})
+
 // QA-036, QA-037, QA-038: the executive summary at the top and the gaps by capability.
 Then('lo primero es la pregunta {string} con la recomendación {string}', async ({ page }, question: string, verdict: string) => {
   const first = page.locator('section').first()

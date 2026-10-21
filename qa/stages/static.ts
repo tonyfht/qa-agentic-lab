@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import { checkAgentDefinitions, readAgentActions } from '../agents/registry'
+import { AGENTS, checkAgentDefinitions, checkAgentFlow, checkAgentPresentations, readAgentActions } from '../agents/registry'
 import { lintFeatures } from '../checks/gherkin'
 import { findBrokenLinks, markdownFiles, mermaidBlocks } from '../checks/markdown'
 import { lintAllSpecs, openspecValidate } from '../checks/specs'
@@ -94,9 +94,15 @@ export const staticChecks: StaticCheck[] = [
   {
     id: 'agents',
     title: 'Definición y registro de los agentes de QA',
-    requirements: ['QA-040', 'QA-045'],
+    requirements: ['QA-040', 'QA-045', 'QA-056', 'QA-057'],
     async run(ctx) {
-      const errors = [...checkAgentDefinitions(ctx.root), ...readAgentActions(ctx.root).errors]
+      const readme = readFileSync(path.join(ctx.root, 'README.md'), 'utf8')
+      const errors = [
+        ...checkAgentDefinitions(ctx.root),
+        ...checkAgentFlow(ctx.root, AGENTS),
+        ...checkAgentPresentations(readme),
+        ...readAgentActions(ctx.root).errors,
+      ]
       return errors.length === 0 ? { status: 'passed' } : { status: 'failed', message: errors.join('\n') }
     },
   },

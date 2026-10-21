@@ -131,9 +131,9 @@ describe('QA-017 Qué ha hecho la IA', () => {
       ['api', 0],
       ['auditor-experiencia', 0],
       ['auditor-seguridad', 0],
+      ['triaje', 0],
       ['sanador', 0],
       ['detector-flaky', 0],
-      ['triaje', 0],
       ['reportero', 0],
     ])
     expect(agents.latest.map((a) => a.date.slice(0, 10))).toEqual(['2026-10-21', '2026-10-20', '2026-10-19'])
@@ -233,5 +233,36 @@ describe('QA-037 Resumen ejecutivo', () => {
       ],
     })
     expect(buildModel([run], () => false).executive.reporter?.summary).toBe('nueva')
+  })
+})
+
+describe('QA-039 Agentes en el flujo', () => {
+  it('cada parada del pipeline lleva el estado de su etapa en la ejecución; las de fuera del pipeline no', () => {
+    const run = sampleRun({
+      stages: [
+        { id: 'static', name: 'Análisis estático', blocking: true, status: 'passed', durationMs: 1 },
+        { id: 'e2e', name: 'Smoke y E2E', blocking: true, status: 'failed', durationMs: 1 },
+      ],
+    })
+    const { stops } = buildModel([run], () => false).agentsFlow
+    const byId = Object.fromEntries(stops.map((s) => [s.id, s]))
+    expect(byId.static.status).toBe('passed')
+    expect(byId.e2e.status).toBe('failed')
+    expect(byId.performance.status).toBeNull()
+    expect(byId.spec).toMatchObject({ inPipeline: false, status: null })
+    expect(byId.publish).toMatchObject({ inPipeline: true, status: null })
+  })
+
+  it('cada agente trae sus paradas del registro y sus actuaciones, la última primero', () => {
+    const action = { agent: 'triaje' as const, change: 'QAL-008', action: 'triaje', artifacts: [], executedBy: 'x' }
+    const run = sampleRun({
+      agentActions: [
+        { ...action, date: '2026-10-20T10:00:00.000Z', summary: 'antes' },
+        { ...action, date: '2026-10-21T10:00:00.000Z', summary: 'después' },
+      ],
+    })
+    const triaje = buildModel([run], () => false).agentsFlow.agents.find((a) => a.id === 'triaje')!
+    expect(triaje).toMatchObject({ stops: ['report', 'failure'], family: 'operacion', actions: 2, definition: '.claude/agents/qa-triaje.md' })
+    expect(triaje.latest?.summary).toBe('después')
   })
 })

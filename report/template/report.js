@@ -35,7 +35,8 @@
   $('run-meta').innerHTML =
     `Ejecución <b>${esc(run.label)}</b> · rama <code>${esc(run.branch)}</code> · commit <code>${esc(run.sha)}</code><br>` +
     `${run.workflowRunUrl ? `<a href="${esc(run.workflowRunUrl)}">${esc(run.origin)}</a>` : esc(run.origin)} · ${esc(when)} · ` +
-    '<button class="toggle" id="theme" type="button">Cambiar tema</button>'
+    '<button class="toggle" id="theme" type="button">Cambiar tema</button>' +
+    '<a class="toggle flow-link" href="agentes.html" target="_blank" rel="noopener" data-testid="agents-flow-link">Agentes de QA en este flujo ↗</a>'
 
   // Executive summary: release recommendation, comparison and the Reportero's reading (QA-036, QA-037)
   const exec = data.executive
