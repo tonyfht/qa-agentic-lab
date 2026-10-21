@@ -9,23 +9,23 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
 
 ## 1. Base del repositorio
 
-- [ ] 1.1 Crear `.gitattributes` (`* text=auto eol=lf`, binarios marcados) y renormalizar. Se verifica con
+- [x] 1.1 Crear `.gitattributes` (`* text=auto eol=lf`, binarios marcados) y renormalizar. Se verifica con
   `git ls-files --eol`, que no muestra `i/crlf` (QA-025).
-- [ ] 1.2 Crear el proyecto Next.js en la raíz con TypeScript estricto, Tailwind, `engines.node >=24` y
+- [x] 1.2 Crear el proyecto Next.js en la raíz con TypeScript estricto, Tailwind, `engines.node >=24` y
   `engine-strict=true` en `.npmrc`. Se verifica con `npm ci` en verde en Node 24 y con error claro en una versión
   anterior.
-- [ ] 1.3 Fijar puertos: `dev` y `start` en el 3400. Se verifica con `npm run dev`, que sirve en
+- [x] 1.3 Fijar puertos: `dev` y `start` en el 3400. Se verifica con `npm run dev`, que sirve en
   `http://localhost:3400`.
-- [ ] 1.4 Configurar ESLint y `tsc --noEmit` como scripts. Se verifica con `npm run lint` y `npm run typecheck` en
+- [x] 1.4 Configurar ESLint y `tsc --noEmit` como scripts. Se verifica con `npm run lint` y `npm run typecheck` en
   verde.
-- [ ] 1.5 Configurar Vitest con `tests/unit/`. Se verifica con `npm run test:unit` en verde con una prueba trivial.
+- [x] 1.5 Configurar Vitest con `tests/unit/`. Se verifica con `npm run test:unit` en verde con una prueba trivial.
 
 ## 2. Esqueleto de La Tienda en Casa
 
-- [ ] 2.1 Portada con la marca, una frase de qué es y el aviso "en construcción". Se verifica abriéndola en el 3400.
-- [ ] 2.2 `GET /api/health` con su esquema Zod: devuelve `{ status, version }` con la versión de `package.json`. Se
+- [x] 2.1 Portada con la marca, una frase de qué es y el aviso "en construcción". Se verifica abriéndola en el 3400.
+- [x] 2.2 `GET /api/health` con su esquema Zod: devuelve `{ status, version }` con la versión de `package.json`. Se
   verifica con una prueba unitaria del *handler* (QA-001).
-- [ ] 2.3 `GET /api/openapi.json` generado desde los esquemas Zod, con la operación `health`. Se verifica con una
+- [x] 2.3 `GET /api/openapi.json` generado desde los esquemas Zod, con la operación `health`. Se verifica con una
   prueba unitaria que comprueba que el documento es OpenAPI válido e incluye `/api/health`.
 
 ## 3. Contrato de resultados e histórico
