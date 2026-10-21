@@ -143,6 +143,33 @@
     ? exp.a11y.map((t) => `<li>${badge(t.status)} ${esc(t.title)}</li>`).join('')
     : '<li>No hay comprobaciones de accesibilidad en esta ejecución.</li>'
 
+  // Security and compliance (QA-026)
+  const sec = data.security
+  const SEV = [
+    ['critical', '✖ Crítica', '--critical'],
+    ['high', '▲ Alta', '--serious'],
+    ['medium', '◆ Media', '--warning'],
+    ['low', '● Baja', '--series-1'],
+    ['info', '○ Informativa', '--skipped'],
+  ]
+  const SRC = { semgrep: 'SAST (Semgrep)', 'npm-audit': 'Dependencias', licenses: 'Licencias', zap: 'DAST (ZAP)' }
+  const prodHigh = sec.production.critical + sec.production.high
+  $('sec-kpis').innerHTML =
+    kpi('Hallazgos que bloquean', String(sec.blocking), sec.ran ? sec.blocking === 0 : null, 'altos, críticos o medios de ZAP sin aceptar') +
+    kpi('Altos o críticos en producción', String(prodHigh), sec.ran ? prodHigh === 0 : null, 'excluidas dependencias de desarrollo') +
+    kpi('Excepciones aceptadas', String(sec.accepted.length), null, 'cada una con su motivo versionado') +
+    kpi('Componentes en el SBOM', sec.sbomComponents === null ? '—' : String(sec.sbomComponents), null, 'CycloneDX, dependencias de producción')
+  $('sec-table').innerHTML = table(
+    ['Fuente', ...SEV.map((s) => s[1])],
+    Object.entries(SRC).map(([k, label]) => [esc(label), ...SEV.map((s) => sec.bySource[k][s[0]])]),
+  )
+  $('sec-checks').innerHTML = sec.checks.length
+    ? sec.checks.map((c) => `<li>${badge(c.status)} ${esc(c.title)}${c.status === 'skipped' && c.message ? ` <span class="nodetail">${esc(c.message)}</span>` : ''}</li>`).join('')
+    : '<li>La etapa de seguridad no se ejecutó en esta ejecución.</li>'
+  $('sec-accepted').innerHTML = sec.accepted.length
+    ? table(['Hallazgo', 'Fuente', 'Motivo'], sec.accepted.map((a) => [esc(a.title), esc(SRC[a.source] ?? a.source), esc(a.reason)]))
+    : '<p class="nodetail">Ninguna.</p>'
+
   // Agents (QA-017)
   const agents = data.agents
   const totalActions = agents.byAgent.reduce((n, a) => n + a.count, 0)
@@ -307,6 +334,32 @@
         series: [{ type: 'line', data: exp.trend.map((r) => r.performance), connectNulls: true, symbolSize: 8, lineStyle: { width: 2, color: css('--brand') }, itemStyle: { color: css('--brand') } }],
       })
       charts.push(tr)
+    }
+
+    const secEl = $('sec-chart')
+    if (!sec.ran) {
+      secEl.className = 'chart short empty'
+      secEl.setAttribute('data-testid', 'security-empty')
+      secEl.textContent = 'No hay resultados de seguridad en esta ejecución (la etapa "Seguridad y cumplimiento" no se ejecutó).'
+    } else {
+      const sc = echarts.init(secEl)
+      sc.setOption({
+        textStyle,
+        tooltip: { ...tooltip, trigger: 'axis', axisPointer: { type: 'shadow' } },
+        legend: { top: 0, textStyle, icon: 'roundRect', itemWidth: 10, itemHeight: 10 },
+        grid: { left: 110, right: 16, top: 52, bottom: 24 },
+        xAxis: { type: 'value', minInterval: 1, ...axis },
+        yAxis: { type: 'category', inverse: true, data: Object.values(SRC), ...axis, axisLabel: { color: css('--ink-2') } },
+        series: SEV.map(([key, name, color]) => ({
+          name,
+          type: 'bar',
+          stack: 's',
+          barMaxWidth: 20,
+          data: Object.keys(SRC).map((k) => sec.bySource[k][key]),
+          itemStyle: { color: css(color), borderColor: css('--surface'), borderWidth: 1 },
+        })),
+      })
+      charts.push(sc)
     }
 
     const agEl = $('agents-chart')

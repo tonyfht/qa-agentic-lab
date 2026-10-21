@@ -45,7 +45,7 @@ describe('QA-009 Calidad de especificaciones y escenarios', () => {
     const errors = lintScenarios(parseFeature('Feature: X\n  @CAT-099\n  Scenario: Huérfano\n', 'x.feature'), known)
     expect(errors).toEqual([
       'x.feature:3 «Huérfano»: el requisito @CAT-099 no existe',
-      'x.feature:3 «Huérfano»: sin etiqueta de tipología (@e2e, @api, @a11y, @visual, @performance, @load, @security)',
+      'x.feature:3 «Huérfano»: sin etiqueta de tipología (@e2e, @api, @a11y, @visual, @performance, @load, @security, @compliance)',
       'x.feature:3 «Huérfano»: sin prioridad (@p1, @p2, @p3)',
     ])
   })
@@ -69,7 +69,7 @@ describe('QA-043 Diseñador de casos con técnica declarada', () => {
 describe('QA-040 Agentes versionados con función y límites', () => {
   it('los agentes del laboratorio tienen definición completa', () => {
     expect(checkAgentDefinitions(root)).toEqual([])
-    expect(AGENTS.map((a) => a.id)).toEqual(['revisor-specs', 'analista', 'disenador', 'automatizador', 'api', 'auditor-experiencia'])
+    expect(AGENTS.map((a) => a.id)).toEqual(['revisor-specs', 'analista', 'disenador', 'automatizador', 'api', 'auditor-experiencia', 'auditor-seguridad'])
   })
 
   it('una definición sin prohibiciones se señala con el agente y la sección', () => {

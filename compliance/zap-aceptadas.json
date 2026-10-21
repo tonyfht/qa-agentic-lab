@@ -1,0 +1,4 @@
+{
+  "$comment": "Alertas de OWASP ZAP aceptadas (SEC-004), por identificador de regla y con su motivo. Nunca se desactiva una regla: se acepta su resultado con una explicación revisable.",
+  "aceptadas": []
+}

@@ -46,6 +46,16 @@ export const Requirement = z.object({
   source: z.string().min(1),
 })
 
+// A normalised security or compliance finding (QAL-007). `accepted` carries the reason when it is a versioned exception.
+export const Finding = z.object({
+  source: z.enum(['semgrep', 'npm-audit', 'licenses', 'zap']),
+  severity: z.enum(['critical', 'high', 'medium', 'low', 'info']),
+  title: z.string().min(1),
+  location: z.string().optional(),
+  scope: z.enum(['production', 'development']).optional(),
+  accepted: z.string().optional(),
+})
+
 export const RunResult = z.object({
   schemaVersion: z.literal(SCHEMA_VERSION),
   runId: z.string().min(1),
@@ -61,9 +71,9 @@ export const RunResult = z.object({
   stages: z.array(StageResult),
   tests: z.array(TestResult),
   requirements: z.array(Requirement),
-  // Reserved for later changes: non-functional metrics (QAL-006) and findings (QAL-007). Agent actions since QAL-003.
+  // Non-functional metrics since QAL-006, security findings since QAL-007, agent actions since QAL-003.
   metrics: z.record(z.string(), z.unknown()),
-  findings: z.array(z.unknown()),
+  findings: z.array(Finding),
   agentActions: z.array(AgentAction),
 })
 
@@ -72,6 +82,7 @@ export type TestStatus = z.infer<typeof TestStatus>
 export type StageResult = z.infer<typeof StageResult>
 export type TestResult = z.infer<typeof TestResult>
 export type Requirement = z.infer<typeof Requirement>
+export type Finding = z.infer<typeof Finding>
 export type RunResult = z.infer<typeof RunResult>
 
 export class RunResultValidationError extends Error {

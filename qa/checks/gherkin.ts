@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 
-export const TYPOLOGY_TAGS = ['@e2e', '@api', '@a11y', '@visual', '@performance', '@load', '@security']
+export const TYPOLOGY_TAGS = ['@e2e', '@api', '@a11y', '@visual', '@performance', '@load', '@security', '@compliance']
 export const PRIORITY_TAGS = ['@p1', '@p2', '@p3']
 export const TECHNIQUE_TAGS = ['@valores-limite', '@clases-equivalencia', '@tabla-decision', '@pairwise']
 const REQUIREMENT_TAG = /^@[A-Z]+-\d{3}$/

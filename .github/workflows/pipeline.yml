@@ -143,9 +143,45 @@ jobs:
             reports/runs/${{ env.QA_RUN_ID }}/stages/performance.json
           if-no-files-found: ignore
 
+  security:
+    name: 5 · Seguridad y cumplimiento
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: Instalar Semgrep
+        run: pipx install semgrep
+      - name: Descargar la imagen de OWASP ZAP
+        run: docker pull ghcr.io/zaproxy/zaproxy:stable
+      - uses: actions/download-artifact@v8
+        with:
+          name: store-build
+          path: .next
+      - run: npm run qa -- --stage security
+        env:
+          QA_REUSE_BUILD: '1'
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: partial-security
+          path: |
+            reports/runs/${{ env.QA_RUN_ID }}/meta.json
+            reports/runs/${{ env.QA_RUN_ID }}/stages/security.json
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: evidencias-seguridad
+          path: |
+            reports/runs/${{ env.QA_RUN_ID }}/sbom.cdx.json
+            reports/runs/${{ env.QA_RUN_ID }}/semgrep.json
+            reports/runs/${{ env.QA_RUN_ID }}/zap/zap.json
+          if-no-files-found: ignore
+
   report:
-    name: 5 · Informe
-    needs: [static, build, e2e, performance]
+    name: 6 · Informe
+    needs: [static, build, e2e, performance, security]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -177,7 +213,7 @@ jobs:
 
   # Solo main publica el informe y alimenta el histórico público (QA-013). Un PR nunca lo modifica.
   publish:
-    name: 6 · Publicar en GitHub Pages
+    name: 7 · Publicar en GitHub Pages
     needs: report
     if: always() && needs.report.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest

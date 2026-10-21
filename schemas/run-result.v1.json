@@ -250,7 +250,53 @@
     },
     "findings": {
       "type": "array",
-      "items": {}
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "semgrep",
+              "npm-audit",
+              "licenses",
+              "zap"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low",
+              "info"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "location": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "production",
+              "development"
+            ]
+          },
+          "accepted": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "severity",
+          "title"
+        ],
+        "additionalProperties": false
+      }
     },
     "agentActions": {
       "type": "array",
@@ -270,7 +316,8 @@
               "disenador",
               "automatizador",
               "api",
-              "auditor-experiencia"
+              "auditor-experiencia",
+              "auditor-seguridad"
             ]
           },
           "change": {

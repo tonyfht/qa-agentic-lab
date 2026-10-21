@@ -86,9 +86,11 @@ flowchart LR
   A["1 · Análisis estático<br/>lint · tipos · unitarias · specs<br/>enlaces · diagramas · secretos"] --> D
   B["2 · Tienda en el runner<br/>build y arranque"] --> E["3 · Smoke y E2E<br/>Gherkin · API · accesibilidad · visual"]
   B --> P["4 · Rendimiento y carga<br/>Lighthouse · k6"]
-  E --> D["5 · Informe<br/>histórico y gráficos"]
+  B --> S["5 · Seguridad y cumplimiento<br/>Semgrep · npm audit · licencias · SBOM · ZAP"]
+  E --> D["6 · Informe<br/>histórico y gráficos"]
   P --> D
-  D --> F["6 · Publicar<br/>GitHub Pages, solo main"]
+  S --> D
+  D --> F["7 · Publicar<br/>GitHub Pages, solo main"]
 ```
 
 **Los agentes de QA.** Cada agente es un fichero versionado en [`.claude/agents/`](.claude/agents/) con su función,

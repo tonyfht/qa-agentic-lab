@@ -1,4 +1,4 @@
-import type { StageResult, TestResult } from '../results/schema'
+import type { Finding, StageResult, TestResult } from '../results/schema'
 
 export interface StageContext {
   root: string
@@ -15,6 +15,8 @@ export interface StageOutcome {
   tests?: TestResult[]
   /** Non-functional figures (Lighthouse, load…) merged into run.metrics. */
   metrics?: Record<string, unknown>
+  /** Security and compliance findings merged into run.findings. */
+  findings?: Finding[]
 }
 
 export interface StageDefinition {
@@ -35,4 +37,5 @@ export interface StagePartial {
   stage: StageResult
   tests: TestResult[]
   metrics?: Record<string, unknown>
+  findings?: Finding[]
 }

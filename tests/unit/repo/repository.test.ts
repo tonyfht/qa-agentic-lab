@@ -56,7 +56,7 @@ describe('QA-020 Main protegida', () => {
 describe('QA-003 CI ejecuta las mismas etapas que local', () => {
   it('cada job de etapa solo llama a npm run qa -- --stage <id>', () => {
     const wf = read('.github/workflows/pipeline.yml')
-    for (const stage of ['static', 'build', 'e2e', 'performance', 'report']) expect(wf).toContain(`run: npm run qa -- --stage ${stage}`)
+    for (const stage of ['static', 'build', 'e2e', 'performance', 'security', 'report']) expect(wf).toContain(`run: npm run qa -- --stage ${stage}`)
   })
 })
 
