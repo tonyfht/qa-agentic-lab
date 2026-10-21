@@ -117,6 +117,32 @@
     ['Estado', 'Requisitos'],
     Object.entries(data.coverage).map(([k, v]) => [esc(LABEL[k]), v]),
   )
+  // Experience (QA-018)
+  const PAGE_NAMES = { '/': 'Portada', '/catalogo': 'Catálogo', '/producto/mantel-antimanchas': 'Ficha' }
+  const exp = data.experience
+  const avg = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null)
+  const lcp = avg(exp.lighthouse.map((p) => p.lcpMs))
+  const a11yOk = exp.a11y.filter((t) => t.status === 'passed').length
+  const kpi = (label, value, ok, note) =>
+    `<div class="tile"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div>` +
+    `<div class="delta ${ok === null ? '' : ok ? 'better' : 'worse'}">${esc(note)}</div></div>`
+  $('exp-kpis').innerHTML =
+    kpi('LCP medio', lcp === null ? '—' : `${(lcp / 1000).toLocaleString('es-ES', { maximumFractionDigits: 2 })} s`, lcp === null ? null : lcp <= exp.budget.lcpMs, `presupuesto ≤ ${exp.budget.lcpMs / 1000} s`) +
+    kpi('p95 con 20 usuarios', exp.load ? `${exp.load.p95Ms} ms` : '—', exp.load ? exp.load.p95Ms < exp.thresholds.p95Ms : null, exp.load ? `umbral < ${exp.thresholds.p95Ms} ms · ${exp.load.requests} peticiones` : 'Sin prueba de carga en esta ejecución') +
+    kpi('Errores con carga', exp.load ? `${(exp.load.errorRate * 100).toLocaleString('es-ES', { maximumFractionDigits: 2 })} %` : '—', exp.load ? exp.load.errorRate < exp.thresholds.errorRate : null, `umbral < ${exp.thresholds.errorRate * 100} %`) +
+    kpi('Páginas sin barreras', exp.a11y.length ? `${a11yOk} / ${exp.a11y.length}` : '—', exp.a11y.length ? a11yOk === exp.a11y.length : null, 'WCAG 2.1 AA, sin violaciones graves')
+  $('exp-lighthouse-table').innerHTML = table(
+    ['Página', 'Rendimiento', 'Accesibilidad', 'Buenas prácticas', 'SEO', 'LCP', 'CLS', 'TBT'],
+    exp.lighthouse.map((p) => [esc(p.page), p.performance, p.accessibility, p.bestPractices, p.seo, `${p.lcpMs} ms`, p.cls, `${p.tbtMs} ms`]),
+  )
+  $('exp-trend-table').innerHTML = table(
+    ['Ejecución', 'Rendimiento medio', 'p95 de carga'],
+    exp.trend.map((r) => [esc(r.label), r.performance ?? '—', r.p95Ms === null ? '—' : `${r.p95Ms} ms`]),
+  )
+  $('exp-a11y').innerHTML = exp.a11y.length
+    ? exp.a11y.map((t) => `<li>${badge(t.status)} ${esc(t.title)}</li>`).join('')
+    : '<li>No hay comprobaciones de accesibilidad en esta ejecución.</li>'
+
   // Agents (QA-017)
   const agents = data.agents
   const totalActions = agents.byAgent.reduce((n, a) => n + a.count, 0)
@@ -231,6 +257,57 @@
       }],
     })
     charts.push(cv)
+
+    // Lighthouse: pages × categories, with the budget as a reference line (one axis, 0–100).
+    const lhEl = $('exp-lighthouse')
+    if (!exp.lighthouse.length) {
+      lhEl.className = 'chart short empty'
+      lhEl.setAttribute('data-testid', 'experience-empty')
+      lhEl.textContent = 'No hay métricas de rendimiento en esta ejecución (la etapa "Rendimiento y carga" no se ejecutó).'
+    } else {
+      const cats = [
+        ['Rendimiento', 'performance', '--series-1'],
+        ['Accesibilidad', 'accessibility', '--series-2'],
+        ['Buenas prácticas', 'bestPractices', '--series-3'],
+        ['SEO', 'seo', '--series-4'],
+      ]
+      const lh = echarts.init(lhEl)
+      lh.setOption({
+        textStyle,
+        tooltip: { ...tooltip, trigger: 'axis', axisPointer: { type: 'shadow' } },
+        legend: { top: 0, textStyle, icon: 'roundRect', itemWidth: 10, itemHeight: 10 },
+        grid: { left: 36, right: 12, top: 52, bottom: 28 },
+        xAxis: { type: 'category', data: exp.lighthouse.map((p) => PAGE_NAMES[p.page] ?? p.page), ...axis, axisLabel: { color: css('--muted'), interval: 0 }, splitLine: { show: false } },
+        yAxis: { type: 'value', min: 0, max: 100, ...axis },
+        series: cats.map(([name, key, color], i) => ({
+          name,
+          type: 'bar',
+          barMaxWidth: 14,
+          data: exp.lighthouse.map((p) => p[key]),
+          itemStyle: { color: css(color), borderRadius: [3, 3, 0, 0] },
+          ...(i === 0 ? { markLine: { symbol: 'none', silent: true, lineStyle: { color: css('--muted'), type: 'dashed' }, label: { formatter: `presupuesto ${exp.budget.performance}`, color: css('--muted'), position: 'insideStartTop' }, data: [{ yAxis: exp.budget.performance }] } } : {}),
+        })),
+      })
+      charts.push(lh)
+    }
+
+    const trEl = $('exp-trend')
+    const points = exp.trend.filter((r) => r.performance !== null)
+    if (points.length < 2) {
+      trEl.className = 'chart short empty'
+      trEl.textContent = 'La evolución del rendimiento necesita al menos 2 ejecuciones con métricas.'
+    } else {
+      const tr = echarts.init(trEl)
+      tr.setOption({
+        textStyle,
+        tooltip: { ...tooltip, trigger: 'axis' },
+        grid: { left: 36, right: 16, top: 24, bottom: 28 },
+        xAxis: { type: 'category', data: exp.trend.map((r) => r.label), ...axis, splitLine: { show: false } },
+        yAxis: { type: 'value', name: 'Rendimiento medio', min: 0, max: 100, nameTextStyle: { color: css('--muted') }, ...axis },
+        series: [{ type: 'line', data: exp.trend.map((r) => r.performance), connectNulls: true, symbolSize: 8, lineStyle: { width: 2, color: css('--brand') }, itemStyle: { color: css('--brand') } }],
+      })
+      charts.push(tr)
+    }
 
     const agEl = $('agents-chart')
     if (totalActions === 0) {

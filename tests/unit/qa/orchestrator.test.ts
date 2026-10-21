@@ -149,3 +149,14 @@ describe('QA-006 Resumen legible de cada ejecución', () => {
     expect(summary).toContain('📊 Informe: reports/site/index.html')
   })
 })
+
+describe('QA-019 Etapa de rendimiento y carga', () => {
+  it('es bloqueante, depende de la tienda y va después del E2E y antes del informe', async () => {
+    const { registry } = await import('@/qa/stages/registry')
+    const ids = registry.map((s) => s.id)
+    const perf = registry.find((s) => s.id === 'performance')!
+    expect(perf).toMatchObject({ name: 'Rendimiento y carga', blocking: true, dependsOn: ['build'] })
+    expect(ids.indexOf('performance')).toBe(ids.indexOf('e2e') + 1)
+    expect(ids.indexOf('report')).toBe(ids.indexOf('performance') + 1)
+  })
+})

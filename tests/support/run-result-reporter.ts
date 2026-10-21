@@ -23,10 +23,14 @@ export function toTestResult(test: TestCase, root: string): TestResult {
   const requirements = tags.map((t) => t.replace(/^@/, '')).filter((t) => REQUIREMENT_ID.test(t))
   const status = STATUS[test.outcome()]
   const last = test.results[test.results.length - 1]
-  const failure = test.results
-    .map((r) => r.error?.message)
-    .filter(Boolean)
-    .join('\n')
+  const skipReason = status === 'skipped' ? test.annotations.find((a) => a.type === 'skip')?.description : undefined
+  const failure = (
+    skipReason ??
+    test.results
+      .map((r) => r.error?.message)
+      .filter(Boolean)
+      .join('\n')
+  )
     .replace(ANSI, '')
     .trim()
   return {

@@ -118,3 +118,28 @@ Then('la sección de agentes explica que todavía no hay actuaciones', async ({ 
   await expect(page.getByTestId('agents-empty')).toHaveText('Todavía no hay actuaciones de agentes registradas.')
   await expect(page.getByTestId('agents-chart-empty')).toBeVisible()
 })
+
+Given('un histórico cuya última ejecución tiene métricas de rendimiento y carga', async ({ world }) => {
+  const outDir = mkdtempSync(path.join(os.tmpdir(), 'qal-report-'))
+  const page = { performance: 98, accessibility: 100, bestPractices: 96, seo: 100, lcpMs: 450, cls: 0, tbtMs: 0 }
+  const last = sampleRun({
+    runId: 'run-2',
+    origin: { kind: 'ci', runNumber: 2 },
+    metrics: {
+      lighthouse: [
+        { page: '/', ...page },
+        { page: '/catalogo', ...page },
+      ],
+      load: { p95Ms: 120, errorRate: 0, requests: 1800, vus: 20, durationS: 30 },
+    },
+  })
+  world.reportIndex = buildSite({ root, history: [...runs(1), last], outDir })
+})
+
+Then('la experiencia muestra un p95 de {string}', async ({ page }, value: string) => {
+  await expect(page.locator('#exp-kpis').getByText(value, { exact: true })).toBeVisible()
+})
+
+Then('la sección de experiencia explica que no hay métricas de rendimiento', async ({ page }) => {
+  await expect(page.getByTestId('experience-empty')).toContainText('No hay métricas de rendimiento')
+})

@@ -1,5 +1,6 @@
 import { buildStage } from './build'
 import { e2eStage } from './e2e'
+import { performanceStage } from './performance'
 import { governanceStage } from './governance'
 import { createReportStage } from './report'
 import { staticStage } from './static'
@@ -10,6 +11,7 @@ export const registry: StageDefinition[] = [
   staticStage,
   buildStage,
   e2eStage,
+  performanceStage,
   createReportStage(() => registry),
   governanceStage,
 ]

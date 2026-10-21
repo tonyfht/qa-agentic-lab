@@ -54,7 +54,7 @@ export function assembleRun(input: AssembleInput): RunResult {
     stages,
     tests: partials.flatMap((p) => p.tests),
     requirements: loadRequirementCatalog(input.root),
-    metrics: {},
+    metrics: Object.assign({}, ...partials.map((p) => p.metrics ?? {})),
     findings: [],
     agentActions: readAgentActions(input.root).actions,
   })

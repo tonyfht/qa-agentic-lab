@@ -12,3 +12,9 @@ body {
   background: var(--color-store-cream);
   color: var(--color-store-ink);
 }
+
+/* Visible focus for keyboard users on every interactive element (EXP-002). */
+:focus-visible {
+  outline: 3px solid var(--color-store-terracotta);
+  outline-offset: 2px;
+}

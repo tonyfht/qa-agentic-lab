@@ -13,6 +13,8 @@ export interface StageOutcome {
   status: 'passed' | 'failed' | 'skipped'
   reason?: string
   tests?: TestResult[]
+  /** Non-functional figures (Lighthouse, load…) merged into run.metrics. */
+  metrics?: Record<string, unknown>
 }
 
 export interface StageDefinition {
@@ -32,4 +34,5 @@ export interface StageDefinition {
 export interface StagePartial {
   stage: StageResult
   tests: TestResult[]
+  metrics?: Record<string, unknown>
 }
