@@ -22,6 +22,18 @@ El pipeline SHALL levantar La Tienda en Casa antes de las etapas que la prueban.
 - **THEN** la etapa de arranque falla con un mensaje que lo indica
 - **AND** las etapas que prueban la tienda no se ejecutan y constan como no ejecutadas, no como superadas
 
+### Requirement: QA-008 Análisis estático del código
+Cada ejecución SHALL pasar el linter y la comprobación de tipos sobre todo el código del repositorio, y SHALL fallar la etapa de análisis estático si cualquiera de los dos encuentra errores.
+
+#### Scenario: Código limpio
+- **WHEN** se ejecuta la etapa de análisis estático sobre código sin errores de lint ni de tipos
+- **THEN** ambas comprobaciones constan como superadas
+
+#### Scenario: Error de tipos
+- **GIVEN** un cambio con un error de tipos
+- **WHEN** se ejecuta la etapa de análisis estático
+- **THEN** la comprobación de tipos falla con el fichero y la línea del error y la etapa falla
+
 ### Requirement: QA-002 Etapas ejecutables en local
 Cada etapa del pipeline SHALL poder ejecutarse en local con un único comando, y el conjunto completo SHALL ejecutarse con `npm run qa`, en el mismo orden que en CI.
 

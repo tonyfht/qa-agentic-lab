@@ -33,6 +33,8 @@ export const TestResult = z.object({
   retries: z.number().int().nonnegative(),
   requirements: z.array(z.string().regex(REQUIREMENT_ID)),
   tags: z.array(z.string()),
+  // Failure message or skip reason, shown in the report.
+  message: z.string().optional(),
   detail: TestDetail.optional(),
 })
 

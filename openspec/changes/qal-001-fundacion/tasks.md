@@ -40,27 +40,27 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
 
 ## 4. Orquestador de etapas
 
-- [ ] 4.1 `qa/run.ts` con registro de etapas (id, nombre, bloqueante, dependencias, requisitos) y
+- [x] 4.1 `qa/run.ts` con registro de etapas (id, nombre, bloqueante, dependencias, requisitos) y
   `npm run qa [-- --stage <id>]`. Se verifica con pruebas del orden, de una sola etapa con sus previas y de un error
   con lista de etapas ante una inexistente (QA-002).
-- [ ] 4.2 Semántica de fallos: bloqueante fallida → ejecución en rojo; dependientes → `not_run`; independientes se
+- [x] 4.2 Semántica de fallos: bloqueante fallida → ejecución en rojo; dependientes → `not_run`; independientes se
   ejecutan; `report` siempre. Se verifica con pruebas del caso "la tienda no arranca" (QA-001, QA-005).
-- [ ] 4.3 Omisión con motivo cuando falta un binario o un secreto. Se verifica con una prueba de que la etapa consta
+- [x] 4.3 Omisión con motivo cuando falta un binario o un secreto. Se verifica con una prueba de que la etapa consta
   `skipped` con su motivo y no cuenta como superada (QA-007).
-- [ ] 4.4 Resumen en consola y en `GITHUB_STEP_SUMMARY` con el mismo código. Se verifica con una prueba de que ambos
+- [x] 4.4 Resumen en consola y en `GITHUB_STEP_SUMMARY` con el mismo código. Se verifica con una prueba de que ambos
   contienen una fila por etapa y el enlace al informe (QA-006).
-- [ ] 4.5 Etapa `build`: `next build` y arranque en el 3410 con `GET /api/health`. Se verifica con
+- [x] 4.5 Etapa `build`: `next build` y arranque en el 3410 con `GET /api/health`. Se verifica con
   `npm run qa -- --stage build` en verde.
 
 ## 5. Pruebas E2E con Gherkin y trazabilidad
 
-- [ ] 5.1 Instalar Playwright y playwright-bdd; `webServer` en el 3410. Se verifica con `npx bddgen` sin errores.
-- [ ] 5.2 Crear `tests/features/quality/smoke.feature` (Gherkin del `design.md`) y sus *steps*. Se verifica con
+- [x] 5.1 Instalar Playwright y playwright-bdd; `webServer` en el 3410. Se verifica con `npx bddgen` sin errores.
+- [x] 5.2 Crear `tests/features/quality/smoke.feature` (Gherkin del `design.md`) y sus *steps*. Se verifica con
   `npm run qa -- --stage e2e` en verde (QA-001).
-- [ ] 5.3 Reporter propio que escribe el parcial de `e2e`: requisitos desde los *tags*, `flaky` si pasa al reintentar,
+- [x] 5.3 Reporter propio que escribe el parcial de `e2e`: requisitos desde los *tags*, `flaky` si pasa al reintentar,
   no trazados, detalle técnico enlazado. Se verifica con pruebas unitarias sobre resultados simulados de Playwright
   (QA-005, QA-011, QA-016).
-- [ ] 5.4 Conversión del JSON de Vitest al mismo formato, con requisitos desde el `describe`. Se verifica con una
+- [x] 5.4 Conversión del JSON de Vitest al mismo formato, con requisitos desde el `describe`. Se verifica con una
   prueba de que las unitarias trazadas aparecen con su ID.
 
 ## 6. Comprobaciones de la etapa `static`
@@ -76,17 +76,17 @@ Rama de trabajo: `change/qal-001-fundacion`. Specs en `specs/`; cómo construirl
 
 ## 7. Informe propio
 
-- [ ] 7.1 Generador `report/build.ts` → `reports/site/` (`index.html`, `data.js`, ECharts local), siguiendo la
+- [x] 7.1 Generador `report/build.ts` → `reports/site/` (`index.html`, `data.js`, ECharts local), siguiendo la
   dirección visual elegida en 0.1. Se verifica con una prueba de que el sitio se genera desde un histórico de ejemplo
   y abre desde disco sin peticiones de red (QA-015).
-- [ ] 7.2 Indicadores con diferencia frente a la ejecución anterior, tira del pipeline y tabla de trazabilidad con
+- [x] 7.2 Indicadores con diferencia frente a la ejecución anterior, tira del pipeline y tabla de trazabilidad con
   requisitos sin pruebas. Se verifica con pruebas del cálculo de diferencias y de cobertura (QA-011, QA-014).
 - [ ] 7.3 Gráficos de tendencia, tiempo por etapa y cobertura, cada uno con su pregunta, su tabla alternativa y su
   estado vacío. Se verifica con una prueba E2E sobre el informe generado: preguntas visibles, mensaje con un solo
   registro y tabla accesible (QA-014).
 - [ ] 7.4 Enlace al detalle técnico, o aviso sin enlace roto si no existe. Se verifica con una prueba E2E sobre un
   test fallido con y sin traza (QA-016).
-- [ ] 7.5 `npm run report`: construye con el histórico local de `reports/` y sirve en el 3420. Se verifica tras dos
+- [x] 7.5 `npm run report`: construye con el histórico local de `reports/` y sirve en el 3420. Se verifica tras dos
   `npm run qa`, con dos puntos en la tendencia en `http://localhost:3420` (QA-015).
 
 ## 8. Pipeline en GitHub Actions
