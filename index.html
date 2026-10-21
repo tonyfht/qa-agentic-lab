@@ -60,6 +60,23 @@
     <div id="untraced"></div>
   </section>
 
+  <section aria-labelledby="h-exp" data-testid="experience">
+    <h2 id="h-exp">Experiencia</h2>
+    <p class="q"><b>¿Es usable y rápida?</b> Lighthouse por página, prueba de carga y accesibilidad de esta ejecución.</p>
+    <div class="tiles" id="exp-kpis"></div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="card">
+        <div id="exp-lighthouse" class="chart short" role="img" aria-label="Puntuaciones de Lighthouse por página"></div>
+        <details><summary>Ver como tabla</summary><div id="exp-lighthouse-table"></div></details>
+      </div>
+      <div class="card">
+        <div id="exp-trend" class="chart short" role="img" aria-label="Rendimiento medio por ejecución"></div>
+        <details><summary>Ver como tabla</summary><div id="exp-trend-table"></div></details>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px"><b>Accesibilidad (WCAG 2.1 AA)</b><ul id="exp-a11y" class="a11y"></ul></div>
+  </section>
+
   <section aria-labelledby="h-agents" data-testid="agents">
     <h2 id="h-agents">Agentes de IA</h2>
     <p class="q"><b>¿Qué ha hecho la IA?</b> Actuaciones registradas por cada agente y las últimas que han hecho.</p>
@@ -78,7 +95,6 @@
     <div class="soon">
       <div><b>¿Qué han reparado los agentes?</b>Tests reparados y defectos abiertos por el Sanador y el Triaje (QAL-008)</div>
       <div><b>¿Es estable la suite?</b>Tasa de tests inestables por ejecución (QAL-008)</div>
-      <div><b>¿Es usable y rápida?</b>Accesibilidad, rendimiento y regresión visual (QAL-006)</div>
       <div><b>¿Es segura y cumple?</b>Hallazgos de seguridad, dependencias y licencias (QAL-007)</div>
       <div><b>¿Podemos salir?</b>Resumen ejecutivo y recomendación del Reportero (QAL-009)</div>
     </div>
