@@ -11,12 +11,12 @@ const COOKIES = [
 export default function PrivacyPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="mb-4 text-3xl font-bold">Privacidad y cookies</h1>
+      <h1 className="mb-4 text-4xl font-semibold">Privacidad y cookies</h1>
       <p className="mb-4">
         La Tienda en Casa es una tienda de demostración. No usa analítica, publicidad ni servicios de terceros: tu
         navegador solo habla con esta tienda.
       </p>
-      <h2 className="mb-2 text-xl font-bold">Cookies</h2>
+      <h2 className="mb-2 text-2xl font-semibold">Cookies</h2>
       <p className="mb-4">Solo usamos estas dos cookies, estrictamente necesarias para que la tienda funcione:</p>
       <table className="w-full border-collapse rounded-2xl bg-white text-left text-sm" aria-label="Cookies que usa la tienda">
         <thead>
@@ -40,7 +40,7 @@ export default function PrivacyPage() {
           ))}
         </tbody>
       </table>
-      <h2 className="mb-2 mt-6 text-xl font-bold">Tus datos</h2>
+      <h2 className="mb-2 mt-6 text-2xl font-semibold">Tus datos</h2>
       <p>
         Guardamos tu nombre, tu correo y tus pedidos. Las contraseñas se guardan cifradas con un hash y de las tarjetas
         solo los cuatro últimos dígitos. Usa datos ficticios: es una demostración.

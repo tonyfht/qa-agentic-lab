@@ -15,7 +15,7 @@ export function LineControls({ slug, name, quantity, max }: { slug: string; name
           value={quantity}
           disabled={pending}
           onChange={(e) => call(`/api/cart/items/${slug}`, 'PATCH', { quantity: Number(e.target.value) })}
-          className="rounded-lg border border-store-ink/20 bg-white px-2 py-1"
+          className="field rounded-full border border-store-ink/20 bg-white py-1.5 pl-3"
         >
           {options.map((n) => (
             <option key={n} value={n}>
@@ -28,7 +28,7 @@ export function LineControls({ slug, name, quantity, max }: { slug: string; name
         type="button"
         disabled={pending}
         onClick={() => call(`/api/cart/items/${slug}`, 'DELETE')}
-        className="text-sm underline"
+        className="text-sm text-store-muted underline hover:text-store-terracotta-dark"
         aria-label={`Eliminar ${name}`}
       >
         Eliminar
@@ -60,10 +60,10 @@ export function CouponForm({ current }: { current: string | null }) {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder="BIENVENIDA10"
-            className="rounded-lg border border-store-ink/20 bg-white px-3 py-2"
+            className="rounded-full border border-store-ink/20 bg-white px-4 py-2.5"
           />
         </label>
-        <button type="submit" disabled={pending} className="self-end rounded-lg border border-store-ink/30 px-4 py-2 font-semibold">
+        <button type="submit" disabled={pending} className="self-end rounded-full border border-store-ink/30 px-4 py-2.5 font-semibold hover:border-store-ink">
           Aplicar
         </button>
       </form>

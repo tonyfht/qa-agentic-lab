@@ -12,9 +12,9 @@ export default async function OrdersPage() {
   const orders = await listOrders(account.id)
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="mb-6 text-3xl font-bold">Mis pedidos</h1>
+      <h1 className="mb-6 text-4xl font-semibold">Mis pedidos</h1>
       {orders.length === 0 ? (
-        <p className="rounded-2xl bg-white p-6">
+        <p className="rounded-2xl border border-store-ink/10 bg-white p-6">
           <span>Todavía no has hecho ningún pedido.</span>{' '}
           <Link href="/catalogo" className="underline">
             Ver el catálogo
@@ -23,12 +23,12 @@ export default async function OrdersPage() {
       ) : (
         <ul className="flex flex-col gap-3" aria-label="Pedidos">
           {orders.map((o) => (
-            <li key={o.number} data-testid="order-row" className="rounded-2xl bg-white p-4">
+            <li key={o.number} data-testid="order-row" className="rounded-2xl border border-store-ink/10 bg-white p-5">
               <Link href={`/cuenta/pedidos/${o.number}`} className="flex flex-wrap justify-between gap-2">
                 <span className="font-semibold">{o.number}</span>
                 <span>{new Date(o.createdAt).toLocaleDateString('es-ES')}</span>
                 <span>{o.units} {o.units === 1 ? 'unidad' : 'unidades'}</span>
-                <span className="font-bold">{formatPrice(o.totalCents)}</span>
+                <span className="font-semibold">{formatPrice(o.totalCents)}</span>
               </Link>
             </li>
           ))}

@@ -21,6 +21,8 @@ type World = {
   other?: { request: APIRequestContext; orderNumber?: string }
   sweep?: { operationId: string; status: number; errors: string[] }[]
   headers?: Record<string, string>
+  /** Name of the product added from a card or a suggestion (QAL-010). */
+  added?: string
 }
 
 export const test = base.extend<{ world: World; contract: ContractChecker }>({

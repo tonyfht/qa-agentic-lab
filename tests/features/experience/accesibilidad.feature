@@ -20,6 +20,7 @@ Feature: Accesibilidad y uso con teclado
       | /carrito                     |
       | /cuenta/entrar               |
       | /cuenta/registro             |
+      | /creditos                    |
 
   @EXP-001 @a11y
   Scenario: El carrito con artículos y el pago son accesibles

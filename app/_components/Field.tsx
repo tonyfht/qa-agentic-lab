@@ -17,7 +17,7 @@ export function Field({
 }) {
   const errorId = `${name}-error`
   return (
-    <label className="flex flex-col gap-1 text-sm font-medium">
+    <label className="flex flex-col gap-1.5 text-sm font-semibold">
       {label}
       <input
         name={name}
@@ -27,7 +27,7 @@ export function Field({
         placeholder={placeholder}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className="rounded-lg border border-store-ink/20 bg-white px-3 py-2 font-normal"
+        className="rounded-xl border border-store-ink/20 bg-white px-3.5 py-2.5 font-normal aria-[invalid=true]:border-store-terracotta"
       />
       {error && (
         <span id={errorId} className="text-store-terracotta-dark" data-testid={`error-${name}`}>

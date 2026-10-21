@@ -31,8 +31,8 @@ export function CheckoutForm({ total }: { total: string }) {
 
   return (
     <form method="post" onSubmit={onSubmit} className="flex flex-col gap-6" aria-label="Pago">
-      <fieldset className="flex flex-col gap-3 rounded-2xl bg-white p-4">
-        <legend className="px-1 text-lg font-bold">Envío</legend>
+      <fieldset className="flex flex-col gap-4 rounded-2xl border border-store-ink/10 bg-white p-5">
+        <legend className="px-1 font-serif text-xl font-semibold">Envío</legend>
         <Field label="Nombre completo" name="fullName" autoComplete="name" error={fields.fullName} />
         <Field label="Dirección" name="address" autoComplete="street-address" error={fields.address} />
         <div className="grid grid-cols-2 gap-3">
@@ -40,8 +40,8 @@ export function CheckoutForm({ total }: { total: string }) {
           <Field label="Código postal" name="postalCode" inputMode="numeric" autoComplete="postal-code" error={fields.postalCode} />
         </div>
       </fieldset>
-      <fieldset className="flex flex-col gap-3 rounded-2xl bg-white p-4">
-        <legend className="px-1 text-lg font-bold">Pago (simulado)</legend>
+      <fieldset className="flex flex-col gap-4 rounded-2xl border border-store-ink/10 bg-white p-5">
+        <legend className="px-1 font-serif text-xl font-semibold">Pago (simulado)</legend>
         <p className="text-sm text-store-muted">
           No se cobra nada. Usa la tarjeta de prueba <code>4242 4242 4242 4242</code>; las demás tarjetas de prueba están
           en el README.
@@ -53,14 +53,14 @@ export function CheckoutForm({ total }: { total: string }) {
         </div>
       </fieldset>
       {error && (
-        <p role="alert" data-testid="checkout-error" className="rounded-lg bg-store-terracotta/10 p-3 text-store-terracotta-dark">
+        <p role="alert" data-testid="checkout-error" className="rounded-xl bg-store-terracotta/10 p-3 text-store-terracotta-dark">
           {error}
         </p>
       )}
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-store-terracotta px-5 py-3 text-lg font-semibold text-white hover:bg-store-terracotta-dark disabled:opacity-60"
+        className="rounded-full bg-store-terracotta px-5 py-4 text-lg font-semibold text-white hover:bg-store-terracotta-dark disabled:opacity-60"
       >
         Pagar {total}
       </button>

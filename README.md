@@ -38,8 +38,14 @@ Sigue los pasos en orden. Cada uno dice qué abrir y qué deberías ver.
    [`combinaciones.feature`](tests/features/catalog/combinaciones.feature). Verás qué puede y qué **no puede** hacer
    un agente, y su trabajo real: 9 combinaciones *pairwise* de filtros en lugar de 54. La
    [revisión de la spec del catálogo](qa/agents/reviews/catalog.md) es obra del Revisor de specs.
-6. **La tienda.** Ejecuta `npm run dev` (ver [Ejecútalo tú](#ejecútalo-tú)) y abre <http://localhost:3400/catalogo>.
-   Verás el catálogo: busca "algodón" (encuentra artículos escritos sin tilde), filtra por precio u ordena.
+6. **La tienda.** Ejecuta `npm run dev` (ver [Ejecútalo tú](#ejecútalo-tú)) y abre <http://localhost:3400>.
+   Verás una tienda online de verdad, con fotos, categorías y ofertas. Busca "algodón" desde la cabecera (encuentra
+   artículos escritos sin tilde) y en el catálogo prueba los filtros: se aplican al momento, cada uno queda como un
+   chip que se quita con un clic, y en el móvil van en un cajón. Las fotos son de Unsplash y cada una tiene su
+   [crédito](http://localhost:3400/creditos).
+
+   <img src="docs/assets/tienda-portada.webp" alt="Portada de La Tienda en Casa: banner de temporada, categorías con foto y artículos mejor valorados" width="720">
+
 7. **La API y su contrato.** Con la tienda abierta, mira <http://localhost:3400/api/openapi.json> y
    <http://localhost:3400/api/products?minPrice=19,90&maxPrice=19,90>. Verás el contrato publicado y la misma
    búsqueda que en la web; cada escenario de API comprueba que la respuesta cumple ese contrato.

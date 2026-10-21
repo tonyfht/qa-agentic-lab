@@ -35,6 +35,12 @@ const nextConfig: NextConfig = {
   // Explicit root: the repo also contains tooling folders that Turbopack must not treat as workspaces.
   turbopack: { root: path.resolve(__dirname) },
   poweredByHeader: false,
+  // EXP-006: local photos only, served as WebP in the sizes the grids use (no remote patterns: no third parties).
+  images: {
+    formats: ['image/webp'],
+    deviceSizes: [640, 828, 1080, 1280, 1600],
+    imageSizes: [48, 80, 160, 240, 320, 480],
+  },
   async headers() {
     return [{ source: '/:path*', headers: SECURITY_HEADERS }]
   },

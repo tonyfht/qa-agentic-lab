@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { Field } from '@/app/_components/Field'
 import { postJson } from '@/app/_components/postJson'
 
-const button = 'rounded-lg bg-store-terracotta px-4 py-2 font-semibold text-white hover:bg-store-terracotta-dark disabled:opacity-60'
+const button = 'rounded-full bg-store-terracotta px-5 py-3 font-semibold text-white hover:bg-store-terracotta-dark disabled:opacity-60'
 
 function useForm(url: string, next: string) {
   const router = useRouter()
