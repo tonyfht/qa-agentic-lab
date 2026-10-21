@@ -1,0 +1,68 @@
+schema: spec-driven
+
+context: |
+  Language: es
+  All artifacts must be written in es.
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+
+  # QA Agentic Lab — Contexto de proyecto
+
+  ## Qué es
+  Laboratorio público de automatización de pruebas con agentes de IA, gobernado por SDD.
+  Dos mitades en un repositorio:
+  - Producto: "La Tienda en Casa", e-commerce pequeño de artículos para el hogar (app/).
+  - Sistema de calidad: pruebas de todas las tipologías, pipeline por etapas, agentes de QA,
+    trazabilidad y portal de calidad en GitHub Pages.
+  Se presenta a clientes: todo lo visible debe poder explicarse desde cero.
+
+  ## Principios
+  - La spec es la fuente de verdad; los escenarios GIVEN/WHEN/THEN originan los .feature Gherkin.
+  - La IA diseña, repara y explica; el veredicto lo dan pruebas deterministas y quality gates.
+  - Todo cambio de un agente entra por PR revisado por una persona.
+  - El Sanador nunca cambia aserciones de comportamiento esperado.
+  - Repositorio público: sin secretos ni datos personales reales.
+  - Carga y DAST activo solo contra sistemas propios.
+
+  ## Trazabilidad
+  Cada requisito lleva un ID <DOMINIO>-<NNN> al inicio del nombre:
+  CAT (catálogo), CART (carrito), PROMO (promociones), CHK (checkout), ORD (pedidos),
+  ACC (cuenta), QA (sistema de calidad). El mismo ID se usa como etiqueta Gherkin (@CAT-001),
+  en el test y en el informe.
+
+  ## Stack
+  Pendiente de QAL-001 (fundación). No asumir stack hasta que QAL-001 esté archivado.
+
+  ## Convención de IDs de cambio
+  QAL-XXX-nombre-descriptivo (3 dígitos, kebab-case). Siguiente libre: openspec/README.md.
+  Rama: change/qal-0xx-<nombre>.
+
+rules:
+  proposal:
+    - "Estado inicial borrador; marcar aprobado solo con validación explícita del usuario"
+    - "Incluir siempre: fuera de alcance, riesgos y criterios de éxito verificables"
+    - "Incluir sección 'Valor para la demo': qué se enseña al cliente con este cambio y en qué tipología de prueba"
+    - "Incluir sección 'Testing scope': tipologías de prueba afectadas y nivel de riesgo (bajo/medio/alto)"
+  specs:
+    - "Usar lenguaje RFC 2119: MUST/SHALL obligatorio, SHOULD recomendado, MAY opcional"
+    - "Cada requisito MUST empezar su nombre por su ID de trazabilidad (p. ej. 'CAT-001 Búsqueda por texto')"
+    - "Cada requisito MUST incluir al menos un escenario GIVEN/WHEN/THEN, y al menos uno de error o límite"
+  design:
+    - "Incluir sección Gherkin con los escenarios que originarán los .feature, etiquetados con su ID"
+    - "Indicar qué tipologías de prueba cubren cada requisito (e2e, api, unit, a11y, visual, rendimiento, seguridad)"
+    - "Indicar qué agentes intervienen y con qué límites, si el cambio los usa"
+  tasks:
+    - "Incluir sección Testing con tareas de test explícitas por tipología"
+    - "Incluir tarea para actualizar la matriz de trazabilidad"
+    - "Gate de cierre: pipeline en verde en el PR del cambio"
+
+operations:
+  apply:
+    guidance:
+      - "Código, Gherkin y tests se escriben juntos; nunca los tests después"
+      - "Trabajar en la rama change/qal-0xx-<nombre> y abrir PR contra main"
+      - "No introducir secretos ni datos personales reales"
+  archive:
+    guidance:
+      - "Gate previo: PR fusionado sin squash, pipeline en verde y tareas completadas"
+      - "Ejecutar /opsx:sync para fusionar delta specs en openspec/specs/ antes de mover a archive"
+      - "Actualizar la tabla de openspec/README.md con la fila del cambio archivado"

@@ -1,0 +1,19 @@
+node_modules/
+.env*
+!.env.example
+
+# Resultados e informes de pruebas (se publican desde CI, no se versionan)
+test-results/
+playwright-report/
+allure-results/
+allure-report/
+coverage/
+reports/
+
+# Builds
+.next/
+dist/
+out/
+
+.DS_Store
+Thumbs.db
