@@ -21,8 +21,8 @@ Público objetivo: proyecto **formativo y sin ánimo de lucro**, para personas q
 que se presenta el laboratorio. Todo lo visible (README, informe, specs) debe poder explicarse **desde cero** a
 alguien que no sabe de QA ni conoce el proyecto.
 
-> Estado: fundación. El stack, la estructura y el pipeline los fija el cambio `QAL-001` (ver `openspec/changes/`).
-> Hasta que se apruebe y archive, las secciones marcadas *(pendiente QAL-001)* son propuesta, no norma.
+> Estado: fundación (`QAL-001`). Stack, estructura, pipeline e informe están fijados; los agentes de QA llegan con
+> sus propios cambios (ver la hoja de ruta en [`openspec/PROJECT.md`](openspec/PROJECT.md#hoja-de-ruta)).
 
 ---
 
@@ -92,18 +92,48 @@ técnico. Palabras clave estructurales de OpenSpec (`Requirement`, `Scenario`, `
 
 ---
 
-## Estructura del repositorio *(pendiente QAL-001)*
+## Stack
+
+Next.js 16 (App Router) + TypeScript estricto + Tailwind 4 · Zod (y OpenAPI generado desde Zod) · Playwright +
+playwright-bdd · Vitest · ECharts · Node 24 (estricto, `engine-strict`) · npm.
+
+## Estructura del repositorio
 
 ```
-app/                  → La Tienda en Casa (front + API documentada con OpenAPI)
+app/                  → La Tienda en Casa: rutas de Next.js (portada, /api/health, /api/openapi.json)
+lib/                  → lógica de la tienda y esquemas Zod de la API
 tests/
-  features/           → Gherkin por dominio, derivado de las specs
-  e2e/ api/ unit/ ... → automatización por tipología
-.claude/agents/       → definición versionada de los agentes de QA
-.github/workflows/    → pipeline por etapas
-report/               → generador del informe de calidad (local y GitHub Pages)
+  features/<dominio>/ → Gherkin (.feature), etiquetado con el ID de requisito (@QA-001)
+  steps/              → steps de playwright-bdd
+  unit/               → Vitest; el ID de requisito va al inicio del describe exterior
+  support/            → reporter de resultados y datos de ejemplo
+qa/
+  run.ts              → orquestador: npm run qa [-- --stage <id>]
+  stages/             → una etapa por fichero; registry.ts fija el orden
+  checks/             → enlaces, Mermaid y secretos (etapa static)
+  results/            → contrato run-result v1, histórico y catálogo de requisitos
+  publish.ts          → publicación en gh-pages (solo CI, solo main)
+report/               → generador del informe (template/ + build.ts + serve.ts)
+schemas/              → JSON Schema publicado del resultado de una ejecución
+.github/              → workflows, plantillas de PR e issues, CODEOWNERS, Dependabot
+docs/assets/          → logo y recursos del README
 openspec/             → specs, cambios y archivo (fuente de verdad)
 ```
+
+## Comandos
+
+| Comando | Qué hace |
+|---|---|
+| `npm run dev` | Tienda en desarrollo en el 3400 |
+| `npm run qa` | Pipeline completo: static → build → e2e → report |
+| `npm run qa -- --stage <id>` | Una etapa (y sus previas). `governance` necesita `--pr-body <fichero>` |
+| `npm run report` | Informe con el histórico local en el 3420 |
+| `npm run test:unit` | Solo las pruebas unitarias |
+| `node scripts/setup-branch-protection.mjs` | Reglas de protección de `main` (tras cambiar nombres de jobs) |
+
+**Reglas al añadir pruebas:** todo test lleva el ID de su requisito (etiqueta Gherkin o inicio del `describe`); si no,
+el informe lo muestra como "sin trazar". Si cambia el esquema de resultados, se sube `SCHEMA_VERSION`, se añade su
+conversión en `qa/results/history.ts` y se regenera `schemas/` con `npx tsx qa/results/export-schema.ts`.
 
 ---
 

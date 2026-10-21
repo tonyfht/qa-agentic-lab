@@ -1,0 +1,51 @@
+{
+  "name": "qa-agentic-lab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Laboratorio de automatización de pruebas con agentes de IA, gobernado por especificación. Caso de uso: La Tienda en Casa.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tonyfht/qa-agentic-lab.git"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "next dev -p 3400",
+    "build": "next build",
+    "start": "next start -p 3400",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "qa": "tsx qa/run.ts",
+    "report": "tsx report/serve.ts"
+  },
+  "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^9.1.0",
+    "next": "^16.4.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "echarts": "^6.1.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.2",
+    "mermaid": "^12.2.0",
+    "playwright-bdd": "^9.2.1",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.5"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "unrs-resolver": true
+  }
+}

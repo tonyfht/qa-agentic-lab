@@ -1,0 +1,22 @@
+# Gobierno del PR (QA-021): cada Pull Request indica qué cambio de OpenSpec implementa o se declara mantenimiento.
+name: Gobierno
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  governance:
+    name: Gobierno del PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - run: npm run qa -- --stage governance
+        env:
+          # Por variable de entorno, nunca interpolado en el script: el texto del PR no se ejecuta.
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}

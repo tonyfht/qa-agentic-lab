@@ -1,0 +1,41 @@
+name: Defecto
+description: Algo no funciona como dice la especificación
+title: "[Defecto] "
+labels: [defecto]
+body:
+  - type: input
+    id: requisito
+    attributes:
+      label: Requisito afectado
+      description: ID del requisito de la spec (por ejemplo CAT-001). Si no lo sabes, deja "desconocido".
+      placeholder: CAT-001
+    validations:
+      required: true
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducirlo
+      placeholder: |
+        1. Abre la tienda en ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: obtenido
+    attributes:
+      label: Resultado obtenido
+    validations:
+      required: true
+  - type: textarea
+    id: evidencia
+    attributes:
+      label: Evidencia
+      description: Capturas, traza de Playwright o enlace a la ejecución del pipeline.
+    validations:
+      required: true

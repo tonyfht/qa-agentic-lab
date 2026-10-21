@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 128" role="img" aria-labelledby="t">
+  <title id="t">QA Agentic Lab</title>
+  <style>
+    .ink { fill: #0b0b0b; } .sub { fill: #52514e; }
+    .shield { fill: #4f46e5; }
+    .edge { stroke: #ffffff; stroke-width: 7; stroke-linecap: round; }
+    .node { fill: #ffffff; stroke: #0d9488; stroke-width: 4; }
+    .hub { fill: #0d9488; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #f0efec; } .sub { fill: #c3c2b7; }
+      .shield { fill: #6d66ee; } .node { stroke: #2dd4bf; } .hub { fill: #2dd4bf; }
+    }
+  </style>
+  <g transform="translate(18 6)">
+    <!-- shield -->
+    <path class="shield" d="M52 2 L98 18 V58 Q98 96 52 116 Q6 96 6 58 V18 Z"/>
+    <!-- check made of connected agents -->
+    <line class="edge" x1="28" y1="60" x2="46" y2="78"/>
+    <line class="edge" x1="46" y1="78" x2="78" y2="40"/>
+    <circle class="node" cx="28" cy="60" r="8"/>
+    <circle class="node" cx="46" cy="78" r="8"/>
+    <circle class="node" cx="78" cy="40" r="8"/>
+    <circle class="hub" cx="46" cy="78" r="3.5"/>
+  </g>
+  <text x="138" y="66" class="ink" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="44" font-weight="700" letter-spacing="-0.5">QA Agentic Lab</text>
+  <text x="140" y="98" class="sub" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="18">Calidad con IA, gobernada por especificación</text>
+</svg>

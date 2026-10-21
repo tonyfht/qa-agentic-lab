@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-store-cream: #fbf7f1;
+  --color-store-ink: #2b2118;
+  --color-store-muted: #6b5a4b;
+  --color-store-terracotta: #b4532a;
+}
+
+body {
+  background: var(--color-store-cream);
+  color: var(--color-store-ink);
+}

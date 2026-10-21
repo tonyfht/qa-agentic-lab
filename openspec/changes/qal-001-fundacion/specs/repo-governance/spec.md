@@ -37,6 +37,11 @@ Cada Pull Request SHALL indicar en su descripción el ID del cambio de OpenSpec 
 - **WHEN** se ejecuta la comprobación de gobierno
 - **THEN** la comprobación falla con un mensaje que explica qué añadir
 
+#### Scenario: PR de actualización automática de dependencias
+- **GIVEN** un PR abierto por Dependabot
+- **WHEN** se ejecuta la comprobación de gobierno
+- **THEN** la comprobación pasa como mantenimiento sin necesidad de ID de cambio
+
 #### Scenario: ID de un cambio inexistente
 - **GIVEN** un PR que cita `QAL-999` y ese cambio no existe en `openspec/`
 - **WHEN** se ejecuta la comprobación de gobierno

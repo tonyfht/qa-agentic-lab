@@ -1,0 +1,26 @@
+name: Requisito nuevo
+description: Propón una funcionalidad para la tienda o para el sistema de calidad
+title: "[Requisito] "
+labels: [requisito]
+body:
+  - type: textarea
+    id: necesidad
+    attributes:
+      label: Qué necesidad cubre
+      description: Quién lo necesita y para qué.
+    validations:
+      required: true
+  - type: textarea
+    id: comportamiento
+    attributes:
+      label: Comportamiento esperado
+      description: Si puedes, en forma de escenario (Dado / Cuando / Entonces).
+    validations:
+      required: true
+  - type: textarea
+    id: demo
+    attributes:
+      label: Qué se enseña con ello
+      description: Qué técnica o tipología de prueba permite enseñar (el laboratorio solo construye lo que sirve para enseñar).
+    validations:
+      required: true

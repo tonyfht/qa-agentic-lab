@@ -1,0 +1,11 @@
+name: Preparar el entorno
+description: Node 24 y dependencias exactas del lockfile (npm ci), igual en todos los jobs.
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v7
+      with:
+        node-version: '24'
+        cache: npm
+    - run: npm ci
+      shell: bash
