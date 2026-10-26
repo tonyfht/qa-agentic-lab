@@ -32,7 +32,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@cyclonedx/cyclonedx-npm": "^6.0.1",
-    "@fission-ai/openspec": "^1.14.1",
+    "@fission-ai/openspec": "^1.14.3",
     "@playwright/test": "^1.64.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.5",
@@ -42,14 +42,14 @@
     "ajv-formats": "^3.0.1",
     "chrome-launcher": "^1.2.2",
     "echarts": "^6.1.0",
-    "eslint": "^9.39.5",
+    "eslint": "^10.13.0",
     "eslint-config-next": "^16.4.2",
     "lighthouse": "^13.5.0",
     "mermaid": "^12.2.0",
     "playwright-bdd": "^9.2.1",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "vitest": "^5.0.5"
   },
   "allowScripts": {
